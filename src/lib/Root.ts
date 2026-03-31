@@ -60,21 +60,21 @@ export class Root {
         this.camera.position.z = 5;
         this.camera.updateProjectionMatrix();
 
-        const appElement = document.getElementById('app');
-        this.controls = new OrbitControls(this.camera, appElement || this.canvas);
+        // Attach controls to canvas to prevent blocking UI touches
+        this.controls = new OrbitControls(this.camera, this.canvas);
         
         this.controls.enableZoom = false; 
         this.controls.minDistance = 3;  
         this.controls.maxDistance = 30; 
         this.controls.target.set(0, 0, 0);
 
-        if (appElement) {
-            appElement.addEventListener('scroll', () => {
-                const scrollHeight = appElement.scrollHeight - window.innerHeight;
-                const scrollPercentage = appElement.scrollTop / scrollHeight;
-                this.scrollRotation = scrollPercentage * Math.PI * 2;
-            });
-        }
+        // Use window scroll for reliable cross‑platform behaviour
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const scrollPercentage = maxScroll > 0 ? scrollY / maxScroll : 0;
+            this.scrollRotation = scrollPercentage * Math.PI * 2;
+        });
     }
 
     postProcessing?: PostProcessing;

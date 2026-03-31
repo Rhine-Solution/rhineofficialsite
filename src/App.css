@@ -13,7 +13,7 @@
   100% { opacity: 0.4; transform: scale(1); }
 }
 
-/* This allows the 3D particles to be seen and zoomed while text scrolls */
+/* The canvas sits behind the UI and does not block touch interactions */
 #threecanvas {
   position: fixed;
   top: 0;
@@ -21,25 +21,28 @@
   width: 100vw;
   height: 100vh;
   z-index: 0;
-  pointer-events: auto; /* Allows rotation/zoom on the background */
+  pointer-events: none;  /* Allows touches to reach the scrollable UI */
 }
 
+/* Scrollable container – now receives all pointer events */
 #app {
   position: relative;
   z-index: 10;
   height: 100vh;
   width: 100%;
-  overflow-y: auto; /* THE FIX: Enables mouse scrolling */
+  overflow-y: auto;
   overflow-x: hidden;
   background: transparent;
-  pointer-events: none; /* Allows mouse to reach the background in empty spaces */
+  pointer-events: auto;   /* Ensures scrolling works everywhere */
+  -webkit-overflow-scrolling: touch;  /* Smooth inertial scroll on iOS */
 }
 
-/* IMPORTANT: All UI elements must be clickable */
+/* Interactive elements remain clickable */
 header, main, section, footer, button, .snake-btn {
   pointer-events: auto;
 }
 
+/* Snake button styles (unchanged) */
 .snake-btn {
   position: relative;
   display: inline-flex;
@@ -84,7 +87,7 @@ header, main, section, footer, button, .snake-btn {
   animation: status-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Custom Scrollbar */
+/* Custom scrollbar */
 #app::-webkit-scrollbar {
   width: 5px;
 }
@@ -93,6 +96,7 @@ header, main, section, footer, button, .snake-btn {
   opacity: 0.1;
   border-radius: 10px;
 }
+
 .side-indicator {
   position: fixed;
   right: 40px;
