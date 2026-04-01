@@ -4,17 +4,7 @@ import './Admin.css';
 import WebGPU from 'three/examples/jsm/capabilities/WebGPU.js';
 import { RhineLogo } from '../components/GFX';
 import { Root } from '../lib/Root';
-import { createClient } from '@supabase/supabase-js';
-
-// Supabase client setup - uses VITE_ env vars (exposed to client). Server-side secrets must not be here.
-const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL as string;
-const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY as string;
-const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    detectSessionInUrl: true,
-  },
-});
+import { supabase } from "../lib/supabase";
 
 type Tab = 'login' | 'register' | 'forgot';
 
