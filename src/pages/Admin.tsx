@@ -5,6 +5,7 @@ import WebGPU from 'three/examples/jsm/capabilities/WebGPU.js';
 import { RhineLogo } from '../components/GFX';
 import { Root } from '../lib/Root';
 import { supabase } from "../lib/supabase";
+import Layout from '../components/Layout';
 
 type Tab = 'login' | 'register' | 'forgot';
 
@@ -50,7 +51,7 @@ export default function Admin() {
 
   // Validation helpers
   const isValidEmail = (e: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
-  const isStrongPassword = (p: string) => p.length >= 8; // extend with complexity rules if desired
+  const isStrongPassword = (p: string) => p.length >= 8;
 
   // Actions
   const handleLogin = async (e: React.FormEvent) => {
@@ -110,54 +111,56 @@ export default function Admin() {
   };
 
   return (
-    <div id="admin-app" className="relative w-full min-h-screen overflow-hidden font-rubik selection:bg-white/20">
-      {/* WebGPU background remains at z-0 (LandingPage uses Root/WebGPU). We simply ensure Admin has a semi-blurred panel on top */}
-      <div className="admin-panel-container">
-        <div className="logo-row">
-          <div className="w-12 h-12">{RhineLogo(themeColor)}</div>
-          <h1 className="admin-title">Welcome, back!</h1>
-        </div>
+    <Layout themeColor={themeColor} showAuthButtons={false} onLogoClick={() => {}}>
+      <div id="admin-app" className="relative w-full min-h-screen overflow-hidden font-rubik selection:bg-white/20">
+        {/* WebGPU background remains at z-0 */}
+        <div className="admin-panel-container">
+          <div className="logo-row">
+            <div className="w-12 h-12">{RhineLogo(themeColor)}</div>
+            <h1 className="admin-title">Welcome, back!</h1>
+          </div>
 
-        <div className="tabs">
-          <button className={`tab-btn ${tab === 'login' ? 'active' : ''}`} onClick={() => setTab('login')}>Login</button>
-          <button className={`tab-btn ${tab === 'register' ? 'active' : ''}`} onClick={() => setTab('register')}>Register</button>
-          <button className={`tab-btn ${tab === 'forgot' ? 'active' : ''}`} onClick={() => setTab('forgot')}>Forgot</button>
-        </div>
+          <div className="tabs">
+            <button className={`tab-btn ${tab === 'login' ? 'active' : ''}`} onClick={() => setTab('login')}>Login</button>
+            <button className={`tab-btn ${tab === 'register' ? 'active' : ''}`} onClick={() => setTab('register')}>Register</button>
+            <button className={`tab-btn ${tab === 'forgot' ? 'active' : ''}`} onClick={() => setTab('forgot')}>Forgot</button>
+          </div>
 
-        <div className="tab-panel">
-          {error && <div className="error" role="alert">{error}</div>}
+          <div className="tab-panel">
+            {error && <div className="error" role="alert">{error}</div>}
 
-          {tab === 'login' && (
-            <form onSubmit={handleLogin} className="form">
-              <label>Email</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} required />
-              <label>Password</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              <button type="submit" className="submit" disabled={loading}>{loading ? 'Signing...' : 'Sign In'}</button>
-            </form>
-          )}
+            {tab === 'login' && (
+              <form onSubmit={handleLogin} className="form">
+                <label>Email</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} required />
+                <label>Password</label>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <button type="submit" className="submit" disabled={loading}>{loading ? 'Signing...' : 'Sign In'}</button>
+              </form>
+            )}
 
-          {tab === 'register' && (
-            <form onSubmit={handleRegister} className="form">
-              <label>Email</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} required />
-              <label>Password</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              <label>Confirm Password</label>
-              <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-              <button type="submit" className="submit" disabled={loading}>{loading ? 'Registering...' : 'Create Account'}</button>
-            </form>
-          )}
+            {tab === 'register' && (
+              <form onSubmit={handleRegister} className="form">
+                <label>Email</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} required />
+                <label>Password</label>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <label>Confirm Password</label>
+                <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+                <button type="submit" className="submit" disabled={loading}>{loading ? 'Registering...' : 'Create Account'}</button>
+              </form>
+            )}
 
-          {tab === 'forgot' && (
-            <form onSubmit={handleForgot} className="form">
-              <label>Email</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} required />
-              <button type="submit" className="submit" disabled={loading}>{loading ? 'Sending...' : 'Send Reset'}</button>
-            </form>
-          )}
+            {tab === 'forgot' && (
+              <form onSubmit={handleForgot} className="form">
+                <label>Email</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} required />
+                <button type="submit" className="submit" disabled={loading}>{loading ? 'Sending...' : 'Send Reset'}</button>
+              </form>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }
