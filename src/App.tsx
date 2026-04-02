@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import LandingPage from "./pages/LandingPage"
-import AdminPage from "./pages/Admin"
+const AdminPage = lazy(() => import("./pages/Admin"));
 
 function App() {
   return (
@@ -10,7 +11,11 @@ function App() {
         <Route path="/" element={<LandingPage />} />
 
         {/* Admin page (auth) */}
-        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin" element={
+          <Suspense fallback={null}>
+            <AdminPage />
+          </Suspense>
+        } />
       </Routes>
     </BrowserRouter>
   );

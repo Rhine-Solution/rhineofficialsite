@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
 type Tab = 'login' | 'register' | 'forgot';
@@ -16,6 +16,59 @@ export default function AuthModal({ isOpen, onClose, themeColor }: AuthModalProp
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previouslyFocusedElement = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      previouslyFocusedElement.current = document.activeElement as HTMLElement;
+      // Use a timeout to ensure the modal is rendered before attempting to focus
+      setTimeout(() => {
+        modalRef.current?.focus();
+      }, 0);
+
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+          onClose();
+        } else if (event.key === 'Tab') {
+          const focusableElements = modalRef.current?.querySelectorAll(
+            'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          ) as NodeListOf<HTMLElement>;
+
+          if (!focusableElements || focusableElements.length === 0) return;
+
+          const firstElement = focusableElements[0];
+          const lastElement = focusableElements[focusableElements.length - 1];
+
+          if (event.shiftKey) { // Shift + Tab
+            if (document.activeElement === firstElement) {
+              lastElement.focus();
+              event.preventDefault();
+            }
+          } else { // Tab
+            if (document.activeElement === lastElement) {
+              firstElement.focus();
+              event.preventDefault();
+            }
+          }
+        }
+      };
+
+      document.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+        if (previouslyFocusedElement.current) {
+          previouslyFocusedElement.current.focus();
+        }
+      };
+    } else {
+      if (previouslyFocusedElement.current) {
+        previouslyFocusedElement.current.focus();
+        previouslyFocusedElement.current = null;
+      }
+    }
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -76,9 +129,16 @@ export default function AuthModal({ isOpen, onClose, themeColor }: AuthModalProp
   };
 
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-[70] pointer-events-auto flex items-center justify-center p-4 bg-black/50"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      tabIndex={-1} // Make the modal div focusable
+      ref={modalRef} // Assign ref to the modal div
+    >
       <div
-        className="relative w-full max-w-md bg-white/5 backdrop-blur-md backdrop-saturate-125 border border-white/10 rounded-2xl shadow-2xl"
+        className="relative w-full max-w-md bg-white/10 backdrop-blur-md backdrop-saturate-125 border border-white/20 rounded-2xl shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -91,7 +151,7 @@ export default function AuthModal({ isOpen, onClose, themeColor }: AuthModalProp
           </svg>
         </button>
 
-        <div className="p-6">
+  	    <div className="p-6">
           <div className="flex justify-center mb-6">
             <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,7 +160,7 @@ export default function AuthModal({ isOpen, onClose, themeColor }: AuthModalProp
             </div>
           </div>
 
-          <div className="flex justify-center gap-4 mb-6 border-b border-white/10">
+          <div className="flex justify-center gap-4 mb-6 border-b border-white/20">
             <button
               className={`pb-2 text-sm font-medium transition-colors ${tab === 'login' ? 'text-white border-b-2 border-white' : 'text-white/60 hover:text-white'}`}
               onClick={() => setTab('login')}
@@ -134,7 +194,7 @@ export default function AuthModal({ isOpen, onClose, themeColor }: AuthModalProp
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value.trim())}
-                className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20"
+                className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20"
                 required
               />
             </div>
@@ -145,7 +205,7 @@ export default function AuthModal({ isOpen, onClose, themeColor }: AuthModalProp
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20"
+                  className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20"
                   required
                 />
               </div>
@@ -157,7 +217,7 @@ export default function AuthModal({ isOpen, onClose, themeColor }: AuthModalProp
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20"
+                  className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20"
                   required
                 />
               </div>
@@ -165,7 +225,7 @@ export default function AuthModal({ isOpen, onClose, themeColor }: AuthModalProp
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white font-medium transition-colors disabled:opacity-50"
+              className="w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white font-medium transition-colors disabled:opacity-50"
             >
               {loading ? 'Please wait...' : tab === 'login' ? 'Sign In' : tab === 'register' ? 'Create Account' : 'Send Reset Link'}
             </button>

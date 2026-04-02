@@ -1,4 +1,193 @@
-﻿=== C:\Users\teoal\Desktop\rhineofficialsite\src\components\Collapsable.tsx ===
+﻿=== C:\Users\teoal\Desktop\rhineofficialsite\src\components\AuthModal.tsx ===
+import { useState } from 'react';
+import { supabase } from '../lib/supabase';
+
+type Tab = 'login' | 'register' | 'forgot';
+
+interface AuthModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  themeColor?: string;
+}
+
+export default function AuthModal({ isOpen, onClose, themeColor }: AuthModalProps) {
+  const [tab, setTab] = useState<Tab>('login');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  if (!isOpen) return null;
+
+  const isValidEmail = (e: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
+  const isStrongPassword = (p: string) => p.length >= 8;
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!isValidEmail(email)) return setError('Invalid email');
+    if (!isStrongPassword(password)) return setError('Password must be â‰¥8 characters');
+    setLoading(true);
+    try {
+      const { data, error: authErr } = await supabase.auth.signInWithPassword({ email, password });
+      if (authErr) throw authErr;
+      onClose();
+    } catch (err: any) {
+      setError(err?.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!isValidEmail(email)) return setError('Invalid email');
+    if (!isStrongPassword(password)) return setError('Password must be â‰¥8 characters');
+    if (password !== confirmPassword) return setError('Passwords do not match');
+    setLoading(true);
+    try {
+      const { data, error: authErr } = await supabase.auth.signUp({ email, password });
+      if (authErr) throw authErr;
+      onClose();
+    } catch (err: any) {
+      setError(err?.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgot = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!isValidEmail(email)) return setError('Invalid email');
+    setLoading(true);
+    try {
+      const { data, error: authErr } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin,
+      });
+      if (authErr) throw authErr;
+      onClose();
+    } catch (err: any) {
+      setError(err?.message || 'Password reset failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
+      <div
+        className="relative w-full max-w-md bg-white/10 backdrop-blur-md backdrop-saturate-125 border border-white/20 rounded-2xl shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 text-white/60 hover:text-white"
+          aria-label="Close"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <div className="p-6">
+          <div className="flex justify-center mb-6">
+            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+          </div>
+
+          <div className="flex justify-center gap-4 mb-6 border-b border-white/20">
+            <button
+              className={`pb-2 text-sm font-medium transition-colors ${tab === 'login' ? 'text-white border-b-2 border-white' : 'text-white/60 hover:text-white'}`}
+              onClick={() => setTab('login')}
+            >
+              Sign In
+            </button>
+            <button
+              className={`pb-2 text-sm font-medium transition-colors ${tab === 'register' ? 'text-white border-b-2 border-white' : 'text-white/60 hover:text-white'}`}
+              onClick={() => setTab('register')}
+            >
+              Sign Up
+            </button>
+            <button
+              className={`pb-2 text-sm font-medium transition-colors ${tab === 'forgot' ? 'text-white border-b-2 border-white' : 'text-white/60 hover:text-white'}`}
+              onClick={() => setTab('forgot')}
+            >
+              Forgot?
+            </button>
+          </div>
+
+          {error && (
+            <div className="mb-4 p-2 text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={tab === 'login' ? handleLogin : tab === 'register' ? handleRegister : handleForgot}>
+            <div className="mb-4">
+              <label className="block text-xs uppercase tracking-wider text-white/60 mb-1">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value.trim())}
+                className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20"
+                required
+              />
+            </div>
+            {tab !== 'forgot' && (
+              <div className="mb-4">
+                <label className="block text-xs uppercase tracking-wider text-white/60 mb-1">Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20"
+                  required
+                />
+              </div>
+            )}
+            {tab === 'register' && (
+              <div className="mb-6">
+                <label className="block text-xs uppercase tracking-wider text-white/60 mb-1">Confirm Password</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20"
+                  required
+                />
+              </div>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white font-medium transition-colors disabled:opacity-50"
+            >
+              {loading ? 'Please wait...' : tab === 'login' ? 'Sign In' : tab === 'register' ? 'Create Account' : 'Send Reset Link'}
+            </button>
+          </form>
+
+          <p className="mt-4 text-center text-xs text-white/40">
+            {tab === 'login' ? "Don't have an account? " : tab === 'register' ? "Already have an account? " : "Remembered your password? "}
+            <button
+              onClick={() => setTab(tab === 'login' ? 'register' : tab === 'register' ? 'login' : 'login')}
+              className="text-white/80 hover:text-white"
+            >
+              {tab === 'login' ? 'Sign up' : tab === 'register' ? 'Sign in' : 'Sign in'}
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+=== C:\Users\teoal\Desktop\rhineofficialsite\src\components\Collapsable.tsx ===
 import { ReactNode, useState } from "react";
 
 interface ICollapsableProps {
@@ -33,6 +222,31 @@ export default function Collapsable({
         </div>
     )
 }
+
+=== C:\Users\teoal\Desktop\rhineofficialsite\src\components\Footer.tsx ===
+import React from 'react';
+import { githubIcon, twitterIcon } from './GFX';
+
+export default function Footer({ themeColor }: { themeColor: string }) {
+  return (
+    <footer className="relative z-10 px-10 py-12 bg-white/5 backdrop-blur-md backdrop-saturate-125 border-t border-white/10">
+      <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row items-end justify-between gap-8">
+        <div className="flex flex-col gap-3 items-start text-left">
+          <div className="flex items-center gap-3">
+            <div className="status-dot w-2 h-2 rounded-full" style={{ backgroundColor: themeColor, boxShadow: `0 0 10px ${themeColor}` }}></div>
+            <span className="text-[9px] uppercase tracking-[0.4em] text-white/40 font-black">Systems: Active</span>
+          </div>
+          <div className="text-[10px] uppercase tracking-[0.2em] text-white/20 font-medium">Â© 2026 Rhine Solution | Developed by htr</div>
+        </div>
+        <div className="flex gap-8 items-center" style={{ color: themeColor }}>
+          <a href="#" className="transition-all duration-300 hover:scale-125 hover:drop-shadow-[0_0_10px_currentColor]">{githubIcon()}</a>
+          <a href="#" className="transition-all duration-300 hover:scale-125 hover:drop-shadow-[0_0_10px_currentColor]">{twitterIcon()}</a>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\components\GFX.tsx ===
 export const closeCross = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
@@ -150,53 +364,272 @@ export const RhineLogo = (color: string = "white") => (
         />
     </svg>
 );
-=== C:\Users\teoal\Desktop\rhineofficialsite\src\components\Header.tsx ===
-import { R } from './GFX';
 
-export default function Header() {
+=== C:\Users\teoal\Desktop\rhineofficialsite\src\components\Header.tsx ===
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { RhineLogo } from './GFX';
+import SideMenu from './SideMenu';
+import AuthModal from './AuthModal';
+
+type HeaderProps = {
+  themeColor?: string;
+  onLogoClick?: () => void;
+  showAuthButtons?: boolean;
+  disableSideMenu?: boolean;
+  heightClass?: string;
+};
+
+const megaMenuCategories = {
+  Services: [
+    "Web Development",
+    "Cloud Infrastructure",
+    "IT Consulting",
+    "Digital Transformation"
+  ],
+  Solutions: [
+    "Enterprise Software",
+    "AI & Automation",
+    "Cybersecurity Suite",
+    "Data Analytics"
+  ],
+  Technology: [
+    "WebGPU / 3D Rendering",
+    "Blockchain / Web3",
+    "IoT & Edge Computing",
+    "Custom APIs"
+  ],
+  Resources: [
+    "Case Studies",
+    "Documentation",
+    "Blog / Insights",
+    "Support & Community"
+  ]
+};
+
+export default function Header({
+  themeColor = 'white',
+  onLogoClick,
+  showAuthButtons = false,
+  disableSideMenu = false,
+  heightClass = 'h-[72px]'
+}: HeaderProps) {
+  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const megaMenuRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (megaMenuOpen && megaMenuRef.current && !megaMenuRef.current.contains(event.target as Node)) {
+        const navButtons = document.querySelectorAll('.nav-trigger');
+        let clickedOnTrigger = false;
+        navButtons.forEach(btn => {
+          if (btn.contains(event.target as Node)) clickedOnTrigger = true;
+        });
+        if (!clickedOnTrigger) {
+          setMegaMenuOpen(false);
+        }
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [megaMenuOpen]);
+
+  const handleCategoryClick = (category: string) => {
+    navigate(`/${category.toLowerCase()}`);
+    setMegaMenuOpen(false);
+  };
+
+  const handleSubItemClick = (category: string, item: string) => {
+    const slug = item.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    navigate(`/${category.toLowerCase()}/${slug}`);
+    setMegaMenuOpen(false);
+  };
+
+  const toggleMegaMenu = () => setMegaMenuOpen(prev => !prev);
+  const closeMegaMenu = () => setMegaMenuOpen(false);
+  const openMobileMenu = () => setMobileMenuOpen(true);
+  const closeMobileMenu = () => setMobileMenuOpen(false);
+  const openAuthModal = () => {
+    console.log('openAuthModal called');
+    setAuthModalOpen(true);
+  };
+  const closeAuthModal = () => setAuthModalOpen(false);
+
+  const openAuthFromMobile = () => {
+    console.log('openAuthFromMobile called');
+    if (mobileMenuOpen) {
+      closeMobileMenu();
+      // Wait for side menu close animation to complete
+      setTimeout(() => {
+        console.log('Delayed opening modal after side menu close');
+        openAuthModal();
+      }, 500);
+    } else {
+      openAuthModal();
+    }
+  };
+
   return (
-    <header className="navbar bg-base-100/30 backdrop-blur-md fixed top-0 z-50 px-8 border-b border-white/10">
-      <div className="flex-1">
-        <a className="btn btn-ghost hover:bg-transparent px-0 gap-3">
-          <div className="w-10">
-            {R()}
-          </div>
-          <span className="text-xl font-bold tracking-tight text-white">
-            Rhine Solution
-          </span>
-        </a>
-      </div>
-      <div className="flex-none hidden lg:block">
-        <ul className="menu menu-horizontal px-1 gap-2 text-white/80 font-medium">
-          <li><a className="hover:text-white transition-colors">Services</a></li>
-          <li><a className="hover:text-white transition-colors">Technology</a></li>
-          <li><a className="hover:text-white transition-colors">Projects</a></li>
-          <li>
-            <a className="btn btn-primary btn-sm rounded-full px-6 ml-4">
-              Get in Touch
-            </a>
-          </li>
-        </ul>
-      </div>
-      {/* Mobile Dropdown */}
-      <div className="flex-none lg:hidden">
-        <div className="dropdown dropdown-end">
-          <button className="btn btn-ghost btn-circle text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" />
-            </svg>
+    <>
+      <header
+        className={`navbar fixed top-0 z-50 px-8 border-b border-white/10 bg-white/5 backdrop-blur-md backdrop-saturate-125 ${heightClass}`}
+      >
+        <div className="flex-1">
+          <button
+            onClick={onLogoClick}
+            className="btn btn-ghost hover:bg-transparent px-0 gap-3 flex items-center"
+            aria-label="Home"
+          >
+            <div className="w-12 h-12 transition-transform hover:scale-110 duration-500">
+              {RhineLogo(themeColor)}
+            </div>
+            <h1 className="text-2xl font-bold tracking-[0.2em] text-white uppercase">
+              Rhine <span style={{ color: themeColor }}>Solution</span>
+            </h1>
           </button>
-          <ul className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-200 rounded-box w-52">
-            <li><a>Services</a></li>
-            <li><a>Technology</a></li>
-            <li><a>Projects</a></li>
-            <li><a>Contact</a></li>
-          </ul>
         </div>
-      </div>
-    </header>
+
+        {/* Desktop Navigation */}
+        <div className="flex-none hidden lg:flex items-center gap-8">
+          <nav className="flex items-center gap-6">
+            {Object.keys(megaMenuCategories).map((name) => (
+              <button
+                key={name}
+                onClick={toggleMegaMenu}
+                className="nav-trigger text-base font-medium text-white/80 hover:text-white transition-colors"
+              >
+                {name}
+              </button>
+            ))}
+          </nav>
+
+          {showAuthButtons && (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={openAuthModal}
+                className="btn btn-ghost btn-sm rounded-full px-6 text-white/90"
+              >
+                Login
+              </button>
+              <button
+                onClick={openAuthModal}
+                className="btn btn-primary btn-sm rounded-full px-6"
+              >
+                Register
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile: hamburger button */}
+        <div className="flex-none lg:hidden">
+          {!disableSideMenu && (
+            <button
+              onClick={openMobileMenu}
+              className="btn btn-ghost btn-circle text-white"
+              aria-label="Open menu"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* Desktop Mega Menu */}
+      {megaMenuOpen && (
+        <div
+          ref={megaMenuRef}
+          className="fixed left-0 right-0 z-40 hidden lg:block"
+          style={{ top: '72px' }}
+        >
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
+            <div className="container mx-auto px-8 py-8">
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-sm bg-white/20 flex items-center justify-center text-white font-bold">R</div>
+                  <div className="text-white font-semibold">Rhine</div>
+                </div>
+                <button
+                  onClick={closeMegaMenu}
+                  className="btn btn-ghost btn-sm text-white hover:bg-white/10"
+                  aria-label="Close"
+                >
+                  Close
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-white/90">
+                {Object.entries(megaMenuCategories).map(([category, items]) => (
+                  <div key={category} className="space-y-3">
+                    <h3 className="text-sm uppercase tracking-widest text-white/80">{category}</h3>
+                    <div className="space-y-1">
+                      {items.map((item) => (
+                        <button
+                          key={item}
+                          onClick={() => handleSubItemClick(category, item)}
+                          className="block hover:text-white transition-colors text-white/70 hover:bg-white/10 px-2 py-1 rounded"
+                        >
+                          {item}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-8 pt-4 border-t border-white/20 flex items-center justify-between text-white/70 text-sm">
+                <div>Â© 2026 Rhine Solution</div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      closeMegaMenu();
+                      openAuthModal();
+                    }}
+                    className="btn btn-ghost btn-sm text-white/80 hover:text-white"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => {
+                      closeMegaMenu();
+                      openAuthModal();
+                    }}
+                    className="btn btn-primary btn-sm"
+                  >
+                    Register
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Side Menu */}
+      {!disableSideMenu && (
+        <SideMenu
+          open={mobileMenuOpen}
+          onClose={closeMobileMenu}
+          themeColor={themeColor}
+          onLogin={openAuthFromMobile}
+          onRegister={openAuthFromMobile}
+          anchor="right"
+          onHoverEnter={() => {}}
+          onHoverLeave={() => {}}
+        />
+      )}
+
+      {/* Auth Modal */}
+      <AuthModal isOpen={authModalOpen} onClose={closeAuthModal} themeColor={themeColor} />
+    </>
   );
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\components\InfoModal.tsx ===
 import { useEffect, useState } from "react";
 import LargeCollapsable from "./LargeCollapsable";
@@ -284,6 +717,7 @@ export default function InfoModal({
 		</>
 	)
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\components\IntroModal.tsx ===
 import { useEffect, useState } from "react";
 import WebGPU from "three/examples/jsm/capabilities/WebGPU.js";
@@ -350,6 +784,7 @@ export default function IntroModal({
     )
 }
 
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\components\LargeCollapsable.tsx ===
 import { ReactNode, useState } from "react";
 
@@ -387,6 +822,41 @@ export default function LargeCollapsable({
         </div>
     )
 }
+
+=== C:\Users\teoal\Desktop\rhineofficialsite\src\components\Layout.tsx ===
+import React, { ReactNode } from 'react';
+import Header from './Header';
+import Footer from './Footer';
+
+interface LayoutProps {
+  children: ReactNode;
+  themeColor?: string;
+  showAuthButtons?: boolean;
+  disableSideMenu?: boolean;
+  onLogoClick?: () => void;
+}
+
+export default function Layout({
+  children,
+  themeColor = 'white',
+  showAuthButtons = false,
+  disableSideMenu = false,
+  onLogoClick
+}: LayoutProps) {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header
+        themeColor={themeColor}
+        showAuthButtons={showAuthButtons}
+        disableSideMenu={disableSideMenu}
+        onLogoClick={onLogoClick}
+      />
+      <main className="flex-1 pt-[72px]">{children}</main>
+      <Footer themeColor={themeColor} />
+    </div>
+  );
+}
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\components\NestedRoot.tsx ===
 // src/components/NestedRoot.tsx
 import React from "react";
@@ -404,6 +874,219 @@ export default function NestedRoot(): JSX.Element {
     </div>
   );
 }
+
+=== C:\Users\teoal\Desktop\rhineofficialsite\src\components\SideMenu.tsx ===
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+type Props = {
+  open: boolean;
+  onClose: () => void;
+  themeColor?: string;
+  onLogin?: () => void;
+  onRegister?: () => void;
+  anchor?: 'right' | 'top';
+  onHoverEnter?: () => void;
+  onHoverLeave?: () => void;
+};
+
+export default function SideMenu({
+  open,
+  onClose,
+  themeColor,
+  onLogin,
+  onRegister,
+  anchor = 'right',
+  onHoverEnter,
+  onHoverLeave,
+}: Props) {
+  const [visible, setVisible] = useState(open);
+  useEffect(() => setVisible(open), [open]);
+  const navigate = useNavigate();
+
+  const mobileGlass = 'bg-white/5 backdrop-blur-md backdrop-saturate-125 border-l border-white/10';
+  const topGlass = 'bg-white/5 backdrop-blur-md backdrop-saturate-125 border-b border-white/10';
+
+  const nav = [
+    {
+      title: 'Services',
+      items: ['Web Development', 'Cloud Infrastructure', 'IT Consulting', 'Digital Transformation'],
+      note: 'Covers the core offerings.',
+    },
+    {
+      title: 'Solutions',
+      items: ['Enterprise Software', 'AI & Automation', 'Cybersecurity Suite', 'Data Analytics'],
+      note: "Highlights packaged or industry-specific solutions.",
+    },
+    {
+      title: 'Technology',
+      items: ['WebGPU / 3D Rendering', 'Blockchain / Web3', 'IoT & Edge Computing', 'Custom APIs'],
+      note: 'Focuses on the tools, platforms, and innovation.',
+    },
+    {
+      title: 'Resources',
+      items: ['Case Studies', 'Documentation', 'Blog / Insights', 'Support & Community'],
+      note: 'Provides value-added content and support.',
+    },
+  ];
+
+  const handleItemClick = (category: string, item: string) => {
+    onClose();
+    const slug = item.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    navigate(`/${category.toLowerCase()}/${slug}`);
+  };
+
+  if (anchor === 'right') {
+    return (
+      <div
+        onMouseEnter={() => onHoverEnter?.()}
+        onMouseLeave={() => onHoverLeave?.()}
+        className={`fixed top-0 right-0 h-full w-[320px] max-w-[92vw] z-[60] transform transition-transform duration-300 ${
+          visible ? 'translate-x-0' : 'translate-x-full'
+        }`}
+        aria-hidden={!visible}
+      >
+        <div className={`${mobileGlass} h-full flex flex-col shadow-2xl`}>
+          <div className="p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-sm bg-white/20 flex items-center justify-center text-white font-bold">R</div>
+              <div className="text-white font-semibold">Rhine</div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  console.log('Login button clicked in SideMenu');
+                  onLogin?.();
+                }}
+                className="px-3 py-1.5 text-sm font-medium text-white/90 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                aria-label="Login"
+              >
+                Login
+              </button>
+              <button
+                onClick={() => {
+                  console.log('Register button clicked in SideMenu');
+                  onRegister?.();
+                }}
+                className="px-3 py-1.5 text-sm font-medium text-white bg-gradient-to-r from-indigo-500 to-indigo-400 rounded-full hover:opacity-90 transition-colors"
+                aria-label="Register"
+              >
+                Register
+              </button>
+              <button
+                onClick={onClose}
+                className="p-2 rounded-md hover:bg-white/10 text-white"
+                aria-label="Close menu"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M6 6l12 12M6 18L18 6" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <nav className="flex-1 overflow-auto px-6 py-8">
+            <ul className="space-y-6">
+              {nav.map((section) => (
+                <li key={section.title}>
+                  <div className="text-sm text-white/60 uppercase tracking-wider mb-2">{section.title}</div>
+                  <div className="space-y-2">
+                    {section.items.map((it) => (
+                      <button
+                        key={it}
+                        onClick={() => handleItemClick(section.title, it)}
+                        className="block w-full text-left text-xl font-semibold text-white/95 hover:text-white transition-colors"
+                      >
+                        {it}
+                      </button>
+                    ))}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="p-4 border-t border-white/10 text-white/70 text-sm flex items-center justify-between">
+            <div>Â© 2026 Rhine</div>
+            <div className="flex gap-3">
+              <a className="hover:text-white">X/Twitter</a>
+              <a className="hover:text-white">LinkedIn</a>
+            </div>
+          </div>
+        </div>
+        <button
+          onClick={onClose}
+          className={`fixed inset-0 z-50 ${visible ? '' : 'hidden'} bg-black/40`}
+          aria-hidden={!visible}
+        />
+      </div>
+    );
+  }
+
+  // top anchored panel (desktop)
+  return (
+    <div
+      onMouseEnter={() => onHoverEnter?.()}
+      onMouseLeave={() => onHoverLeave?.()}
+      className={`fixed left-0 right-0 top-0 z-[58] transform transition-transform duration-300 ${
+        visible ? 'translate-y-0' : '-translate-y-full'
+      }`}
+      aria-hidden={!visible}
+      style={{ WebkitBackdropFilter: 'none' }}
+    >
+      <div
+        className={`${topGlass} mx-auto max-w-[1800px] w-full h-[340px] shadow-2xl`}
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className="h-full flex flex-col">
+          <div className="p-6 flex items-start justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-sm bg-white/20 flex items-center justify-center text-white font-bold">R</div>
+              <div className="text-white font-semibold">Rhine</div>
+            </div>
+            <div className="flex items-center gap-3">
+              <button onClick={onClose} className="btn btn-ghost btn-sm text-white" aria-label="Close">
+                Close
+              </button>
+            </div>
+          </div>
+          <div className="flex-1 grid grid-cols-3 gap-6 p-6 text-white/90">
+            {nav.map((section) => (
+              <div key={section.title} className="space-y-3">
+                <h3 className="text-sm uppercase tracking-widest text-white/60">{section.title}</h3>
+                <div className="space-y-1">
+                  {section.items.map((it) => (
+                    <button
+                      key={it}
+                      onClick={() => handleItemClick(section.title, it)}
+                      className="block hover:text-white"
+                    >
+                      {it}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="p-4 border-t border-white/10 flex items-center justify-between text-white/70">
+            <div className="text-sm">Â© 2026 Rhine Solution</div>
+            <div className="flex gap-3">
+              <button onClick={onLogin} className="btn btn-ghost btn-sm">
+                Login
+              </button>
+              <button onClick={onRegister} className="btn btn-primary btn-sm">
+                Register
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\components\Slider.tsx ===
 interface ISliderProps {
     label:string,
@@ -442,6 +1125,7 @@ export default function Slider({
     </div>
     )
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\components\threeroot.tsx ===
 import { useEffect, useRef } from "react";
 import { Root } from "../lib/Root";
@@ -486,6 +1170,7 @@ export default function ThreeRoot() {
         <canvas ref={canvasRef} id="threecanvas"></canvas>
     );
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\lib\elements\LinkedParticles.ts ===
 
 // @ts-nocheck
@@ -1007,6 +1692,7 @@ export class LinkedParticles implements IAnimatedElement {
 
 
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\lib\interfaces\IAnimatedElement.ts ===
 /**
  * Small interface for animated elements
@@ -1014,6 +1700,7 @@ export class LinkedParticles implements IAnimatedElement {
 export interface IAnimatedElement {
     update(dt: number, elapsed: number): void;
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\lib\utils\Pointer.ts ===
 import { Camera, Plane, Raycaster, Vector2, Vector3 } from "three/webgpu";
 import { uniform, WebGPURenderer } from "three/webgpu";
@@ -1091,6 +1778,7 @@ export class Pointer implements IAnimatedElement {
 		this.updateScreenPointer();
     }
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\lib\Root.ts ===
 // @ts-nocheck
 import { ACESFilmicToneMapping, Clock, PerspectiveCamera, Scene, Vector2, Vector3 } from "three/webgpu";
@@ -1219,6 +1907,7 @@ export class Root {
         this.capturing = false;
     }
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\lib\supabase.ts ===
 import { createClient } from "@supabase/supabase-js";
 
@@ -1238,56 +1927,16 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true,
   },
 });
-=== C:\Users\teoal\Desktop\rhineofficialsite\src\pages\Admin.css ===
-/* Admin.css - panel has blurred background while preserving WebGPU visuals behind */
 
-#admin-app {
-  background: transparent;
-}
-
-.admin-panel-container {
-  position: absolute;
-  z-index: 20;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: min(720px, 95vw);
-  background: rgba(0,0,0,0.45);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 12px;
-  padding: 28px;
-  backdrop-filter: blur(8px) saturate(120%);
-  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-  color: #fff;
-}
-
-.logo-row { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
-.admin-title { font-weight:800; letter-spacing:0.18em; text-transform:uppercase; }
-
-.tabs { display:flex; gap:8px; margin-bottom:18px; }
-.tab-btn { background:transparent; border:none; padding:8px 14px; color:rgba(255,255,255,0.7); cursor:pointer; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; }
-.tab-btn.active { color: white; border-bottom:2px solid currentColor; }
-
-.tab-panel { padding-top:8px; }
-.form { display:flex; flex-direction:column; gap:10px; }
-.form label { font-size:12px; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:0.08em; }
-.form input { padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:#fff; outline:none; }
-.form input:focus { box-shadow: 0 0 0 4px rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.12); }
-.submit { margin-top:8px; padding:10px 14px; border-radius:8px; background:linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.08); color:#fff; cursor:pointer; font-weight:800; text-transform:uppercase; }
-.error { background:rgba(255,0,0,0.08); color:#ffb3b3; padding:8px 10px; border-radius:6px; font-weight:700; }
-
-@media (max-width: 640px) {
-  .admin-panel-container { width: 95vw; padding: 18px; }
-  .tabs { gap:6px; }
-}
 === C:\Users\teoal\Desktop\rhineofficialsite\src\pages\Admin.tsx ===
 import { useEffect, useState } from 'react';
 import '../App.css';
-import './Admin.css';
+import '../Admin.css';
 import WebGPU from 'three/examples/jsm/capabilities/WebGPU.js';
 import { RhineLogo } from '../components/GFX';
 import { Root } from '../lib/Root';
 import { supabase } from "../lib/supabase";
+import Layout from '../components/Layout';
 
 type Tab = 'login' | 'register' | 'forgot';
 
@@ -1333,7 +1982,7 @@ export default function Admin() {
 
   // Validation helpers
   const isValidEmail = (e: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
-  const isStrongPassword = (p: string) => p.length >= 8; // extend with complexity rules if desired
+  const isStrongPassword = (p: string) => p.length >= 8;
 
   // Actions
   const handleLogin = async (e: React.FormEvent) => {
@@ -1393,63 +2042,67 @@ export default function Admin() {
   };
 
   return (
-    <div id="admin-app" className="relative w-full min-h-screen overflow-hidden font-rubik selection:bg-white/20">
-      {/* WebGPU background remains at z-0 (LandingPage uses Root/WebGPU). We simply ensure Admin has a semi-blurred panel on top */}
-      <div className="admin-panel-container">
-        <div className="logo-row">
-          <div className="w-12 h-12">{RhineLogo(themeColor)}</div>
-          <h1 className="admin-title">Welcome, back!</h1>
-        </div>
+    <Layout themeColor={themeColor} showAuthButtons={false} onLogoClick={() => {}}>
+      <div id="admin-app" className="relative w-full min-h-screen overflow-hidden font-rubik selection:bg-white/20">
+        {/* WebGPU background remains at z-0 */}
+        <div className="admin-panel-container">
+          <div className="logo-row">
+            <div className="w-12 h-12">{RhineLogo(themeColor)}</div>
+            <h1 className="admin-title">Welcome, back!</h1>
+          </div>
 
-        <div className="tabs">
-          <button className={`tab-btn ${tab === 'login' ? 'active' : ''}`} onClick={() => setTab('login')}>Login</button>
-          <button className={`tab-btn ${tab === 'register' ? 'active' : ''}`} onClick={() => setTab('register')}>Register</button>
-          <button className={`tab-btn ${tab === 'forgot' ? 'active' : ''}`} onClick={() => setTab('forgot')}>Forgot</button>
-        </div>
+          <div className="tabs">
+            <button className={`tab-btn ${tab === 'login' ? 'active' : ''}`} onClick={() => setTab('login')}>Login</button>
+            <button className={`tab-btn ${tab === 'register' ? 'active' : ''}`} onClick={() => setTab('register')}>Register</button>
+            <button className={`tab-btn ${tab === 'forgot' ? 'active' : ''}`} onClick={() => setTab('forgot')}>Forgot</button>
+          </div>
 
-        <div className="tab-panel">
-          {error && <div className="error" role="alert">{error}</div>}
+          <div className="tab-panel">
+            {error && <div className="error" role="alert">{error}</div>}
 
-          {tab === 'login' && (
-            <form onSubmit={handleLogin} className="form">
-              <label>Email</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} required />
-              <label>Password</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              <button type="submit" className="submit" disabled={loading}>{loading ? 'Signing...' : 'Sign In'}</button>
-            </form>
-          )}
+            {tab === 'login' && (
+              <form onSubmit={handleLogin} className="form">
+                <label>Email</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} required />
+                <label>Password</label>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <button type="submit" className="submit" disabled={loading}>{loading ? 'Signing...' : 'Sign In'}</button>
+              </form>
+            )}
 
-          {tab === 'register' && (
-            <form onSubmit={handleRegister} className="form">
-              <label>Email</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} required />
-              <label>Password</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              <label>Confirm Password</label>
-              <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-              <button type="submit" className="submit" disabled={loading}>{loading ? 'Registering...' : 'Create Account'}</button>
-            </form>
-          )}
+            {tab === 'register' && (
+              <form onSubmit={handleRegister} className="form">
+                <label>Email</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} required />
+                <label>Password</label>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <label>Confirm Password</label>
+                <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+                <button type="submit" className="submit" disabled={loading}>{loading ? 'Registering...' : 'Create Account'}</button>
+              </form>
+            )}
 
-          {tab === 'forgot' && (
-            <form onSubmit={handleForgot} className="form">
-              <label>Email</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} required />
-              <button type="submit" className="submit" disabled={loading}>{loading ? 'Sending...' : 'Send Reset'}</button>
-            </form>
-          )}
+            {tab === 'forgot' && (
+              <form onSubmit={handleForgot} className="form">
+                <label>Email</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} required />
+                <button type="submit" className="submit" disabled={loading}>{loading ? 'Sending...' : 'Send Reset'}</button>
+              </form>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\pages\LandingPage.tsx ===
 import { useEffect, useState } from 'react';
 import '../App.css';
 import WebGPU from 'three/examples/jsm/capabilities/WebGPU.js';
 import { RhineLogo, githubIcon, twitterIcon } from '../components/GFX';
 import { Root } from '../lib/Root';
+import Layout from '../components/Layout';
 
 export default function App() {
   const [hasWebGPU, setHasWebGPU] = useState(false);
@@ -1459,7 +2112,6 @@ export default function App() {
   useEffect(() => {
     setHasWebGPU(WebGPU.isAvailable());
     
-    // NEW: Sync HUD with the 3D Engine
     const syncHUD = () => {
       setDisplayZoom(Root.zoomPercent || 0);
       requestAnimationFrame(syncHUD);
@@ -1524,116 +2176,128 @@ export default function App() {
         </div>
       </div>
 
-      {/* HEADER */}
-      <header className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-10 py-8 bg-transparent">
-        <div className="flex items-center gap-4 cursor-pointer" onClick={() => scrollTo('hero')}>
-          <div className="w-12 h-12 transition-transform hover:scale-110 duration-500">
-            {RhineLogo(themeColor)} 
+      <Layout themeColor={themeColor} showAuthButtons={true} onLogoClick={() => scrollTo('hero')}>
+        {/* HERO SECTION */}
+        <main id="hero" className="relative z-10 flex flex-col items-center justify-center h-screen px-6 text-center">
+          <h2 className="text-6xl md:text-9xl font-black text-white uppercase tracking-tighter mb-6">
+            Future <span style={{ color: themeColor }}>Defined</span>
+          </h2>
+          <p className="text-white/60 text-lg md:text-xl font-light tracking-widest uppercase mb-12">
+            Next-generation digital experiences built in only for you
+          </p>
+          <div className="flex flex-wrap justify-center gap-10">
+            <SnakeButton text="Start Project" color={themeColor} onClick={() => scrollTo('contact')} />
+            <SnakeButton text="View Work" color="white" onClick={() => scrollTo('services')} />
           </div>
-          <h1 className="text-2xl font-bold tracking-[0.2em] text-white uppercase">
-            Rhine <span style={{ color: themeColor }}>Solution</span>
-          </h1>
-        </div>
-        <nav className="hidden md:block">
-          <ul className="flex gap-12 text-[10px] font-black uppercase tracking-[0.4em]" style={{ color: themeColor }}>
-            <li className="cursor-pointer hover:text-white transition-all" onClick={() => scrollTo('services')}>Services</li>
-            <li className="cursor-pointer hover:text-white transition-all" onClick={() => scrollTo('technology')}>Technology</li>
-            <li className="cursor-pointer hover:text-white transition-all" onClick={() => scrollTo('about')}>About</li>
-          </ul>
-        </nav>
-      </header>
+        </main>
 
-      {/* HERO SECTION */}
-      <main id="hero" className="relative z-10 flex flex-col items-center justify-center h-screen px-6 text-center">
-        <h2 className="text-6xl md:text-9xl font-black text-white uppercase tracking-tighter mb-6">
-          Future <span style={{ color: themeColor }}>Defined</span>
-        </h2>
-        <p className="text-white/60 text-lg md:text-xl font-light tracking-widest uppercase mb-12">
-          Next-generation digital experiences built in only for you
-        </p>
-        <div className="flex flex-wrap justify-center gap-10">
-          <SnakeButton text="Start Project" color={themeColor} onClick={() => scrollTo('contact')} />
-          <SnakeButton text="View Work" color="white" onClick={() => scrollTo('services')} />
-        </div>
-      </main>
+        {/* SERVICES SECTION */}
+        <section id="services" className="relative z-10 py-40 px-10">
+          <div className="max-w-6xl mx-auto">
+            <h3 className="text-[10px] uppercase tracking-[0.8em] mb-4" style={{ color: themeColor }}>Capabilities</h3>
+            <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-20">Expertise</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-1px bg-white/10 border border-white/10">
+              {[{title:"WebGPU Apps"}, {title:"Digital Strategy"}, {title:"UI Architecture"}].map((s, i) => (
+                <div key={i} className="bg-black/40 p-12 hover:bg-black/60 transition-all group">
+                  <div className="w-8 h-[1px] mb-8 group-hover:w-full transition-all" style={{ backgroundColor: themeColor }}></div>
+                  <h4 className="text-xl font-bold text-white uppercase mb-4 tracking-widest">{s.title}</h4>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-      {/* SERVICES SECTION */}
-      <section id="services" className="relative z-10 py-40 px-10">
-        <div className="max-w-6xl mx-auto">
-          <h3 className="text-[10px] uppercase tracking-[0.8em] mb-4" style={{ color: themeColor }}>Capabilities</h3>
-          <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-20">Expertise</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-1px bg-white/10 border border-white/10">
-            {[{title:"WebGPU Apps"}, {title:"Digital Strategy"}, {title:"UI Architecture"}].map((s, i) => (
-              <div key={i} className="bg-black/40 p-12 hover:bg-black/60 transition-all group">
-                <div className="w-8 h-[1px] mb-8 group-hover:w-full transition-all" style={{ backgroundColor: themeColor }}></div>
-                <h4 className="text-xl font-bold text-white uppercase mb-4 tracking-widest">{s.title}</h4>
+        {/* TECHNOLOGY SECTION */}
+        <section id="technology" className="relative z-10 py-40 px-10 bg-white/[0.02]">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-20">
+            <div className="md:w-1/2 text-left">
+              <h2 className="text-5xl font-black text-white uppercase tracking-tighter mb-8">The Engine</h2>
+              <p className="text-white/50 text-lg leading-loose uppercase tracking-widest font-light mb-10">
+                We leverage raw hardware acceleration to deliver visuals previously impossible on the web.
+              </p>
+            </div>
+            <div className="md:w-1/2 border border-white/10 p-1 bg-black/20">
+              <div className="border border-white/5 p-10 text-left font-mono text-[10px] text-white/30 leading-relaxed">
+                <span className="text-white/60 block mb-2">Rhine_System_Init...</span>
+                {`> Initializing WebGPU Context... DONE`} <br/>
+                {`> Loading Custom Shaders... DONE`} <br/>
+                <span style={{ color: themeColor }} className="block mt-4 animate-pulse">_SYSTEM READY</span>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* TECHNOLOGY SECTION */}
-      <section id="technology" className="relative z-10 py-40 px-10 bg-white/[0.02]">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-20">
-          <div className="md:w-1/2 text-left">
-            <h2 className="text-5xl font-black text-white uppercase tracking-tighter mb-8">The Engine</h2>
-            <p className="text-white/50 text-lg leading-loose uppercase tracking-widest font-light mb-10">
-              We leverage raw hardware acceleration to deliver visuals previously impossible on the web.
-            </p>
-          </div>
-          <div className="md:w-1/2 border border-white/10 p-1 bg-black/20">
-            <div className="border border-white/5 p-10 text-left font-mono text-[10px] text-white/30 leading-relaxed">
-              <span className="text-white/60 block mb-2">Rhine_System_Init...</span>
-              {`> Initializing WebGPU Context... DONE`} <br/>
-              {`> Loading Custom Shaders... DONE`} <br/>
-              <span style={{ color: themeColor }} className="block mt-4 animate-pulse">_SYSTEM READY</span>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ABOUT SECTION */}
-      <section id="about" className="relative z-10 py-40 px-10 text-center">
-        <h2 className="text-4xl font-black text-white uppercase tracking-tighter mb-12">Behind <span style={{ color: themeColor }}>Rhine</span></h2>
-        <p className="max-w-3xl mx-auto text-white/70 text-xl leading-relaxed font-light uppercase tracking-widest">
-          Founded by htr, Rhine Solution was built on a single premise: The web should be as powerful as your hardware.
-        </p>
-      </section>
+        {/* ABOUT SECTION */}
+        <section id="about" className="relative z-10 py-40 px-10 text-center">
+          <h2 className="text-4xl font-black text-white uppercase tracking-tighter mb-12">Behind <span style={{ color: themeColor }}>Rhine</span></h2>
+          <p className="max-w-3xl mx-auto text-white/70 text-xl leading-relaxed font-light uppercase tracking-widest">
+            Founded by htr, Rhine Solution was built on a single premise: The web should be as powerful as your hardware.
+          </p>
+        </section>
 
-      {/* CONTACT SECTION */}
-      <section id="contact" className="relative z-10 py-60 px-10 text-center">
-        <h2 className="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter mb-12">Let's <span style={{ color: themeColor }}>Create</span></h2>
-        <div className="flex justify-center">
-          <SnakeButton text="Contact US" color={themeColor} />
-        </div>
-      </section>
-
-      {/* FIXED SIDE SCROLL INDICATOR */}
-      <div className="side-indicator group cursor-pointer hidden lg:flex" onClick={() => scrollTo('services')}>
-         <span className="text-[8px] uppercase tracking-[0.6em] text-white/20 group-hover:text-white transition-colors duration-500 vertical-text font-black">Scroll to explore</span>
-         <div className="w-[1px] h-12 group-hover:h-24 transition-all duration-700 ease-in-out" style={{ backgroundColor: themeColor, boxShadow: `0 0 10px ${themeColor}` }}></div>
-      </div>
-
-      {/* FOOTER */}
-      <footer className="relative z-10 px-10 py-12 bg-transparent border-t border-white/5">
-        <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row items-end justify-between gap-8">
-          <div className="flex flex-col gap-3 items-start text-left">
-            <div className="flex items-center gap-3">
-              <div className="status-dot w-2 h-2 rounded-full" style={{ backgroundColor: themeColor, boxShadow: `0 0 10px ${themeColor}` }}></div>
-              <span className="text-[9px] uppercase tracking-[0.4em] text-white/40 font-black">Systems: Active</span>
-            </div>
-            <div className="text-[10px] uppercase tracking-[0.2em] text-white/20 font-medium">Â© 2026 Rhine Solution | Developed by htr</div>
+        {/* CONTACT SECTION */}
+        <section id="contact" className="relative z-10 py-60 px-10 text-center">
+          <h2 className="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter mb-12">Let's <span style={{ color: themeColor }}>Create</span></h2>
+          <div className="flex justify-center">
+            <SnakeButton text="Contact US" color={themeColor} />
           </div>
-          <div className="flex gap-8 items-center" style={{ color: themeColor }}>
-            <a href="#" className="transition-all duration-300 hover:scale-125 hover:drop-shadow-[0_0_10px_currentColor]">{githubIcon()}</a>
-            <a href="#" className="transition-all duration-300 hover:scale-125 hover:drop-shadow-[0_0_10px_currentColor]">{twitterIcon()}</a>
-          </div>
+        </section>
+
+        {/* FIXED SIDE SCROLL INDICATOR */}
+        <div className="side-indicator group cursor-pointer hidden lg:flex" onClick={() => scrollTo('services')}>
+           <span className="text-[8px] uppercase tracking-[0.6em] text-white/20 group-hover:text-white transition-colors duration-500 vertical-text font-black">Scroll to explore</span>
+           <div className="w-[1px] h-12 group-hover:h-24 transition-all duration-700 ease-in-out" style={{ backgroundColor: themeColor, boxShadow: `0 0 10px ${themeColor}` }}></div>
         </div>
-      </footer>
+      </Layout>
     </div>
   );
 }
+
+=== C:\Users\teoal\Desktop\rhineofficialsite\src\pages\ServiceDetail.tsx ===
+
+=== C:\Users\teoal\Desktop\rhineofficialsite\src\Admin.css ===
+/* Admin.css - panel has blurred background while preserving WebGPU visuals behind */
+
+#admin-app {
+  background: transparent;
+}
+
+.admin-panel-container {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(720px, 95vw);
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 28px;
+  backdrop-filter: blur(8px) saturate(120%);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  color: #fff;
+}
+
+.logo-row { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.admin-title { font-weight:800; letter-spacing:0.18em; text-transform:uppercase; }
+
+.tabs { display:flex; gap:8px; margin-bottom:18px; }
+.tab-btn { background:transparent; border:none; padding:8px 14px; color:rgba(255,255,255,0.7); cursor:pointer; font-weight:700; text-transform:uppercase; letter-spacing:0.12em; }
+.tab-btn.active { color: white; border-bottom:2px solid currentColor; }
+
+.tab-panel { padding-top:8px; }
+.form { display:flex; flex-direction:column; gap:10px; }
+.form label { font-size:12px; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:0.08em; }
+.form input { padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:#fff; outline:none; }
+.form input:focus { box-shadow: 0 0 0 4px rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.12); }
+.submit { margin-top:8px; padding:10px 14px; border-radius:8px; background:linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.08); color:#fff; cursor:pointer; font-weight:800; text-transform:uppercase; }
+.error { background:rgba(255,0,0,0.08); color:#ffb3b3; padding:8px 10px; border-radius:6px; font-weight:700; }
+
+@media (max-width: 640px) {
+  .admin-panel-container { width: 95vw; padding: 18px; }
+  .tabs { gap:6px; }
+}
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\App.css ===
 @tailwind base;
 @tailwind components;
@@ -1752,10 +2416,11 @@ header, main, section, footer, button, .snake-btn {
   text-orientation: mixed;
   transform: rotate(180deg); /* Makes it read from top to bottom */
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\App.tsx ===
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage"
-import AdminPage from "./pages/Admin" // Test, remove when done.
+import AdminPage from "./pages/Admin"
 
 function App() {
   return (
@@ -1764,7 +2429,7 @@ function App() {
         {/* Public landing page */}
         <Route path="/" element={<LandingPage />} />
 
-        {/* Test page */}
+        {/* Admin page (auth) */}
         <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </BrowserRouter>
@@ -1772,7 +2437,9 @@ function App() {
 }
 
 export default App;
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\index.css ===
+
 === C:\Users\teoal\Desktop\rhineofficialsite\src\main.tsx ===
 import React from 'react'
 import ReactDOM from 'react-dom/client'
@@ -1788,6 +2455,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </React.StrictMode>
   </>
 )
+
 === C:\Users\teoal\Desktop\rhineofficialsite\eslint.config.js ===
 module.exports = {
   root: true,
@@ -1807,6 +2475,7 @@ module.exports = {
     ],
   },
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\index.html ===
 <!doctype html>
 <html lang="en">
@@ -1844,6 +2513,7 @@ module.exports = {
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
+
 === C:\Users\teoal\Desktop\rhineofficialsite\package-lock.json ===
 {
   "name": "webgpu-linked-particles",
@@ -6618,6 +7288,7 @@ module.exports = {
     }
   }
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\package.json ===
 {
   "name": "webgpu-linked-particles",
@@ -6659,6 +7330,7 @@ module.exports = {
     "vite-bundle-visualizer": "^1.2.1"
   }
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\postcss.config.js ===
 export default {
   plugins: {
@@ -6666,6 +7338,11 @@ export default {
     autoprefixer: {},
   },
 }
+
+=== C:\Users\teoal\Desktop\rhineofficialsite\README.md ===
+# rhineofficial
+
+
 === C:\Users\teoal\Desktop\rhineofficialsite\tailwind.config.js ===
 /** @type {import('tailwindcss').Config} */
 import daisyui from 'daisyui'
@@ -6701,6 +7378,7 @@ export default {
   },
 }
 
+
 === C:\Users\teoal\Desktop\rhineofficialsite\tsconfig.app.json ===
 {
   "compilerOptions": {
@@ -6730,6 +7408,7 @@ export default {
   },
   "include": ["src"]
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\tsconfig.json ===
 {
   "compilerOptions": {
@@ -6758,6 +7437,7 @@ export default {
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\tsconfig.node.json ===
 {
   "compilerOptions": {
@@ -6770,6 +7450,7 @@ export default {
   },
   "include": ["vite.config.ts"]
 }
+
 === C:\Users\teoal\Desktop\rhineofficialsite\vite.config.ts ===
 import { defineConfig, PluginOption } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -6801,3 +7482,4 @@ export default defineConfig({
     }
   },
 })
+
