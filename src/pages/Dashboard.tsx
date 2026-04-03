@@ -342,15 +342,15 @@ export default function Dashboard(): JSX.Element {
 
                 {/* Quick stats */}
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="p-4 rounded-xl bg-white/6 border border-white/8">
+                  <div className="p-4 rounded-xl bg-white/6 border border-white/10 shadow-lg">
                     <div className="text-xs text-white/60">Active projects</div>
                     <div className="mt-2 text-2xl font-semibold text-white">{projects.length}</div>
                   </div>
-                  <div className="p-4 rounded-xl bg-white/6 border border-white/8">
+                  <div className="p-4 rounded-xl bg-white/6 border border-white/10 shadow-lg">
                     <div className="text-xs text-white/60">Notifications</div>
                     <div className="mt-2 text-2xl font-semibold text-white">{notifications.length}</div>
                   </div>
-                  <div className="p-4 rounded-xl bg-white/6 border border-white/8">
+                  <div className="p-4 rounded-xl bg-white/6 border border-white/10 shadow-lg">
                     <div className="text-xs text-white/60">Storage</div>
                     <div className="mt-2 text-2xl font-semibold text-white">0 MB</div>
                   </div>

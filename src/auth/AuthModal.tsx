@@ -23,14 +23,12 @@ export default function AuthModal({ isOpen, onClose, themeColor, initialTab = 'l
   const navigate = useNavigate();
 
   useEffect(() => {
-    // When modal opens or initialTab changes, set the active tab
     if (isOpen) setTab(initialTab);
   }, [isOpen, initialTab]);
 
   useEffect(() => {
     if (isOpen) {
       previouslyFocusedElement.current = document.activeElement as HTMLElement;
-      // Use a timeout to ensure the modal is rendered before attempting to focus
       setTimeout(() => {
         modalRef.current?.focus();
       }, 0);
@@ -48,12 +46,12 @@ export default function AuthModal({ isOpen, onClose, themeColor, initialTab = 'l
           const firstElement = focusableElements[0];
           const lastElement = focusableElements[focusableElements.length - 1];
 
-          if (event.shiftKey) { // Shift + Tab
+          if (event.shiftKey) {
             if (document.activeElement === firstElement) {
               lastElement.focus();
               event.preventDefault();
             }
-          } else { // Tab
+          } else {
             if (document.activeElement === lastElement) {
               firstElement.focus();
               event.preventDefault();
@@ -63,7 +61,6 @@ export default function AuthModal({ isOpen, onClose, themeColor, initialTab = 'l
       };
 
       document.addEventListener('keydown', handleKeyDown);
-
       return () => {
         document.removeEventListener('keydown', handleKeyDown);
         if (previouslyFocusedElement.current) {
@@ -79,6 +76,7 @@ export default function AuthModal({ isOpen, onClose, themeColor, initialTab = 'l
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
+
   const isValidEmail = (e: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);
   const isStrongPassword = (p: string) => p.length >= 8;
 
@@ -91,15 +89,15 @@ export default function AuthModal({ isOpen, onClose, themeColor, initialTab = 'l
     try {
       const { data, error: authErr } = await supabase.auth.signInWithPassword({ email, password });
       if (authErr) throw authErr;
-      // On successful login, close modal and navigate to dashboard
       onClose();
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err?.message || 'Login failed');
+      setError('Login failed');
     } finally {
       setLoading(false);
     }
   };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -113,11 +111,12 @@ export default function AuthModal({ isOpen, onClose, themeColor, initialTab = 'l
       onClose();
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err?.message || 'Registration failed');
+      setError('Registration failed');
     } finally {
       setLoading(false);
     }
   };
+
   const handleForgot = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -130,27 +129,28 @@ export default function AuthModal({ isOpen, onClose, themeColor, initialTab = 'l
       if (authErr) throw authErr;
       onClose();
     } catch (err: any) {
-      setError(err?.message || 'Password reset failed');
+      setError('Password reset failed');
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div
-      className="fixed inset-0 z-[70] pointer-events-auto flex items-center justify-center p-4 bg-black/50"
+      className="fixed inset-0 z-[70] pointer-events-auto flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      tabIndex={-1} // Make the modal div focusable
-      ref={modalRef} // Assign ref to the modal div
+      tabIndex={-1}
+      ref={modalRef}
     >
       <div
-        className="relative w-full max-w-md bg-white/10 backdrop-blur-md backdrop-saturate-125 border border-white/20 rounded-2xl shadow-2xl"
+        className="relative w-full max-w-md bg-black/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 text-white/60 hover:text-white"
+          className="absolute right-4 top-4 text-white/60 hover:text-white transition-colors"
           aria-label="Close"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,82 +160,124 @@ export default function AuthModal({ isOpen, onClose, themeColor, initialTab = 'l
 
         <div className="p-6">
           <div className="flex justify-center mb-6">
-            <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
           </div>
-          <div className="flex justify-center gap-4 mb-6 border-b border-white/20">
+
+          <div className="flex justify-center gap-4 mb-6 border-b border-white/10">
             <button
-              className={`pb-2 text-sm font-medium transition-colors ${tab === 'login' ? 'text-white border-b-2 border-white' : 'text-white/60 hover:text-white'}`}
-              onClick={() => setTab('login')}>
+              className={`pb-2 text-sm font-medium transition-colors ${tab === 'login'
+                  ? 'text-white border-b-2 border-white'
+                  : 'text-white/60 hover:text-white'
+                }`}
+              onClick={() => setTab('login')}
+            >
               Login
             </button>
             <button
-              className={`pb-2 text-sm font-medium transition-colors ${tab === 'register' ? 'text-white border-b-2 border-white' : 'text-white/60 hover:text-white'}`}
-              onClick={() => setTab('register')}>
+              className={`pb-2 text-sm font-medium transition-colors ${tab === 'register'
+                  ? 'text-white border-b-2 border-white'
+                  : 'text-white/60 hover:text-white'
+                }`}
+              onClick={() => setTab('register')}
+            >
               Register
             </button>
             <button
-              className={`pb-2 text-sm font-medium transition-colors ${tab === 'forgot' ? 'text-white border-b-2 border-white' : 'text-white/60 hover:text-white'}`}
-              onClick={() => setTab('forgot')}>
+              className={`pb-2 text-sm font-medium transition-colors ${tab === 'forgot'
+                  ? 'text-white border-b-2 border-white'
+                  : 'text-white/60 hover:text-white'
+                }`}
+              onClick={() => setTab('forgot')}
+            >
               Forgot Password
             </button>
           </div>
+
           {error && (
-            <div className="mb-4 p-2 text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded">
+            <div className="mb-4 p-2 text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded-lg">
               {error}
             </div>
           )}
-          <form onSubmit={tab === 'login' ? handleLogin : tab === 'register' ? handleRegister : handleForgot}>
+
+          <form
+            onSubmit={
+              tab === 'login'
+                ? handleLogin
+                : tab === 'register'
+                  ? handleRegister
+                  : handleForgot
+            }
+          >
             <div className="mb-4">
-              <label className="block text-xs uppercase tracking-wider text-white/60 mb-1">Email</label>
+              <label className="block text-xs uppercase tracking-wider text-white/50 mb-1">
+                Email
+              </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value.trim())}
-                className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20"
+                className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent transition-all"
                 required
               />
             </div>
+
             {tab !== 'forgot' && (
               <div className="mb-4">
-                <label className="block text-xs uppercase tracking-wider text-white/60 mb-1">Password</label>
+                <label className="block text-xs uppercase tracking-wider text-white/50 mb-1">
+                  Password
+                </label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20"
+                  className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent transition-all"
                   required
                 />
               </div>
             )}
+
             {tab === 'register' && (
               <div className="mb-6">
-                <label className="block text-xs uppercase tracking-wider text-white/60 mb-1">Confirm Password</label>
+                <label className="block text-xs uppercase tracking-wider text-white/50 mb-1">
+                  Confirm Password
+                </label>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/20"
+                  className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent transition-all"
                   required
                 />
               </div>
             )}
+
             <button
               type="submit"
               disabled={loading}
               className="w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white font-medium transition-colors disabled:opacity-50"
             >
-              {loading ? 'Please wait...' : tab === 'login' ? 'Login' : tab === 'register' ? 'Create Account' : 'Send Reset Link'}
+              {loading
+                ? 'Please wait...'
+                : tab === 'login'
+                  ? 'Login'
+                  : tab === 'register'
+                    ? 'Create Account'
+                    : 'Send Reset Link'}
             </button>
           </form>
+
           <p className="mt-4 text-center text-xs text-white/40">
-            {tab === 'login' ? "Don't have an account? " : tab === 'register' ? "Already have an account? " : "Remembered your password? "}
+            {tab === 'login'
+              ? "Don't have an account? "
+              : tab === 'register'
+                ? 'Already have an account? '
+                : 'Remembered your password? '}
             <button
-              onClick={() => setTab(tab === 'login' ? 'register' : tab === 'register' ? 'login' : 'login')}
-              className="text-white/80 hover:text-white"
+              onClick={() =>
+                setTab(
+                  tab === 'login' ? 'register' : tab === 'register' ? 'login' : 'login'
+                )
+              }
+              className="text-white/80 hover:text-white transition-colors"
             >
               {tab === 'login' ? 'Register' : tab === 'register' ? 'Login' : 'Login'}
             </button>

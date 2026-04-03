@@ -36,8 +36,9 @@ export default function SideMenu({
 
   const navigate = useNavigate();
 
-  const mobileGlass = 'bg-white/5 backdrop-blur-md backdrop-saturate-125 border-l border-white/10';
-  const topGlass = 'bg-white/5 backdrop-blur-md backdrop-saturate-125 border-b border-white/10';
+  // Dynamic Island glass styles
+  const mobileGlass = 'bg-black/80 backdrop-blur-xl border-l border-white/20';
+  const topGlass = 'bg-black/80 backdrop-blur-xl border-b border-white/20';
 
   const nav = [
     {
@@ -84,7 +85,7 @@ export default function SideMenu({
 
   if (anchor === 'right') {
     return (
-    <>
+      <>
         {/* Menu panel */}
         <div
           onMouseEnter={() => onHoverEnter?.()}
@@ -95,9 +96,11 @@ export default function SideMenu({
           aria-hidden={!visible}
         >
           <div className={`${mobileGlass} h-full flex flex-col shadow-2xl`} style={mobileStyle}>
-            <div className="p-4 flex items-center justify-between">
+            <div className="p-4 flex items-center justify-between border-b border-white/10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-sm bg-white/20 flex items-center justify-center text-white font-bold">R</div>
+                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white font-bold">
+                  R
+                </div>
                 <div className="text-white font-semibold">Rhine</div>
               </div>
 
@@ -110,6 +113,7 @@ export default function SideMenu({
                     onLogin?.();
                   }}
                   ariaLabel="Login"
+                  className="text-white/80 hover:text-white text-sm px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition-all"
                 >
                   Login
                 </AuthButton>
@@ -122,6 +126,7 @@ export default function SideMenu({
                     onRegister?.();
                   }}
                   ariaLabel="Register"
+                  className="text-sm px-3 py-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-all"
                 >
                   Register
                 </AuthButton>
@@ -131,7 +136,7 @@ export default function SideMenu({
                     e.stopPropagation();
                     onClose();
                   }}
-                  className="p-2 rounded-md hover:bg-white/10 text-white"
+                  className="p-2 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors"
                   aria-label="Close menu"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -145,7 +150,9 @@ export default function SideMenu({
               <ul className="space-y-6">
                 {nav.map((section) => (
                   <li key={section.title}>
-                    <div className="text-sm text-white/60 uppercase tracking-wider mb-2">{section.title}</div>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-2">
+                      {section.title}
+                    </div>
                     <div className="space-y-2">
                       {section.items.map((it) => (
                         <AuthButton
@@ -156,7 +163,7 @@ export default function SideMenu({
                             e?.stopPropagation();
                             handleItemClick(section.title, it);
                           }}
-                          className="w-full text-left text-xl font-semibold text-white/95 bg-transparent px-0"
+                          className="w-full text-left text-base font-medium text-white/80 hover:text-white bg-transparent px-0 py-2 rounded-lg hover:bg-white/5 transition-all"
                           ariaLabel={it}
                         >
                           {it}
@@ -168,23 +175,23 @@ export default function SideMenu({
               </ul>
             </nav>
 
-            <div className="p-4 border-t border-white/10 text-white/70 text-sm flex items-center justify-between">
-              <div>© 2026 Rhine</div>
+            <div className="p-4 border-t border-white/10 text-white/50 text-xs flex items-center justify-between">
+              <div>© 2026 Rhine Solution</div>
               <div className="flex gap-3">
-                <a className="hover:text-white">X/Twitter</a>
-                <a className="hover:text-white">LinkedIn</a>
+                <a href="#" className="hover:text-white transition-colors">X/Twitter</a>
+                <a href="#" className="hover:text-white transition-colors">LinkedIn</a>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Overlay – separate, behind the menu (z-50 vs z-60) */}
+        {/* Overlay – behind the menu */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             onClose();
           }}
-          className={`fixed inset-0 z-50 ${visible ? '' : 'hidden'} bg-black/40`}
+          className={`fixed inset-0 z-50 ${visible ? '' : 'hidden'} bg-black/60 backdrop-blur-sm`}
           aria-hidden={!visible}
         />
       </>
@@ -200,35 +207,51 @@ export default function SideMenu({
         visible ? 'translate-y-0' : '-translate-y-full'
       }`}
       aria-hidden={!visible}
-      style={{ WebkitBackdropFilter: 'none' }}
     >
       <div
-        className={`${topGlass} mx-auto max-w-[1800px] w-full h-[340px] shadow-2xl`}
+        className={`${topGlass} mx-auto max-w-[1800px] w-full shadow-2xl rounded-b-2xl`}
         role="dialog"
         aria-modal="true"
       >
         <div className="h-full flex flex-col">
-          <div className="p-6 flex items-start justify-between">
+          <div className="p-6 flex items-start justify-between border-b border-white/10">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-sm bg-white/20 flex items-center justify-center text-white font-bold">R</div>
-              <div className="text-white font-semibold">Rhine</div>
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white font-bold">
+                R
+              </div>
+              <div className="text-white font-semibold">Rhine Solution</div>
             </div>
             <div className="flex items-center gap-3">
-              <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="btn btn-ghost btn-sm text-white" aria-label="Close">
-                Close
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose();
+                }}
+                className="text-white/60 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10"
+                aria-label="Close"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M6 6l12 12M6 18L18 6" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </button>
             </div>
           </div>
-          <div className="flex-1 grid grid-cols-3 gap-6 p-6 text-white/90">
+
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6 text-white/80">
             {nav.map((section) => (
               <div key={section.title} className="space-y-3">
-                <h3 className="text-sm uppercase tracking-widest text-white/60">{section.title}</h3>
-                <div className="space-y-1">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-white/50">
+                  {section.title}
+                </h3>
+                <div className="space-y-2">
                   {section.items.map((it) => (
                     <button
                       key={it}
-                      onClick={(e) => { e.stopPropagation(); handleItemClick(section.title, it); }}
-                      className="block hover:text-white"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleItemClick(section.title, it);
+                      }}
+                      className="block w-full text-left text-sm text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg transition-all duration-200"
                     >
                       {it}
                     </button>
@@ -237,11 +260,34 @@ export default function SideMenu({
               </div>
             ))}
           </div>
-          <div className="p-4 border-t border-white/10 flex items-center justify-between text-white/70">
-            <div className="text-sm">© 2026 Rhine Solution</div>
-            <div className="flex gap-3">
-              <AuthButton variant="ghost" themeColor={themeColor} onClick={(e?: any) => { e?.stopPropagation(); onLogin?.(); }} ariaLabel="Login">Login</AuthButton>
-              <AuthButton variant="primary" themeColor={themeColor} onClick={(e?: any) => { e?.stopPropagation(); onRegister?.(); }} ariaLabel="Register">Register</AuthButton>
+
+          <div className="p-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-white/50 text-xs">
+            <div>© 2026 Rhine Solution — Innovation at the edge</div>
+            <div className="flex gap-2">
+              <AuthButton
+                variant="ghost"
+                themeColor={themeColor}
+                onClick={(e?: any) => {
+                  e?.stopPropagation();
+                  onLogin?.();
+                }}
+                ariaLabel="Login"
+                className="text-white/80 hover:text-white text-xs px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition-all"
+              >
+                Login
+              </AuthButton>
+              <AuthButton
+                variant="primary"
+                themeColor={themeColor}
+                onClick={(e?: any) => {
+                  e?.stopPropagation();
+                  onRegister?.();
+                }}
+                ariaLabel="Register"
+                className="text-xs px-3 py-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-all"
+              >
+                Register
+              </AuthButton>
             </div>
           </div>
         </div>
