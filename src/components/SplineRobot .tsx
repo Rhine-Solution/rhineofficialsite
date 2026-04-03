@@ -13,8 +13,10 @@ export default function SplineRobot() {
     let relY = (clientY - rect.top) / rect.height;
     relX = Math.min(1, Math.max(0, relX)) - 0.5;
     relY = Math.min(1, Math.max(0, relY)) - 0.5;
-    splineAppRef.current.setVariable('headRotX', -relY * 0.5);
-    splineAppRef.current.setVariable('headRotY', relX * 0.5);
+    
+    // Head rotates: Y horizontal, X vertical (inverted so head looks down when cursor is below)
+    splineAppRef.current.setVariable('headRotX', -relY * 0.3);
+    splineAppRef.current.setVariable('headRotY', relX * 0.4);
   };
 
   const handleMouseMove = (e: React.MouseEvent) => updatePointer(e.clientX, e.clientY);
@@ -31,7 +33,7 @@ export default function SplineRobot() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full min-h-[200px]"
+      className="relative w-full h-full min-h-[450px] flex items-center justify-center"
       onMouseMove={handleMouseMove}
       onMouseLeave={handlePointerLeave}
       onTouchMove={handleTouchMove}
@@ -39,9 +41,10 @@ export default function SplineRobot() {
     >
       <Spline
         scene="https://prod.spline.design/3c3rOBJxzYuK8lDA/scene.splinecode"
-        className="w-full h-full"
+        className="w-full h-full object-contain"
         onLoad={(splineApp) => {
           splineAppRef.current = splineApp;
+          console.log('Spline ready – head will tilt down when you approach');
         }}
       />
       <img
@@ -52,7 +55,3 @@ export default function SplineRobot() {
     </div>
   );
 }
-
-// Note: nstall the required packages (once) bash /// npm install @splinetool/react-spline @splinetool/runtime  /// 
-//  import SplineRobot from '../components/SplineRobot';  Inside your component's JSX: <div className="w-64 h-64 mx-auto"> <SplineRobot /> </div>//
-

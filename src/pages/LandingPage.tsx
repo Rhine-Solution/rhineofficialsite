@@ -124,11 +124,11 @@ export default function App() {
             <div className="md:w-1/2 border border-white/10 p-1 bg-black/20">
               <div className="border border-white/5 p-10 text-left font-mono text-[10px] text-white/30 leading-relaxed">
                 <span className="text-white/60 block mb-2">Rhine_System_Init...</span>
-                  {`> Initializing WebGPU Context... DONE`} <br/>
-                 {`> Loading Custom Shaders... DONE`} <br/>
-                   {/* Robot above heading */}
-                   <div className="w-48 h-48 md:w-64 md:h-64 mx-auto mb-6">
-                      <SplineRobot />
+                {`> Initializing WebGPU Context... DONE`} <br/>
+                {`> Loading Custom Shaders... DONE`} <br/>
+                 {/* Robot above heading */}
+                  <div className="w-48 h-48 md:w-64 md:h-64 mx-auto mb-6">
+                   <SplineRobot />
                    </div>
                 <span style={{ color: themeColor }} className="block mt-4 animate-pulse">_SYSTEM READY</span>
               </div>
