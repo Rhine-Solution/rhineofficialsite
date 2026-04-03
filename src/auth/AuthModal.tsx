@@ -8,11 +8,10 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   themeColor?: string;
-  initialTab?: Tab;
 }
 
-export default function AuthModal({ isOpen, onClose, themeColor, initialTab = 'login' }: AuthModalProps) {
-  const [tab, setTab] = useState<Tab>(initialTab);
+export default function AuthModal({ isOpen, onClose, themeColor }: AuthModalProps) {
+  const [tab, setTab] = useState<Tab>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -21,10 +20,6 @@ export default function AuthModal({ isOpen, onClose, themeColor, initialTab = 'l
   const modalRef = useRef<HTMLDivElement>(null);
   const previouslyFocusedElement = useRef<HTMLElement | null>(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isOpen) setTab(initialTab);
-  }, [isOpen, initialTab]);
 
   useEffect(() => {
     if (isOpen) {
@@ -158,36 +153,23 @@ export default function AuthModal({ isOpen, onClose, themeColor, initialTab = 'l
           </svg>
         </button>
 
-        <div className="p-6">
+    	    <div className="p-6">
           <div className="flex justify-center mb-6">
           </div>
-
-          <div className="flex justify-center gap-4 mb-6 border-b border-white/10">
+          <div className="flex justify-center gap-4 mb-6 border-b border-white/20">
             <button
-              className={`pb-2 text-sm font-medium transition-colors ${tab === 'login'
-                  ? 'text-white border-b-2 border-white'
-                  : 'text-white/60 hover:text-white'
-                }`}
-              onClick={() => setTab('login')}
-            >
+              className={`pb-2 text-sm font-medium transition-colors ${tab === 'login' ? 'text-white border-b-2 border-white' : 'text-white/60 hover:text-white'}`}
+              onClick={() => setTab('login')}>
               Login
             </button>
             <button
-              className={`pb-2 text-sm font-medium transition-colors ${tab === 'register'
-                  ? 'text-white border-b-2 border-white'
-                  : 'text-white/60 hover:text-white'
-                }`}
-              onClick={() => setTab('register')}
-            >
+              className={`pb-2 text-sm font-medium transition-colors ${tab === 'register' ? 'text-white border-b-2 border-white' : 'text-white/60 hover:text-white'}`}
+              onClick={() => setTab('register')}>
               Register
             </button>
             <button
-              className={`pb-2 text-sm font-medium transition-colors ${tab === 'forgot'
-                  ? 'text-white border-b-2 border-white'
-                  : 'text-white/60 hover:text-white'
-                }`}
-              onClick={() => setTab('forgot')}
-            >
+              className={`pb-2 text-sm font-medium transition-colors ${tab === 'forgot' ? 'text-white border-b-2 border-white' : 'text-white/60 hover:text-white'}`}
+              onClick={() => setTab('forgot')}>
               Forgot Password
             </button>
           </div>
@@ -197,16 +179,7 @@ export default function AuthModal({ isOpen, onClose, themeColor, initialTab = 'l
               {error}
             </div>
           )}
-
-          <form
-            onSubmit={
-              tab === 'login'
-                ? handleLogin
-                : tab === 'register'
-                  ? handleRegister
-                  : handleForgot
-            }
-          >
+          <form onSubmit={tab === 'login' ? handleLogin : tab === 'register' ? handleRegister : handleForgot}>
             <div className="mb-4">
               <label className="block text-xs uppercase tracking-wider text-white/50 mb-1">
                 Email
@@ -255,13 +228,7 @@ export default function AuthModal({ isOpen, onClose, themeColor, initialTab = 'l
               disabled={loading}
               className="w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white font-medium transition-colors disabled:opacity-50"
             >
-              {loading
-                ? 'Please wait...'
-                : tab === 'login'
-                  ? 'Login'
-                  : tab === 'register'
-                    ? 'Create Account'
-                    : 'Send Reset Link'}
+              {loading ? 'Please wait...' : tab === 'login' ? 'Login' : tab === 'register' ? 'Create Account' : 'Send Reset Link'}
             </button>
           </form>
 
@@ -279,7 +246,7 @@ export default function AuthModal({ isOpen, onClose, themeColor, initialTab = 'l
               }
               className="text-white/80 hover:text-white transition-colors"
             >
-              {tab === 'login' ? 'Register' : tab === 'register' ? 'Login' : 'Login'}
+              {tab === 'login' ? 'Sign up' : tab === 'register' ? 'Sign in' : 'Sign in'}
             </button>
           </p>
         </div>

@@ -96,12 +96,12 @@ export default function Header({
   const openMobileMenu = () => setMobileMenuOpen(true);
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
-  const openAuthFromMobile = (tab?: 'login' | 'register') => {
+  const openAuthFromMobile = () => {
     if (mobileMenuOpen) {
       closeMobileMenu();
-      authModal.open(tab);
+      authModal.open();
     } else {
-      authModal.open(tab);
+      authModal.open();
     }
   };
 
@@ -123,39 +123,28 @@ export default function Header({
         </button>
       </div>
 
-      {/* Desktop Dynamic Island Pill - Only visible on large screens */}
-      <div
-        ref={pillRef}
-        className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 hidden lg:block"
-      >
-        <div
-          className={`
-            bg-black/80 backdrop-blur-xl rounded-full border border-white/20 shadow-2xl
-            transition-all duration-300 ease-out
-            ${megaMenuOpen ? 'shadow-white/10' : ''}
-          `}
-          style={{
-            boxShadow: megaMenuOpen ? `0 0 0 1px ${themeColor}40, 0 8px 20px rgba(0,0,0,0.3)` : undefined
-          }}
-        >
-          <div className="flex items-center gap-1 px-3 sm:px-4 py-2 sm:py-2.5">
-            {/* Desktop Navigation - Inside Pill */}
-            <div className="flex items-center gap-1">
-              {(Object.keys(megaMenuCategories) as Array<keyof typeof megaMenuCategories>).map((name) => (
-                <button
-                  key={name}
-                  onClick={() => openCategoryMenu(name)}
-                  className={`
-                    nav-trigger px-3 py-1.5 text-sm font-medium rounded-full transition-all duration-200
-                    ${activeCategory === name && megaMenuOpen
-                      ? 'bg-white/20 text-white'
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
-                    }
-                  `}
-                >
-                  {name}
-                </button>
-              ))}
+        {/* Desktop Navigation */}
+        <div className="flex-none hidden lg:flex items-center gap-8">
+          <nav className="flex items-center gap-6">
+            {Object.keys(megaMenuCategories).map((name) => (
+              <button
+                key={name}
+                onClick={toggleMegaMenu}
+                className="nav-trigger text-base font-medium text-white/80 hover:text-white transition-colors"
+              >
+                {name}
+              </button>
+            ))}
+          </nav>
+
+          {showAuthButtons && (
+            <div className="flex items-center gap-3">
+              <AuthButton variant="ghost" themeColor={themeColor} onClick={() => authModal.open()} ariaLabel="Login">
+                Login
+              </AuthButton>
+              <AuthButton variant="primary" themeColor={themeColor} onClick={() => authModal.open()} ariaLabel="Register">
+                Register
+              </AuthButton>
             </div>
           </div>
         </div>
@@ -238,28 +227,15 @@ export default function Header({
                   ))}
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-white/50 text-xs">
-                  <div>© 2026 Rhine Solution — Innovation at the edge</div>
-                  <div className="flex gap-2">
-                    <AuthButton
-                      variant="ghost"
-                      themeColor={themeColor}
-                      onClick={() => { closeMegaMenu(); authModal.open('login'); }}
-                      className="text-xs px-3 py-1.5 rounded-full"
-                      ariaLabel="Login"
-                    >
-                      Login
-                    </AuthButton>
-                    <AuthButton
-                      variant="primary"
-                      themeColor={themeColor}
-                      onClick={() => { closeMegaMenu(); authModal.open('register'); }}
-                      className="text-xs px-3 py-1.5 rounded-full"
-                      ariaLabel="Register"
-                    >
-                      Register
-                    </AuthButton>
-                  </div>
+              <div className="mt-8 pt-4 border-t border-white/20 flex items-center justify-between text-white/70 text-sm">
+                <div>© 2026 Rhine Solution</div>
+                <div className="flex gap-3">
+                  <AuthButton variant="ghost" themeColor={themeColor} onClick={() => { closeMegaMenu(); authModal.open('login'); }} ariaLabel="Login">
+                    Login
+                  </AuthButton>
+                  <AuthButton variant="primary" themeColor={themeColor} onClick={() => { closeMegaMenu(); authModal.open('register'); }} ariaLabel="Register">
+                    Register
+                  </AuthButton>
                 </div>
               </div>
             </div>
@@ -273,8 +249,8 @@ export default function Header({
           open={mobileMenuOpen}
           onClose={closeMobileMenu}
           themeColor={themeColor}
-          onLogin={() => openAuthFromMobile('login')}
-          onRegister={() => openAuthFromMobile('register')}
+          onLogin={openAuthFromMobile}
+          onRegister={openAuthFromMobile}
           anchor="right"
           onHoverEnter={() => {}}
           onHoverLeave={() => {}}

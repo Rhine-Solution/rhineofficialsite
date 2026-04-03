@@ -4,7 +4,6 @@ import WebGPU from 'three/examples/jsm/capabilities/WebGPU.js';
 import { RhineLogo, githubIcon, twitterIcon } from '../components/GFX';
 import { Root } from '../lib/Root';
 import Layout from '../components/Layout';
-import { useAuthModal } from '../auth/AuthModalProvider';
 import SplineRobot from '../components/SplineRobot';
 
 export default function App() {
@@ -36,43 +35,19 @@ export default function App() {
   }, []);
 
   const themeColor = `hsl(${hue}, 100%, 60%)`;
-  const authModal = useAuthModal();
 
-  const SnakeButton = ({ text, color, onClick }: { text: string; color: string; onClick?: () => void }) => {
-    const handleClick = (e?: React.MouseEvent | React.KeyboardEvent) => {
-      e && (e as any).preventDefault?.();
-      e && (e as any).stopPropagation?.();
-      onClick?.();
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        handleClick(e);
-      }
-    };
-
-    return (
-      <div
-        className="snake-btn cursor-pointer"
-        style={{ '--theme-color': color } as any}
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        role="button"
-        tabIndex={0}
-        aria-pressed="false"
+  const SnakeButton = ({ text, color, onClick }: { text: string; color: string; onClick?: () => void }) => (
+    <div className="snake-btn" style={{ '--theme-color': color } as any}>
+      <div className="snake-line"></div>
+      <button 
+        onClick={onClick}
+        className="btn-inner px-10 py-4 border-2 uppercase text-xs font-bold tracking-[0.2em]"
+        style={{ borderColor: color, color: color }}
       >
-        <div className="snake-line" />
-        <button
-          type="button"
-          onClick={handleClick}
-          className="btn-inner px-10 py-4 border-2 uppercase text-xs font-bold tracking-[0.2em]"
-          style={{ borderColor: color, color: color }}
-        >
-          {text}
-        </button>
-      </div>
-    );
-  };
+        {text}
+      </button>
+    </div>
+  );
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -115,7 +90,7 @@ export default function App() {
       Next-generation digital experiences built in only for you
     </p>
     <div className="flex flex-wrap justify-center gap-10">
-      <SnakeButton text="Start Project" color={themeColor} onClick={() => authModal.open('login')} />
+      <SnakeButton text="Start Project" color={themeColor} onClick={() => scrollTo('contact')} />
       <SnakeButton text="View Work" color="white" onClick={() => scrollTo('services')} />
     </div>
   </main>
