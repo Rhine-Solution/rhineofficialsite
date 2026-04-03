@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import AuthModal from './AuthModal';
 
+export type Tab = 'login' | 'register' | 'forgot';
+
 interface AuthModalContextType {
   isOpen: boolean;
-  open: () => void;
+  open: (tab?: Tab) => void;
   close: () => void;
 }
 
@@ -16,14 +18,18 @@ interface AuthModalProviderProps {
 
 export const AuthModalProvider: React.FC<AuthModalProviderProps> = ({ children, themeColor }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [initialTab, setInitialTab] = useState<Tab>('login');
 
-  const open = () => setIsOpen(true);
+  const open = (tab?: Tab) => {
+    setInitialTab(tab ?? 'login');
+    setIsOpen(true);
+  };
   const close = () => setIsOpen(false);
 
   return (
     <AuthModalContext.Provider value={{ isOpen, open, close }}>
       {children}
-      {isOpen && <AuthModal isOpen={isOpen} onClose={close} themeColor={themeColor} />}
+      {isOpen && <AuthModal isOpen={isOpen} onClose={close} themeColor={themeColor} initialTab={initialTab} />}
     </AuthModalContext.Provider>
   );
 };

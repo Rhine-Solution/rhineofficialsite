@@ -86,12 +86,12 @@ export default function Header({
   const openMobileMenu = () => setMobileMenuOpen(true);
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
-  const openAuthFromMobile = () => {
+  const openAuthFromMobile = (tab?: 'login' | 'register') => {
     if (mobileMenuOpen) {
       closeMobileMenu();
-      authModal.open();
+      authModal.open(tab);
     } else {
-      authModal.open();
+      authModal.open(tab);
     }
   };
 
@@ -134,10 +134,10 @@ export default function Header({
 
           {showAuthButtons && (
             <div className="flex items-center gap-3">
-              <AuthButton variant="ghost" themeColor={themeColor} onClick={() => authModal.open()} ariaLabel="Login">
+              <AuthButton variant="ghost" themeColor={themeColor} onClick={() => authModal.open('login')} ariaLabel="Login">
                 Login
               </AuthButton>
-              <AuthButton variant="primary" themeColor={themeColor} onClick={() => authModal.open()} ariaLabel="Register">
+              <AuthButton variant="primary" themeColor={themeColor} onClick={() => authModal.open('register')} ariaLabel="Register">
                 Register
               </AuthButton>
             </div>
@@ -205,10 +205,10 @@ export default function Header({
               <div className="mt-8 pt-4 border-t border-white/20 flex items-center justify-between text-white/70 text-sm">
                 <div>© 2026 Rhine Solution</div>
                 <div className="flex gap-3">
-                  <AuthButton variant="ghost" themeColor={themeColor} onClick={() => { closeMegaMenu(); authModal.open(); }} ariaLabel="Login">
+                  <AuthButton variant="ghost" themeColor={themeColor} onClick={() => { closeMegaMenu(); authModal.open('login'); }} ariaLabel="Login">
                     Login
                   </AuthButton>
-                  <AuthButton variant="primary" themeColor={themeColor} onClick={() => { closeMegaMenu(); authModal.open(); }} ariaLabel="Register">
+                  <AuthButton variant="primary" themeColor={themeColor} onClick={() => { closeMegaMenu(); authModal.open('register'); }} ariaLabel="Register">
                     Register
                   </AuthButton>
                 </div>
@@ -224,8 +224,8 @@ export default function Header({
           open={mobileMenuOpen}
           onClose={closeMobileMenu}
           themeColor={themeColor}
-          onLogin={openAuthFromMobile}
-          onRegister={openAuthFromMobile}
+          onLogin={() => openAuthFromMobile('login')}
+          onRegister={() => openAuthFromMobile('register')}
           anchor="right"
           onHoverEnter={() => {}}
           onHoverLeave={() => {}}
