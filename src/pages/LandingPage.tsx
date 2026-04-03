@@ -4,6 +4,7 @@ import WebGPU from 'three/examples/jsm/capabilities/WebGPU.js';
 import { RhineLogo, githubIcon, twitterIcon } from '../components/GFX';
 import { Root } from '../lib/Root';
 import Layout from '../components/Layout';
+import SplineRobot from '../components/SplineRobot';
 
 export default function App() {
   const [hasWebGPU, setHasWebGPU] = useState(false);
@@ -56,7 +57,8 @@ export default function App() {
     <div id="app" className="relative w-full min-h-screen overflow-y-auto font-rubik selection:bg-white/20">
       
       {/* TECHNICAL HUD */}
-      <div className="fixed top-1/2 left-10 -translate-y-1/2 z-50 font-mono text-[10px] text-white/20 space-y-6 hidden xl:block">
+      <div className="fixed top-1/2 left-10 -translate-y-1/2 z-50 font-mono text-[10px] text-white/20 space-y-6 hidden xl:block"
+        style={{ textShadow: `0 0 1px ${themeColor}` }}>
         <div className="space-y-2">
           <div className="flex items-center gap-4">
             <div className="w-1 h-1 rounded-full bg-white/40 animate-ping"></div>
@@ -78,19 +80,21 @@ export default function App() {
       </div>
 
       <Layout themeColor={themeColor} showAuthButtons={true} onLogoClick={() => scrollTo('hero')}>
-        {/* HERO SECTION */}
-        <main id="hero" className="relative z-10 flex flex-col items-center justify-center h-screen px-6 text-center">
-          <h2 className="text-6xl md:text-9xl font-black text-white uppercase tracking-tighter mb-6">
-            Future <span style={{ color: themeColor }}>Defined</span>
-          </h2>
-          <p className="text-white/60 text-lg md:text-xl font-light tracking-widest uppercase mb-12">
-            Next-generation digital experiences built in only for you
-          </p>
-          <div className="flex flex-wrap justify-center gap-10">
-            <SnakeButton text="Start Project" color={themeColor} onClick={() => scrollTo('contact')} />
-            <SnakeButton text="View Work" color="white" onClick={() => scrollTo('services')} />
-          </div>
-        </main>
+  {/* HERO SECTION */}
+  <main id="hero" className="relative z-10 flex flex-col items-center justify-center h-screen px-6 text-center">
+    <h2 className="text-6xl md:text-9xl font-black text-white uppercase tracking-tighter mb-6">
+      
+      Future <span style={{ color: themeColor }}>Defined</span>
+    </h2>
+    <p className="text-white/60 text-lg md:text-xl font-light tracking-widest uppercase mb-12">
+      Next-generation digital experiences built in only for you
+    </p>
+    <div className="flex flex-wrap justify-center gap-10">
+      <SnakeButton text="Start Project" color={themeColor} onClick={() => scrollTo('contact')} />
+      <SnakeButton text="View Work" color="white" onClick={() => scrollTo('services')} />
+    </div>
+  </main>
+
 
         {/* SERVICES SECTION */}
         <section id="services" className="relative z-10 py-40 px-10">
@@ -122,6 +126,10 @@ export default function App() {
                 <span className="text-white/60 block mb-2">Rhine_System_Init...</span>
                 {`> Initializing WebGPU Context... DONE`} <br/>
                 {`> Loading Custom Shaders... DONE`} <br/>
+                 {/* Robot above heading */}
+                  <div className="w-48 h-48 md:w-64 md:h-64 mx-auto mb-6">
+                   <SplineRobot />
+                   </div>
                 <span style={{ color: themeColor }} className="block mt-4 animate-pulse">_SYSTEM READY</span>
               </div>
             </div>
