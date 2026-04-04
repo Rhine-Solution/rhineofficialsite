@@ -489,7 +489,7 @@ export default function Dashboard(): JSX.Element {
 
   return (
     <Layout themeColor="#60a5fa" showAuthButtons={false} disableSideMenu>
-      <div className="min-h-screen h-screen flex flex-col bg-black">
+      <div className="min-h-screen h-screen flex flex-col bg-transparent">
         <main className="flex-1 overflow-y-auto pt-24 px-6 sm:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col lg:flex-row gap-8">
