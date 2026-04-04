@@ -28,6 +28,9 @@ const SupportCommunity = lazy(() => import('../pages/Resources/SupportCommunity'
 
 const AdminPage = lazy(() => import('../pages/Admin'));
 const DashboardPage = lazy(() => import('../pages/Dashboard'));
+const Privacy = lazy(() => import('../pages/Privacy'));
+const Terms = lazy(() => import('../pages/Terms'));
+const NotFound = lazy(() => import('../pages/NotFound'));
 
 import ProtectedRoute from '../auth/ProtectedRoute';
 
@@ -68,6 +71,13 @@ export default function AppRoutes() {
         {/* Existing admin/dashboard routes */}
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+
+        {/* Legal pages */}
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
   );

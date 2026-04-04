@@ -75,8 +75,16 @@ export default function SideMenu({
 
   const handleItemClick = (category: string, item: string) => {
     onClose();
-    const slug = item.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const slug = item.toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace('webgpu-3d-rendering', 'webgpu-3d')
+      .replace('iot-edge-computing', 'iot-edge');
     navigate(`/${category.toLowerCase()}/${slug}`);
+  };
+
+  const handleCategoryClick = (category: string) => {
+    onClose();
+    navigate(`/${category.toLowerCase()}`);
   };
 
   const mobileStyle = isMobile
@@ -150,9 +158,12 @@ export default function SideMenu({
               <ul className="space-y-6">
                 {nav.map((section) => (
                   <li key={section.title}>
-                    <div className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-2">
+                    <button
+                      onClick={() => handleCategoryClick(section.title)}
+                      className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-2 text-left w-full cursor-pointer hover:text-white"
+                    >
                       {section.title}
-                    </div>
+                    </button>
                     <div className="space-y-2">
                       {section.items.map((it) => (
                         <AuthButton

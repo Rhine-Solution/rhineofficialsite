@@ -88,7 +88,10 @@ export default function Header({
   };
 
   const handleSubItemClick = (category: string, item: string) => {
-    const slug = item.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const slug = item.toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace('webgpu-3d-rendering', 'webgpu-3d')
+      .replace('iot-edge-computing', 'iot-edge');
     navigate(`/${category.toLowerCase()}/${slug}`);
     closeMegaMenu();
   };
@@ -211,7 +214,11 @@ export default function Header({
             <div className="bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
-                  <h2 className="text-white font-semibold text-lg" style={{ color: themeColor }}>
+                  <h2
+                    onClick={() => { navigate(`/${String(activeCategory).toLowerCase()}`); closeMegaMenu(); }}
+                    className="text-white font-semibold text-lg cursor-pointer"
+                    style={{ color: themeColor }}
+                  >
                     {activeCategory}
                   </h2>
                   <button

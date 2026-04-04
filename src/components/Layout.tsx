@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 
@@ -17,6 +18,9 @@ export default function Layout({
   disableSideMenu = false,
   onLogoClick,
 }: LayoutProps) {
+  const navigate = useNavigate();
+  const handleLogoClick = onLogoClick || (() => navigate('/'));
+
   const backgroundStyle: React.CSSProperties = {
     backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.02), rgba(0,0,0,0))',
     WebkitBackdropFilter: 'saturate(125%) blur(8px)'
@@ -28,7 +32,7 @@ export default function Layout({
         themeColor={themeColor}
         showAuthButtons={showAuthButtons}
         disableSideMenu={disableSideMenu}
-        onLogoClick={onLogoClick}
+        onLogoClick={handleLogoClick}
       />
 
       <main className="pt-[72px] min-h-screen flex-1">
