@@ -15,9 +15,8 @@ export default function Layout({
   themeColor = '#4f46e5',
   showAuthButtons = false,
   disableSideMenu = false,
-  onLogoClick
+  onLogoClick,
 }: LayoutProps) {
-  // Use the same glassmorphism / backdrop style as the header for the app background.
   const backgroundStyle: React.CSSProperties = {
     backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.02), rgba(0,0,0,0))',
     WebkitBackdropFilter: 'saturate(125%) blur(8px)'
