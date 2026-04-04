@@ -63,6 +63,38 @@ export default function Header({
   const pathname = location.pathname;
   const authModal = useAuthModal();
 
+  // --- new: render-aware (desktop vs mobile) ---
+  const getInitialDesktop = () => {
+    if (typeof window === 'undefined') return true;
+    return window.innerWidth >= 1024;
+  };
+  const [isDesktop, setIsDesktop] = useState<boolean>(getInitialDesktop());
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const mql = window.matchMedia('(min-width:1024px)');
+    const handleChange = (ev: MediaQueryListEvent | MediaQueryList) => {
+      setIsDesktop('matches' in ev ? ev.matches : (ev as MediaQueryList).matches);
+    };
+
+    // initial sync
+    handleChange(mql);
+
+    // modern APIs
+    if (typeof mql.addEventListener === 'function') {
+      mql.addEventListener('change', handleChange as EventListener);
+      return () => mql.removeEventListener('change', handleChange as EventListener);
+    }
+
+    // fallback for older browsers
+    if (typeof mql.addListener === 'function') {
+      mql.addListener(handleChange as (this: MediaQueryList, ev: MediaQueryListEvent) => any);
+      return () => mql.removeListener(handleChange as (this: MediaQueryList, ev: MediaQueryListEvent) => any);
+    }
+
+    return;
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (megaMenuOpen && megaMenuRef.current && !megaMenuRef.current.contains(event.target as Node)) {
@@ -173,9 +205,9 @@ export default function Header({
         </div>
       </div>
 
-      {/* Mobile Hamburger Button - Top Right Corner (visible only on screens < lg) */}
-      {!disableSideMenu && (
-        <div className="fixed top-4 right-4 z-50 block lg:hidden">
+      {/* Mobile Hamburger Button — rendered only when NOT desktop */}
+      {!disableSideMenu && !isDesktop && (
+        <div className="fixed top-4 right-4 z-50">
           <button
             onClick={openMobileMenu}
             className="btn btn-ghost btn-circle text-white hover:bg-white/10 transition-colors bg-black/40 backdrop-blur-sm border border-white/20 w-10 h-10 rounded-full flex items-center justify-center"
@@ -188,9 +220,9 @@ export default function Header({
         </div>
       )}
 
-      {/* Desktop Auth Buttons - Right Corner (visible only on lg screens) */}
-      {showAuthButtons && (
-        <div className="fixed top-4 right-4 z-50 hidden lg:flex items-center gap-2">
+      {/* Desktop Auth Buttons — rendered only on desktop */}
+      {showAuthButtons && isDesktop && (
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
           <AuthButton
             variant="ghost"
             themeColor={themeColor}
@@ -245,7 +277,7 @@ export default function Header({
                   {megaMenuCategories[activeCategory].map((item) => (
                     <button
                       key={item}
-                      onClick={() => handleSubItemClick(activeCategory, item)}
+                      onClick={() => handleSubItemClick(activeCategory!, item)}
                       className="text-left text-white/80 hover:text-white hover:bg-white/10 px-4 py-3 rounded-xl transition-all duration-200 text-sm flex items-center gap-3 group"
                     >
                       <span className="w-1 h-1 rounded-full bg-white/40 group-hover:bg-white transition-colors"></span>

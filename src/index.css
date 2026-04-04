@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Force-hide hamburger on desktop in case other CSS overrides Tailwind */
+@media (min-width: 1024px) {
+  .mobile-only-hamburger {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+  /* Ensure mobile auth buttons are hidden outside of the side menu */
+  .auth-button-mobile {
+    display: none !important;
+  }
+}
+
 /* Global base styles applied to the app */
 :root {
   color-scheme: dark;
