@@ -1,7 +1,6 @@
 import React from 'react';
 import Layout from '../../components/Layout';
 import { Link } from 'react-router-dom';
-import useThemeHue from '../../hooks/useThemeHue';
 
 const items = [
   { title: 'Web Development', to: '/services/web-development' },
@@ -11,10 +10,8 @@ const items = [
 ];
 
 export default function Services() {
-  const { themeColor } = useThemeHue();
-
   return (
-    <Layout themeColor={themeColor} onLogoClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} showAuthButtons={true}>
+    <Layout themeColor="#4f46e5" onLogoClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} showAuthButtons={true}>
       <div className="container mx-auto px-6 py-12 text-white">
         <h1 className="text-4xl font-bold mb-4">Services – Comprehensive Technology Solutions</h1>
         <div className="prose prose-invert max-w-none mb-8">

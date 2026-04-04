@@ -20,7 +20,18 @@ export default function Layout({
   onLogoClick,
 }: LayoutProps) {
   const navigate = useNavigate();
-  const handleLogoClick = onLogoClick || (() => navigate('/'));
+  const handleLogoClick = () => {
+    // Always navigate home first
+    navigate('/');
+    // If already on home, allow page-specific onLogoClick behaviour (e.g., scroll to hero)
+    try {
+      if (window.location.pathname === '/') {
+        onLogoClick?.();
+      }
+    } catch (e) {
+      // ignore (server-side or non-window environment)
+    }
+  };
 
   const backgroundStyle: React.CSSProperties = {
     backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.02), rgba(0,0,0,0))',
