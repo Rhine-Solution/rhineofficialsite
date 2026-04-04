@@ -190,7 +190,12 @@ export default function App() {
         <section id="contact" className="relative z-10 py-60 px-10 text-center">
           <h2 className="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter mb-12">Let's <span style={{ color: themeColor }}>Create</span></h2>
           <div className="flex justify-center">
-            <SnakeButton text="Contact US" color={themeColor} onClick={() => navigate('/contact')} />
+            <button
+              style={{ color: themeColor, borderColor: themeColor, borderWidth: "1px", padding: "1.5em 1.5em", textTransform: "uppercase", fontSize: "15px", fontWeight: "bold", letterSpacing: "0.2em" }}
+              onClick={() => navigate('/contact')}
+            >
+              Contact US
+            </button>
           </div>
         </section>
 
