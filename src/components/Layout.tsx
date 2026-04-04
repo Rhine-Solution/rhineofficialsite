@@ -21,15 +21,13 @@ export default function Layout({
 }: LayoutProps) {
   const navigate = useNavigate();
   const handleLogoClick = () => {
-    // Always navigate home first
     navigate('/');
-    // If already on home, allow page-specific onLogoClick behaviour (e.g., scroll to hero)
     try {
       if (window.location.pathname === '/') {
         onLogoClick?.();
       }
     } catch (e) {
-      // ignore (server-side or non-window environment)
+      // ignore
     }
   };
 
@@ -46,13 +44,10 @@ export default function Layout({
         disableSideMenu={disableSideMenu}
         onLogoClick={handleLogoClick}
       />
-
       <ScrollToTop />
-
-      <main className="pt-[72px] min-h-screen flex-1 relative z-10">
+      <main className="pt-[72px] flex-1 relative z-10">
         {children}
       </main>
-
       <Footer themeColor={themeColor} />
     </div>
   );
