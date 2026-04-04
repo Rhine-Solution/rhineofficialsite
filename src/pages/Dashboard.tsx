@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { supabase } from '../lib/supabase';
 import SettingsModal from '../components/SettingsModal';
+import TeamSettingsModal from '../components/TeamSettingsModal';
 import { Eye, X, HardDrive, Plus, HelpCircle } from 'lucide-react';
 import { Joyride, STATUS } from 'react-joyride';
 import type { Step, TooltipRenderProps, Props as JoyrideProps } from 'react-joyride';
@@ -142,7 +143,9 @@ const CustomTooltip = (props: TooltipRenderProps) => {
 
 export default function Dashboard(): JSX.Element {
   const [loading, setLoading] = useState(true);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [accountSettingsOpen, setAccountSettingsOpen] = useState(false);
+  const [teamSettingsOpen, setTeamSettingsOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(null);
 
@@ -163,6 +166,17 @@ export default function Dashboard(): JSX.Element {
 
   const [notifModalOpen, setNotifModalOpen] = useState(false);
   const [selectedNotif, setSelectedNotif] = useState<NotificationItem | null>(null);
+
+  // Invites (requests) for current user
+  const [invites, setInvites] = useState<any[]>([]);
+  const [invitesLoading, setInvitesLoading] = useState(false);
+  const [invitesError, setInvitesError] = useState<string | null>(null);
+
+  // Team members shown in Dashboard (if current user belongs to a team)
+  type TeamMember = { id: string; user_id: string; email: string | null; display_name: string | null; role: string; permissions: { read: boolean; write: boolean; delete: boolean } };
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [teamMembersLoading, setTeamMembersLoading] = useState(false);
+  const [teamMembersError, setTeamMembersError] = useState<string | null>(null);
 
   // Onboarding tour state
   const [runTour, setRunTour] = useState(false);
@@ -186,6 +200,7 @@ export default function Dashboard(): JSX.Element {
           setDisplayName(
             (data.user.user_metadata && (data.user.user_metadata.full_name || data.user.user_metadata.fullName)) ?? null
           );
+          setCurrentUserId(data.user.id ?? null);
         }
 
         if (mounted) {
@@ -197,6 +212,7 @@ export default function Dashboard(): JSX.Element {
         }
 
         await fetchNotifications();
+        await fetchInvites();
       } catch (err) {
         console.error('init error', err);
       } finally {
@@ -259,6 +275,36 @@ export default function Dashboard(): JSX.Element {
     }
   };
 
+  // Fetch pending invites for current user (invited_email or invited_user_id)
+  const fetchInvites = async () => {
+    setInvitesLoading(true);
+    setInvitesError(null);
+    try {
+      const userRes = await supabase.auth.getUser();
+      const userId = userRes.data?.user?.id ?? null;
+      const userEmail = userRes.data?.user?.email ?? null;
+      if (!userId && !userEmail) return setInvites([]);
+
+      // Use parameterized supabase query - check invited_user_id or invited_email
+      const { data, error } = await supabase
+        .from('team_invites')
+        .select('id, team_id, invited_by, invited_user_id, invited_email, permissions, role, status, created_at')
+        .or(`invited_user_id.eq.${userId},invited_email.eq.${userEmail}`)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+      setInvites(data ?? []);
+    } catch (err: any) {
+      console.error('fetchInvites failed', err?.message || err);
+      setInvitesError('Failed to load invites');
+      setInvites([]);
+    } finally {
+      setInvitesLoading(false);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -270,7 +316,8 @@ export default function Dashboard(): JSX.Element {
     }
   };
 
-  const handleSettings = () => setSettingsOpen(true);
+  const handleAccountSettings = () => setAccountSettingsOpen(true);
+  const handleTeamSettings = () => setTeamSettingsOpen(true);
 
   const validateProjectInput = (name: string) => {
     const s = name.trim();
@@ -617,14 +664,48 @@ export default function Dashboard(): JSX.Element {
                       </div>
                     </div>
 
-                    <div className="quick-actions p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
-                      <h3 className="text-sm text-white/60">Quick Actions</h3>
-                      <div className="mt-3 flex flex-col gap-2">
-                        <button className="px-3 py-2 bg-white/10 rounded text-white hover:bg-white/20 transition-colors">Invite teammate</button>
-                        <button className="px-3 py-2 bg-white/10 rounded text-white hover:bg-white/20 transition-colors">Upload file</button>
+                    <div className="requests-panel p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
+                      <h3 className="text-sm text-white/60">Team Requests</h3>
+                      <div className="mt-3 space-y-3 max-h-56 overflow-auto pr-2">
+                        {invitesLoading && <div className="text-sm text-white/60">Loading...</div>}
+                        {invitesError && <div className="text-sm text-red-400">{invitesError}</div>}
+                        {!invitesLoading && invites.length === 0 && <div className="text-sm text-white/60">No pending invites</div>}
+                        {invites.map((it: any) => (
+                          <div key={it.id} className="p-3 rounded-lg bg-white/5 border border-white/10 flex items-center justify-between">
+                            <div className="min-w-0">
+                              <div className="text-sm font-semibold text-white truncate max-w-[12rem]">Invite to team {sanitizeForDisplay(it.team_id)}</div>
+                              <div className="text-xs text-white/50">{formatDate(it.created_at)}</div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button onClick={async () => {
+                                // Accept invite: call RPC (to be implemented) or inline client-side (NOT recommended). We'll perform a validated client call to update invite safely.
+                                try {
+                                  const user = (await supabase.auth.getUser()).data?.user;
+                                  if (!user) throw new Error('Not authenticated');
+                                  // Call RPC accept_invite - implement on server. Optimistic UI: mark as accepted locally.
+                                  const { data: rpcData, error: rpcErr } = await supabase.rpc('accept_invite', { invite_id_in: it.id });
+                                  if (rpcErr) throw rpcErr;
+                                  setInvites((prev) => prev.filter((x) => x.id !== it.id));
+                                } catch (err: any) {
+                                  console.error('accept invite failed', err?.message || err);
+                                  alert('Failed to accept invite');
+                                }
+                              }} className="px-2 py-1 rounded bg-white/10 hover:bg-white/20">Accept</button>
+                              <button onClick={async () => {
+                                try {
+                                  const { error } = await supabase.from('team_invites').update({ status: 'declined' }).eq('id', it.id);
+                                  if (error) throw error;
+                                  setInvites((prev) => prev.filter((x) => x.id !== it.id));
+                                } catch (err: any) {
+                                  console.error('decline invite failed', err?.message || err);
+                                  alert('Failed to decline invite');
+                                }
+                              }} className="px-2 py-1 rounded bg-red-600/20 hover:bg-red-600/30">Decline</button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    </div>
-                  </aside>
+                    </div>                  </aside>
                 </div>
               </main>
 
@@ -635,7 +716,7 @@ export default function Dashboard(): JSX.Element {
                   <div className="text-white mt-1 font-semibold">{sanitizeName(displayName, 'User')}</div>
                   <div className="text-xs text-white/60">{sanitizeForDisplay(email)}</div>
                   <div className="mt-4 flex flex-col gap-2">
-                    <button onClick={handleSettings} className="w-full px-3 py-2 bg-white/10 rounded text-white hover:bg-white/20 transition-colors">Settings</button>
+                    <button onClick={handleAccountSettings} className="w-full px-3 py-2 bg-white/10 rounded text-white hover:bg-white/20 transition-colors">Settings</button>
                     <button onClick={handleLogout} className="w-full px-3 py-2 bg-red-500/20 rounded text-white hover:bg-red-500/30 transition-colors">Log out</button>
                   </div>
                 </div>
@@ -653,13 +734,55 @@ export default function Dashboard(): JSX.Element {
                 </div>
 
                 <div className="mt-4 p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
-                  <div className="text-sm text-white/60">Team</div>
-                  <div className="mt-3 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/80">Z</div>
-                    <div>
-                      <div className="text-sm text-white">UserExample</div>
-                      <div className="text-xs text-white/60">Owner</div>
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-white/60">Team</div>
+                    <button
+                      aria-label="Open team settings"
+                      onClick={() => setTeamSettingsOpen(true)}
+                      className="px-2 py-1 text-xs rounded bg-white/5 hover:bg-white/10 text-white/80"
+                    >
+                      Team Settings
+                    </button>
+                  </div>
+
+                  <div className="mt-3">
+                    {teamMembersLoading && <div className="text-sm text-white/60">Loading members...</div>}
+                    {teamMembersError && <div className="text-sm text-red-400">{teamMembersError}</div>}
+
+                    {!teamMembersLoading && teamMembers.length === 0 && (
+                      <div className="mt-3 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/80">Z</div>
+                        <div>
+                          <div className="text-sm text-white">{sanitizeForDisplay(displayName) || (email ? email.split('@')[0] : 'You')}</div>
+                          <div className="text-xs text-white/60">Owner</div>
+                          <div className="text-xs text-white/60 mt-1">No other members</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {!teamMembersLoading && teamMembers.length > 0 && (
+                      <ul className="mt-2 space-y-2">
+                        {teamMembers.map((m) => (
+                          <li key={m.id} className="p-2 rounded bg-white/5 border border-white/10 flex items-center justify-between">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/80 text-sm font-semibold">{(m.display_name || m.email || m.user_id || 'U').charAt(0).toUpperCase()}</div>
+                              <div className="min-w-0">
+                                <div className="text-sm text-white truncate">{sanitizeForDisplay(m.display_name) || sanitizeForDisplay(m.email) || m.user_id}</div>
+                                <div className="text-xs text-white/60">{m.role === 'owner' ? 'Owner' : 'Member'}</div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-3">
+                              <div className="text-xs text-white/80 flex items-center gap-2">
+                                <span className={`px-2 py-0.5 rounded ${m.permissions.read ? 'bg-green-600/30 text-green-200' : 'bg-white/5 text-white/60'}`}>Read</span>
+                                <span className={`px-2 py-0.5 rounded ${m.permissions.write ? 'bg-green-600/30 text-green-200' : 'bg-white/5 text-white/60'}`}>Write</span>
+                                <span className={`px-2 py-0.5 rounded ${m.permissions.delete ? 'bg-red-600/30 text-red-200' : 'bg-white/5 text-white/60'}`}>Delete</span>
+                              </div>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </div>
               </aside>
@@ -668,7 +791,8 @@ export default function Dashboard(): JSX.Element {
 
         </main>
 
-        <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+        <SettingsModal isOpen={accountSettingsOpen} onClose={() => setAccountSettingsOpen(false)} />
+        <TeamSettingsModal isOpen={teamSettingsOpen} onClose={() => setTeamSettingsOpen(false)} />
         <NotificationModal />
 
         {/* Floating Help Button to start the tour */}
