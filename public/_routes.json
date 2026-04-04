@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "include": ["/*"],
+  "exclude": [
+    "/assets/*",
+    "*.ico",
+    "*.png",
+    "*.jpg",
+    "*.jpeg",
+    "*.svg",
+    "*.webp",
+    "*.json",
+    "*.txt",
+    "*.xml",
+    "/favicon.ico",
+    "/robots.txt",
+    "/sitemap.xml"
+  ],
+  "fallback": "/index.html"
+}
