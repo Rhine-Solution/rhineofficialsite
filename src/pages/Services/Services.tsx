@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from '../../components/Layout';
 import { Link } from 'react-router-dom';
+import useThemeHue from '../../hooks/useThemeHue';
 
 const items = [
   { title: 'Web Development', to: '/services/web-development' },
@@ -10,15 +11,25 @@ const items = [
 ];
 
 export default function Services() {
+  const { themeColor } = useThemeHue();
+
   return (
-    <Layout themeColor="#4f46e5" onLogoClick={() => window.location.href = '/'}>
-      <div className="max-w-6xl mx-auto p-8 text-white">
-        <h2 className="text-3xl font-bold mb-6">Services</h2>
+    <Layout themeColor={themeColor} onLogoClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} showAuthButtons={true}>
+      <div className="container mx-auto px-6 py-12 text-white">
+        <h1 className="text-4xl font-bold mb-4">Services – Comprehensive Technology Solutions</h1>
+        <div className="prose prose-invert max-w-none mb-8">
+          <p>
+            At Rhine Solution, we provide engineering-driven services across product, infrastructure, and operations. Our
+            teams deliver end-to-end solutions from design to production with an emphasis on reliability, observability, and
+            measurable outcomes.
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {items.map(i => (
-            <Link to={i.to} key={i.to} className="p-6 bg-white/5 rounded-lg hover:shadow-lg transition-shadow">
-              <h3 className="text-xl font-semibold">{i.title}</h3>
-              <p className="text-white/70 mt-2">Learn more about our {i.title} services.</p>
+            <Link to={i.to} key={i.to} className="block bg-black/80 backdrop-blur-xl border-l border-white/20 rounded-r-2xl p-6 hover:scale-[1.02] transition-transform">
+              <h3 className="text-2xl font-semibold mb-2">{i.title}</h3>
+              <p className="text-white/80">Learn more about our {i.title} services.</p>
             </Link>
           ))}
         </div>
