@@ -494,177 +494,177 @@ export default function Dashboard(): JSX.Element {
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col lg:flex-row gap-8">
               <main className="flex-1">
-              {/* Greeting card - Dynamic Island style */}
-              <div className="greeting-card rounded-2xl bg-black/80 backdrop-blur-xl p-6 border border-white/20 shadow-2xl">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <h1 className="text-3xl sm:text-4xl font-extrabold text-white drop-shadow-md">{greeting}</h1>
-                    <div className="mt-1 text-sm text-white/70">UTC time: <span className="font-medium text-white">{utcNow}</span></div>
-                  </div>
-                </div>
-
-                {/* Quick stats - matching glass cards */}
-                <div className="quick-stats mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="p-4 rounded-xl bg-white/5 border border-white/20 shadow-lg backdrop-blur-sm">
-                    <div className="text-xs text-white/60">Active projects</div>
-                    <div className="mt-2 text-2xl font-semibold text-white">{projects.length}</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-white/5 border border-white/20 shadow-lg backdrop-blur-sm">
-                    <div className="text-xs text-white/60">Notifications</div>
-                    <div className="mt-2 text-2xl font-semibold text-white">{notifications.length}</div>
-                  </div>
-                  <div className="p-4 rounded-xl bg-white/5 border border-white/20 shadow-lg backdrop-blur-sm flex items-center justify-between">
+                {/* Greeting card - Dynamic Island style */}
+                <div className="greeting-card rounded-2xl bg-black/80 backdrop-blur-xl p-6 border border-white/20 shadow-2xl">
+                  <div className="flex items-center justify-between gap-4">
                     <div>
-                      <div className="text-xs text-white/60 flex items-center gap-1">
-                        <HardDrive className="w-3 h-3" /> Storage
-                      </div>
-                      <div className="mt-2 text-xl font-semibold text-white">
-                        {formatStorageUsed()} / {formatStorageLimit()}
-                      </div>
+                      <h1 className="text-3xl sm:text-4xl font-extrabold text-white drop-shadow-md">{greeting}</h1>
+                      <div className="mt-1 text-sm text-white/70">UTC time: <span className="font-medium text-white">{utcNow}</span></div>
                     </div>
-                    <button
-                      onClick={handleExtendStorage}
-                      className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                      aria-label="Extend storage"
-                    >
-                      <Plus className="w-4 h-4 text-white" />
-                    </button>
                   </div>
-                </div>
-              </div>
 
-              {/* Main content: Projects & Activity */}
-              <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <section className="projects-section lg:col-span-2 space-y-6">
-                  <div className="p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
-                    <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-                      <h2 className="text-lg font-semibold text-white">Projects</h2>
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => { setNewName(''); setNewDesc(''); setCreating(false); }} className="px-3 py-2 bg-white/10 rounded-md text-white hover:bg-white/20 transition-colors">Refresh</button>
-                        <div className="inline-flex rounded-md bg-white/5 p-1">
-                          <button onClick={() => setProjectFolder('all')} className={`px-3 py-1 rounded text-sm ${projectFolder === 'all' ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'}`}>All</button>
-                          <button onClick={() => setProjectFolder('solo')} className={`px-3 py-1 rounded text-sm ${projectFolder === 'solo' ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'}`}>Solo</button>
-                          <button onClick={() => setProjectFolder('team')} className={`px-3 py-1 rounded text-sm ${projectFolder === 'team' ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'}`}>Team</button>
-                        </div>
-                        <button onClick={() => setCreating((c) => !c)} className="new-project-btn px-3 py-2 bg-white/20 hover:bg-white/30 rounded-md text-white shadow-md transition-colors">New Project</button>
-                      </div>
+                  {/* Quick stats - matching glass cards */}
+                  <div className="quick-stats mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/20 shadow-lg backdrop-blur-sm">
+                      <div className="text-xs text-white/60">Active projects</div>
+                      <div className="mt-2 text-2xl font-semibold text-white">{projects.length}</div>
                     </div>
-
-                    {creating && (
-                      <div className="p-4 rounded-lg bg-white/5 border border-white/10 mb-4">
-                        {error && <div className="text-sm text-red-300 mb-2">{error}</div>}
-                        <label className="block text-xs text-white/60 mb-1">Name</label>
-                        <input value={newName} onChange={(e) => setNewName(e.target.value)} className="w-full px-3 py-2 rounded bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-white/20" />
-                        <label className="block text-xs text-white/60 mt-3 mb-1">Description</label>
-                        <textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} className="w-full px-3 py-2 rounded bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-white/20" />
-                        <div className="mt-3 flex justify-end gap-3">
-                          <button onClick={() => setCreating(false)} className="px-3 py-2 bg-white/10 rounded text-white hover:bg-white/20">Cancel</button>
-                          <button onClick={handleCreateProject} className="px-3 py-2 bg-white/20 hover:bg-white/30 rounded text-white">Create</button>
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/20 shadow-lg backdrop-blur-sm">
+                      <div className="text-xs text-white/60">Notifications</div>
+                      <div className="mt-2 text-2xl font-semibold text-white">{notifications.length}</div>
+                    </div>
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/20 shadow-lg backdrop-blur-sm flex items-center justify-between">
+                      <div>
+                        <div className="text-xs text-white/60 flex items-center gap-1">
+                          <HardDrive className="w-3 h-3" /> Storage
+                        </div>
+                        <div className="mt-2 text-xl font-semibold text-white">
+                          {formatStorageUsed()} / {formatStorageLimit()}
                         </div>
                       </div>
-                    )}
-
-                    <div className="space-y-4">
-                      {filteredProjects.map((p) => (
-                        <article key={p.id} className="p-4 rounded-xl bg-white/5 border border-white/20 flex items-start justify-between">
-                          <div>
-                            <time className="text-xs text-white/60">{new Date(p.createdAt).toLocaleString()}</time>
-                            <h3 className="mt-1 text-lg font-medium text-white">{sanitizeForDisplay(p.name)}</h3>
-                            {p.description && <p className="mt-1 text-sm text-white/60">{sanitizeForDisplay(p.description)}</p>}
-                            <div className="mt-2 text-xs text-white/50">{p.owner === 'solo' ? 'Solo' : 'Team'}</div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <button className="px-3 py-2 bg-white/10 rounded text-white/80 hover:bg-white/20 transition-colors">Open</button>
-                            <button className="px-3 py-2 bg-red-500/20 rounded text-white/80 hover:bg-red-500/30 transition-colors">Delete</button>
-                          </div>
-                        </article>
-                      ))}
-                      {filteredProjects.length === 0 && <div className="text-white/60">No projects in this folder.</div>}
+                      <button
+                        onClick={handleExtendStorage}
+                        className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                        aria-label="Extend storage"
+                      >
+                        <Plus className="w-4 h-4 text-white" />
+                      </button>
                     </div>
                   </div>
-                </section>
+                </div>
 
-                <aside className="space-y-6">
-                  <div className="notifications-panel p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
-                    <h3 className="text-sm text-white/60">Notifications</h3>
-                    <div role="region" aria-label="Notifications" className="mt-3 space-y-3 max-h-56 overflow-auto pr-2">
-                      {notifLoading && <div className="text-sm text-white/60">Loading...</div>}
-                      {notifError && <div className="text-sm text-red-400">{notifError}</div>}
-                      {!notifLoading && notifications.length === 0 && <div className="text-sm text-white/60">No notifications yet!</div>}
-                      {notifications.map((n) => (
-                        <div key={n.id} className="p-3 rounded-lg bg-white/5 border border-white/10 flex items-center justify-between">
-                          <div className="min-w-0">
-                            <div className="text-sm font-semibold text-white truncate max-w-[12rem]">{sanitizeForDisplay(n.title, 120)}</div>
-                            <div className="text-xs text-white/50">{formatDate(n.time)}</div>
+                {/* Main content: Projects & Activity */}
+                <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <section className="projects-section lg:col-span-2 space-y-6">
+                    <div className="p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
+                      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                        <h2 className="text-lg font-semibold text-white">Projects</h2>
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => { setNewName(''); setNewDesc(''); setCreating(false); }} className="px-3 py-2 bg-white/10 rounded-md text-white hover:bg-white/20 transition-colors">Refresh</button>
+                          <div className="inline-flex rounded-md bg-white/5 p-1">
+                            <button onClick={() => setProjectFolder('all')} className={`px-3 py-1 rounded text-sm ${projectFolder === 'all' ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'}`}>All</button>
+                            <button onClick={() => setProjectFolder('solo')} className={`px-3 py-1 rounded text-sm ${projectFolder === 'solo' ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'}`}>Solo</button>
+                            <button onClick={() => setProjectFolder('team')} className={`px-3 py-1 rounded text-sm ${projectFolder === 'team' ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white'}`}>Team</button>
                           </div>
-                          <div>
-                            <button
-                              aria-label={`Read notification ${sanitizeForDisplay(n.title)}`}
-                              onClick={() => {
-                                setSelectedNotif(n);
-                                setNotifModalOpen(true);
-                              }}
-                              className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                            >
-                              <Eye className="w-4 h-4 text-white/90" />
-                            </button>
+                          <button onClick={() => setCreating((c) => !c)} className="new-project-btn px-3 py-2 bg-white/20 hover:bg-white/30 rounded-md text-white shadow-md transition-colors">New Project</button>
+                        </div>
+                      </div>
+
+                      {creating && (
+                        <div className="p-4 rounded-lg bg-white/5 border border-white/10 mb-4">
+                          {error && <div className="text-sm text-red-300 mb-2">{error}</div>}
+                          <label className="block text-xs text-white/60 mb-1">Name</label>
+                          <input value={newName} onChange={(e) => setNewName(e.target.value)} className="w-full px-3 py-2 rounded bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-white/20" />
+                          <label className="block text-xs text-white/60 mt-3 mb-1">Description</label>
+                          <textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} className="w-full px-3 py-2 rounded bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-white/20" />
+                          <div className="mt-3 flex justify-end gap-3">
+                            <button onClick={() => setCreating(false)} className="px-3 py-2 bg-white/10 rounded text-white hover:bg-white/20">Cancel</button>
+                            <button onClick={handleCreateProject} className="px-3 py-2 bg-white/20 hover:bg-white/30 rounded text-white">Create</button>
                           </div>
                         </div>
-                      ))}
+                      )}
+
+                      <div className="space-y-4">
+                        {filteredProjects.map((p) => (
+                          <article key={p.id} className="p-4 rounded-xl bg-white/5 border border-white/20 flex items-start justify-between">
+                            <div>
+                              <time className="text-xs text-white/60">{new Date(p.createdAt).toLocaleString()}</time>
+                              <h3 className="mt-1 text-lg font-medium text-white">{sanitizeForDisplay(p.name)}</h3>
+                              {p.description && <p className="mt-1 text-sm text-white/60">{sanitizeForDisplay(p.description)}</p>}
+                              <div className="mt-2 text-xs text-white/50">{p.owner === 'solo' ? 'Solo' : 'Team'}</div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button className="px-3 py-2 bg-white/10 rounded text-white/80 hover:bg-white/20 transition-colors">Open</button>
+                              <button className="px-3 py-2 bg-red-500/20 rounded text-white/80 hover:bg-red-500/30 transition-colors">Delete</button>
+                            </div>
+                          </article>
+                        ))}
+                        {filteredProjects.length === 0 && <div className="text-white/60">No projects in this folder.</div>}
+                      </div>
                     </div>
-                    <div className="mt-3 flex justify-end">
-                      <button onClick={() => fetchNotifications()} className="px-3 py-2 text-xs bg-white/10 rounded text-white hover:bg-white/20 transition-colors">Refresh notifications</button>
+                  </section>
+
+                  <aside className="space-y-6">
+                    <div className="notifications-panel p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
+                      <h3 className="text-sm text-white/60">Notifications</h3>
+                      <div role="region" aria-label="Notifications" className="mt-3 space-y-3 max-h-56 overflow-auto pr-2">
+                        {notifLoading && <div className="text-sm text-white/60">Loading...</div>}
+                        {notifError && <div className="text-sm text-red-400">{notifError}</div>}
+                        {!notifLoading && notifications.length === 0 && <div className="text-sm text-white/60">No notifications yet!</div>}
+                        {notifications.map((n) => (
+                          <div key={n.id} className="p-3 rounded-lg bg-white/5 border border-white/10 flex items-center justify-between">
+                            <div className="min-w-0">
+                              <div className="text-sm font-semibold text-white truncate max-w-[12rem]">{sanitizeForDisplay(n.title, 120)}</div>
+                              <div className="text-xs text-white/50">{formatDate(n.time)}</div>
+                            </div>
+                            <div>
+                              <button
+                                aria-label={`Read notification ${sanitizeForDisplay(n.title)}`}
+                                onClick={() => {
+                                  setSelectedNotif(n);
+                                  setNotifModalOpen(true);
+                                }}
+                                className="flex items-center justify-center w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                              >
+                                <Eye className="w-4 h-4 text-white/90" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-3 flex justify-end">
+                        <button onClick={() => fetchNotifications()} className="px-3 py-2 text-xs bg-white/10 rounded text-white hover:bg-white/20 transition-colors">Refresh notifications</button>
+                      </div>
+                    </div>
+
+                    <div className="quick-actions p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
+                      <h3 className="text-sm text-white/60">Quick Actions</h3>
+                      <div className="mt-3 flex flex-col gap-2">
+                        <button className="px-3 py-2 bg-white/10 rounded text-white hover:bg-white/20 transition-colors">Invite teammate</button>
+                        <button className="px-3 py-2 bg-white/10 rounded text-white hover:bg-white/20 transition-colors">Upload file</button>
+                      </div>
+                    </div>
+                  </aside>
+                </div>
+              </main>
+
+              {/* Right column summary */}
+              <aside className="w-full lg:w-80">
+                <div className="account-card p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
+                  <div className="text-sm text-white/60">Account</div>
+                  <div className="text-white mt-1 font-semibold">{sanitizeName(displayName, 'User')}</div>
+                  <div className="text-xs text-white/60">{sanitizeForDisplay(email)}</div>
+                  <div className="mt-4 flex flex-col gap-2">
+                    <button onClick={handleSettings} className="w-full px-3 py-2 bg-white/10 rounded text-white hover:bg-white/20 transition-colors">Settings</button>
+                    <button onClick={handleLogout} className="w-full px-3 py-2 bg-red-500/20 rounded text-white hover:bg-red-500/30 transition-colors">Log out</button>
+                  </div>
+                </div>
+
+                <div className="storage-card mt-4 p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
+                  <div className="text-sm text-white/60">Storage usage</div>
+                  <div className="mt-2 text-lg text-white font-semibold">{usedPercentage.toFixed(0)}% used</div>
+                  <div className="w-full bg-white/10 h-2 rounded mt-2 overflow-hidden">
+                    <div className={`h-2 rounded transition-all duration-300 ${barColorClass}`} style={{ width: `${Math.min(usedPercentage, 100)}%` }} />
+                  </div>
+                  <div className="mt-2 text-xs text-white/50 flex justify-between">
+                    <span>{formatStorageUsed()}</span>
+                    <span>of {formatStorageLimit()}</span>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
+                  <div className="text-sm text-white/60">Team</div>
+                  <div className="mt-3 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/80">Z</div>
+                    <div>
+                      <div className="text-sm text-white">UserExample</div>
+                      <div className="text-xs text-white/60">Owner</div>
                     </div>
                   </div>
-
-                  <div className="quick-actions p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
-                    <h3 className="text-sm text-white/60">Quick Actions</h3>
-                    <div className="mt-3 flex flex-col gap-2">
-                      <button className="px-3 py-2 bg-white/10 rounded text-white hover:bg-white/20 transition-colors">Invite teammate</button>
-                      <button className="px-3 py-2 bg-white/10 rounded text-white hover:bg-white/20 transition-colors">Upload file</button>
-                    </div>
-                  </div>
-                </aside>
-              </div>
-            </main>
-
-            {/* Right column summary */}
-            <aside className="w-full lg:w-80">
-              <div className="account-card p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
-                <div className="text-sm text-white/60">Account</div>
-                <div className="text-white mt-1 font-semibold">{sanitizeName(displayName, 'User')}</div>
-                <div className="text-xs text-white/60">{sanitizeForDisplay(email)}</div>
-                <div className="mt-4 flex flex-col gap-2">
-                  <button onClick={handleSettings} className="w-full px-3 py-2 bg-white/10 rounded text-white hover:bg-white/20 transition-colors">Settings</button>
-                  <button onClick={handleLogout} className="w-full px-3 py-2 bg-red-500/20 rounded text-white hover:bg-red-500/30 transition-colors">Log out</button>
                 </div>
-              </div>
-
-              <div className="storage-card mt-4 p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
-                <div className="text-sm text-white/60">Storage usage</div>
-                <div className="mt-2 text-lg text-white font-semibold">{usedPercentage.toFixed(0)}% used</div>
-                <div className="w-full bg-white/10 h-2 rounded mt-2 overflow-hidden">
-                  <div className={`h-2 rounded transition-all duration-300 ${barColorClass}`} style={{ width: `${Math.min(usedPercentage, 100)}%` }} />
-                </div>
-                <div className="mt-2 text-xs text-white/50 flex justify-between">
-                  <span>{formatStorageUsed()}</span>
-                  <span>of {formatStorageLimit()}</span>
-                </div>
-              </div>
-
-              <div className="mt-4 p-4 rounded-xl bg-black/80 backdrop-blur-xl border border-white/20 shadow-2xl">
-                <div className="text-sm text-white/60">Team</div>
-                <div className="mt-3 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/80">Z</div>
-                  <div>
-                    <div className="text-sm text-white">UserExample</div>
-                    <div className="text-xs text-white/60">Owner</div>
-                  </div>
-                </div>
-              </div>
-            </aside>
+              </aside>
+            </div>
           </div>
-        </div>
 
         </main>
 
@@ -687,18 +687,14 @@ export default function Dashboard(): JSX.Element {
           continuous={true}
           tooltipComponent={CustomTooltip}
           callback={handleJoyrideCallback}
+          options={{
+            zIndex: 10000,
+            arrowColor: 'rgba(255, 255, 255, 0.85)',
+          }}
           styles={{
-            options: {
-              zIndex: 10000,
-              arrowColor: 'rgba(255, 255, 255, 0.85)',
-              backgroundColor: 'rgba(0,0,0,0.85)',
-              textColor: '#fff',
-              primaryColor: '#ffffff',
-            },
             beaconInner: { backgroundColor: '#ffffff' },
             beaconOuter: { boxShadow: '0 0 0 6px #ffffff7e' },
             overlay: { backgroundColor: 'rgba(0,0,0,0.6)' },
-            beacon: { inner: { backgroundColor: '#ffffff' }, outer: { boxShadow: '0 0 0 6px rgba(255,255,255,0.06)' } },
           }}
         />
       </div>
