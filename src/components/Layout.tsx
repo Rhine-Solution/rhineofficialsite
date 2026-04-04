@@ -44,9 +44,6 @@ export default function Layout({
         <ThreeRoot />
       </Suspense>
 
-      {/* Overlay between canvas and UI to restore original darker backdrop */}
-      <div className="canvas-overlay pointer-events-none" aria-hidden />
-
       <Header
         themeColor={themeColor}
         showAuthButtons={showAuthButtons}
