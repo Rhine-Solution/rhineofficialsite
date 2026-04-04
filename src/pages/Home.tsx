@@ -5,7 +5,7 @@ import { RhineLogo, githubIcon, twitterIcon } from '../components/GFX';
 import { Root } from '../lib/Root';
 import Layout from '../components/Layout';
 import { useAuthModal } from '../auth/AuthModalProvider';
-import SplineRobot from '../components/SplineRobot';
+
 
 export default function App() {
   const [hasWebGPU, setHasWebGPU] = useState(false);
@@ -104,7 +104,7 @@ export default function App() {
         </div>
       </div>
 
-      <Layout themeColor={themeColor} showAuthButtons={true} onLogoClick={() => scrollTo('hero')}>
+      <Layout themeColor={themeColor} showAuthButtons={true}>
         {/* HERO SECTION */}
         <main id="hero" className="relative z-10 flex flex-col items-center justify-center h-screen px-6 text-center">
           <h2 className="text-6xl md:text-9xl font-black text-white uppercase tracking-tighter mb-6">
@@ -152,7 +152,7 @@ export default function App() {
                 {`> Initializing WebGPU Context... DONE`} <br/>
                 {`> Loading Custom Shaders... DONE`} <br/>
                 <div className="w-48 h-48 md:w-64 md:h-64 mx-auto mb-6">
-                  <SplineRobot />
+                  //plineRoboot import//
                 </div>
                 <span style={{ color: themeColor }} className="block mt-4 animate-pulse">_SYSTEM READY</span>
               </div>

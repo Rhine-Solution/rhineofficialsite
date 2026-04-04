@@ -1,0 +1,30 @@
+/* Global base styles applied to the app */
+:root {
+  color-scheme: dark;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure default link contrast */
+a {
+  color: inherit;
+}
+
+/* Ensure container elements render above the three canvas by default */
+.app-background, .container, main, header, footer, nav, section {
+  position: relative;
+}
+
+/* Small utility: ensure prose text is visible if prose-invert fails */
+.prose, .prose-invert {
+  color: rgba(255,255,255,0.9);
+}

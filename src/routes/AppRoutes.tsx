@@ -1,5 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Home = lazy(() => import('../pages/Home'));
 const Services = lazy(() => import('../pages/Services/Services'));
@@ -36,7 +37,7 @@ import ProtectedRoute from '../auth/ProtectedRoute';
 
 export default function AppRoutes() {
   return (
-    <Suspense fallback={<div /> }>
+    <Suspense fallback={<LoadingSpinner /> }>
       <Routes>
         <Route path="/" element={<Home />} />
 

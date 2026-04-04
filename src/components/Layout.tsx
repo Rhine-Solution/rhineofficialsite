@@ -28,7 +28,7 @@ export default function Layout({
   };
 
   return (
-    <div className="app-background min-h-screen flex flex-col" style={backgroundStyle}>
+    <div className="app-background min-h-screen flex flex-col relative z-10" style={backgroundStyle}>
       <Header
         themeColor={themeColor}
         showAuthButtons={showAuthButtons}
@@ -38,7 +38,7 @@ export default function Layout({
 
       <ScrollToTop />
 
-      <main className="pt-[72px] min-h-screen flex-1">
+      <main className="pt-[72px] min-h-screen flex-1 relative z-10">
         {children}
       </main>
 
