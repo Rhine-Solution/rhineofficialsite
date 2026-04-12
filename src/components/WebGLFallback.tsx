@@ -29,7 +29,7 @@ export default function WebGLFallback({ children, fallback }: WebGLFallbackProps
 function DefaultFallback() {
   return (
     <div 
-      className="fixed inset-0 -z-10 bg-gradient-to-br from-gray-900 via-black to-gray-800"
+      className="fixed inset-0 bg-[#0a0a0a]"
       aria-hidden="true"
     />
   );
