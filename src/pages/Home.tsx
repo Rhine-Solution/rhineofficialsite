@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
 import WebGPU from 'three/examples/jsm/capabilities/WebGPU.js';
-import { RhineLogo, githubIcon, twitterIcon } from '../components/GFX';
 import { Root } from '../lib/Root';
 import Layout from '../components/Layout';
 import { useAuthModal } from '../auth/AuthModalProvider';
 
 
-export default function App() {
+export default function Home() {
   const [hasWebGPU, setHasWebGPU] = useState(false);
   const [hue, setHue] = useState(0);
   const [displayZoom, setDisplayZoom] = useState(0);
@@ -108,22 +107,24 @@ export default function App() {
 
       <Layout themeColor={themeColor} showAuthButtons={true}>
         {/* HERO SECTION */}
-        <main id="hero" className="relative z-10 flex flex-col items-center justify-center h-screen px-6 text-center">
-          <h2 className="text-6xl md:text-9xl font-black text-white uppercase tracking-tighter mb-6">
+        <main id="hero" className="relative z-10 flex flex-col items-center justify-center min-h-[85vh] px-4 md:px-6 text-center">
+          <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-9xl font-black text-white uppercase tracking-tighter mb-4 md:mb-6">
             Future <span style={{ color: themeColor }}>Defined</span>
           </h2>
-          <p className="text-white/60 text-lg md:text-xl font-light tracking-widest uppercase mb-12">
+          <p className="text-white/60 text-sm md:text-lg lg:text-xl font-light tracking-widest uppercase mb-8 md:mb-12">
             Next-generation digital experiences built in only for you
           </p>
-          <div className="flex flex-wrap justify-center gap-10">
+          <div className="flex flex-wrap justify-center gap-4 md:gap-10">
             <button
-              style={{ color: themeColor, borderColor: themeColor, borderWidth: "1px", padding: "1.5em 1.5em", textTransform: "uppercase", fontSize: "15px", fontWeight: "bold", letterSpacing: "0.2em" }}
-              onClick={() => authModal.open('login')}
+              className="px-6 py-3 md:px-10 md:py-4 text-xs md:text-sm border uppercase font-bold tracking-wider transition-all hover:opacity-80"
+              style={{ color: themeColor, borderColor: themeColor }}
+              onClick={() => navigate('/start-project')}
             >
               Start Project
             </button>
             <button
-              style={{ color: "white", borderColor: "white", borderWidth: "1px", padding: "1.5em 1.5em", textTransform: "uppercase", fontSize: "15px", fontWeight: "bold", letterSpacing: "0.2em" }}
+              className="px-6 py-3 md:px-10 md:py-4 text-xs md:text-sm border uppercase font-bold tracking-wider transition-all hover:opacity-80"
+              style={{ color: "white", borderColor: "white" }}
               onClick={() => scrollTo('services')}
             >
               View Work
@@ -132,16 +133,16 @@ export default function App() {
         </main>
 
         {/* SERVICES SECTION – glass cards */}
-        <section id="services" className="relative z-10 py-40 px-10">
+        <section id="services" className="relative z-10 py-16 md:py-40 px-4 md:px-10">
           <div className="max-w-6xl mx-auto">
             <h3 className="text-[10px] uppercase tracking-[0.8em] mb-4" style={{ color: themeColor }}>Capabilities</h3>
-            <h2 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-20">Expertise</h2>
+            <h2 className="text-3xl md:text-6xl font-black text-white uppercase tracking-tighter mb-10 md:mb-20">Expertise</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {["WebGPU Apps", "Digital Strategy", "UI Architecture"].map((title, i) => (
-                <div key={i} className="bg-black/80 backdrop-blur-xl border-l border-white/20 rounded-r-2xl p-8 hover:bg-black/90 transition-all group">
-                  <div className="w-8 h-[1px] mb-8 group-hover:w-full transition-all" style={{ backgroundColor: themeColor }}></div>
-                  <h4 className="text-xl font-bold text-white uppercase mb-4 tracking-widest">{title}</h4>
+                <div key={i} className="bg-black/80 backdrop-blur-xl border-l border-white/20 rounded-r-2xl p-6 md:p-8 hover:bg-black/90 transition-all group">
+                  <div className="w-8 h-[1px] mb-6 md:mb-8 group-hover:w-full transition-all" style={{ backgroundColor: themeColor }}></div>
+                  <h4 className="text-lg md:text-xl font-bold text-white uppercase mb-3 md:mb-4 tracking-widest">{title}</h4>
                 </div>
               ))}
             </div>
@@ -149,21 +150,21 @@ export default function App() {
         </section>
 
         {/* TECHNOLOGY SECTION – right panel now glassy */}
-        <section id="technology" className="relative z-10 py-40 px-10 bg-white/[0.02]">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-20">
+        <section id="technology" className="relative z-10 py-16 md:py-40 px-4 md:px-10 bg-white/[0.02]">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-20">
             <div className="md:w-1/2 text-left">
-              <h2 className="text-5xl font-black text-white uppercase tracking-tighter mb-8">The Engine</h2>
-              <p className="text-white/50 text-lg leading-loose uppercase tracking-widest font-light mb-10">
+              <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter mb-6 md:mb-8">The Engine</h2>
+              <p className="text-white/50 text-sm md:text-lg leading-relaxed uppercase tracking-widest font-light mb-6 md:mb-10">
                 We leverage raw hardware acceleration to deliver visuals previously impossible on the web.
               </p>
             </div>
             {/* Glass container for the right panel (robot + system log) */}
             <div className="md:w-1/2 bg-black/80 backdrop-blur-xl border-l border-white/20 rounded-r-2xl shadow-2xl p-1">
-              <div className="border border-white/5 p-10 text-left font-mono text-[10px] text-white/30 leading-relaxed">
+              <div className="border border-white/5 p-6 md:p-10 text-left font-mono text-[10px] text-white/30 leading-relaxed">
                 <span className="text-white/60 block mb-2">Rhine_System_Init...</span>
                 {`> Initializing WebGPU Context... DONE`} <br />
                 {`> Loading Custom Shaders... DONE`} <br />
-                <div className="w-48 h-48 md:w-64 md:h-64 mx-auto mb-6">
+                <div className="w-32 h-32 md:w-48 md:h-64 mx-auto mb-4 md:mb-6">
                   //plineRoboot import//
                 </div>
                 <span style={{ color: themeColor }} className="block mt-4 animate-pulse">_SYSTEM READY</span>
@@ -173,13 +174,13 @@ export default function App() {
         </section>
 
         {/* ABOUT SECTION – glass container around heading + paragraph */}
-        <section id="about" className="relative z-10 py-40 px-10">
+        <section id="about" className="relative z-10 py-16 md:py-40 px-4 md:px-10">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-black/80 backdrop-blur-xl border-l border-white/20 rounded-r-2xl p-10 text-center shadow-2xl">
-              <h2 className="text-4xl font-black text-white uppercase tracking-tighter mb-8">
+            <div className="bg-black/80 backdrop-blur-xl border-l border-white/20 rounded-r-2xl p-6 md:p-10 text-center shadow-2xl">
+              <h2 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter mb-6 md:mb-8">
                 Behind <span style={{ color: themeColor }}>Rhine</span>
               </h2>
-              <p className="text-white/70 text-xl leading-relaxed font-light uppercase tracking-widest">
+              <p className="text-white/70 text-sm md:text-xl leading-relaxed font-light uppercase tracking-widest">
                 Founded by htr, Rhine Solution was built on a single premise: The web should be as powerful as your hardware.
               </p>
             </div>
@@ -187,11 +188,12 @@ export default function App() {
         </section>
 
         {/* CONTACT SECTION */}
-        <section id="contact" className="relative z-10 py-60 px-10 text-center">
-          <h2 className="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter mb-12">Let's <span style={{ color: themeColor }}>Create</span></h2>
+        <section id="contact" className="relative z-10 py-16 md:py-60 px-4 md:px-10 text-center">
+          <h2 className="text-3xl md:text-8xl font-black text-white uppercase tracking-tighter mb-8 md:mb-12">Let's <span style={{ color: themeColor }}>Create</span></h2>
           <div className="flex justify-center">
             <button
-              style={{ color: themeColor, borderColor: themeColor, borderWidth: "1px", padding: "1.5em 1.5em", textTransform: "uppercase", fontSize: "15px", fontWeight: "bold", letterSpacing: "0.2em" }}
+              className="px-6 py-3 md:px-10 md:py-4 text-xs md:text-sm border uppercase font-bold tracking-wider transition-all hover:opacity-80"
+              style={{ color: themeColor, borderColor: themeColor }}
               onClick={() => navigate('/contact')}
             >
               Contact US

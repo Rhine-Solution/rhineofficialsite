@@ -23,7 +23,6 @@ export default class ErrorBoundary extends Component<Props, State> {
     // Log to console to surface runtime errors during SSR/build/runtime
     // This is intentionally conservative: no external telemetry or network calls.
     // Keep stack traces for debugging.
-    // eslint-disable-next-line no-console
     console.error('ErrorBoundary caught:', error, errorInfo);
   }
 

@@ -7,7 +7,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthModalProvider themeColor="#4f46e5">
+      <AuthModalProvider>
         <ErrorBoundary>
           <AppRoutes />
         </ErrorBoundary>

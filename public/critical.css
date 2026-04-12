@@ -65,7 +65,7 @@ h1{font-size:2rem;margin:0 0 1rem;font-weight:800}
 h2{font-size:1.25rem;margin-top:1.5rem}
 
 /* Responsive helper: show lg:block replacements */
-@media(min-width:1024px){.lg\:block{display:block}.hidden\ lg\:block{display:block}}
+@media(min-width:1024px){.lg\:block{display:block}}
 
 /* Misc small utilities used by components */
 .text-sm{font-size:0.875rem}

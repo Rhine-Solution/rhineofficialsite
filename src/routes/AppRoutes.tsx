@@ -11,6 +11,9 @@ function ForumRedirect() {
 }
 
 const Home = lazy(() => import('../pages/Home'));
+const About = lazy(() => import('../pages/About/About'));
+const Portfolio = lazy(() => import('../pages/Portfolio/Portfolio'));
+const StartProject = lazy(() => import('../pages/StartProject'));
 const Services = lazy(() => import('../pages/Services/Services'));
 const WebDevelopment = lazy(() => import('../pages/Services/WebDevelopment'));
 const CloudInfrastructure = lazy(() => import('../pages/Services/CloudInfrastructure'));
@@ -49,6 +52,13 @@ export default function AppRoutes() {
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading...</div>}>
       <Routes>
         <Route path="/" element={<Home />} />
+        
+        {/* New Pages */}
+        <Route path="/about" element={<About />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        
+        {/* Start Project */}
+        <Route path="/start-project" element={<StartProject />} />
 
         {/* Services */}
         <Route path="/services" element={<Services />} />

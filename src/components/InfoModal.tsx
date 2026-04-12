@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import LargeCollapsable from "./LargeCollapsable";
-import { cameraIcon, closeCross, crosshairIcon, saveIcon, tools, uploadIcon } from "./GFX";
+import { closeCross, crosshairIcon, saveIcon, tools, uploadIcon } from "./GFX";
 
 interface IInfoModalProps {
 	isOpen: boolean;

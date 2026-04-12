@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { RhineLogo } from './GFX';
 import SideMenu from './SideMenu';
+import UserDropdown from './UserDropdown';
 import AuthButton from '../auth/AuthButton';
 import { useAuthModal } from '../auth/AuthModalProvider';
 
@@ -10,15 +11,20 @@ type HeaderProps = {
   onLogoClick?: () => void;
   showAuthButtons?: boolean;
   disableSideMenu?: boolean;
-  heightClass?: string;
 };
 
 const megaMenuCategories = {
-  Rhine: [
-    "Expertise",
-    "The Engine",
-    "Behind Rhine",
-    "Let's Create"
+  About: [
+    "Company",
+    "Team",
+    "Values",
+    "Contact"
+  ],
+  Portfolio: [
+    "All Projects",
+    "Web Development",
+    "Cloud",
+    "AI & Automation"
   ],
   Services: [
     "Web Development",
@@ -50,8 +56,7 @@ export default function Header({
   themeColor = '#4f46e5',
   onLogoClick,
   showAuthButtons = false,
-  disableSideMenu = false,
-  heightClass = 'h-[72px]'
+  disableSideMenu = false
 }: HeaderProps) {
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<keyof typeof megaMenuCategories | null>(null);
@@ -88,8 +93,8 @@ export default function Header({
 
     // fallback for older browsers
     if (typeof mql.addListener === 'function') {
-      mql.addListener(handleChange as (this: MediaQueryList, ev: MediaQueryListEvent) => any);
-      return () => mql.removeListener(handleChange as (this: MediaQueryList, ev: MediaQueryListEvent) => any);
+      mql.addListener(handleChange as (this: MediaQueryList, ev: MediaQueryListEvent) => void);
+      return () => mql.removeListener(handleChange as (this: MediaQueryList, ev: MediaQueryListEvent) => void);
     }
 
     return;
@@ -117,6 +122,13 @@ export default function Header({
       setMegaMenuOpen(false);
       setActiveCategory(null);
     } else {
+      if (category === 'About') {
+        navigate('/about');
+      } else if (category === 'Portfolio') {
+        navigate('/portfolio');
+      } else {
+        navigate(`/${String(category).toLowerCase()}`);
+      }
       setActiveCategory(category);
       setMegaMenuOpen(true);
     }
@@ -128,6 +140,117 @@ export default function Header({
   };
 
   const handleSubItemClick = (category: string, item: string) => {
+    if (category === 'About') {
+      const sectionMap: Record<string, string> = {
+        'Company': 'company',
+        'Team': 'team',
+        'Values': 'values',
+        'Contact': 'contact'
+      };
+      const sectionId = sectionMap[item];
+      if (sectionId) {
+        navigate('/about');
+        setTimeout(() => {
+          const element = document.getElementById(sectionId);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      } else {
+        navigate('/about');
+      }
+      closeMegaMenu();
+      return;
+    }
+    if (category === 'Portfolio') {
+      navigate('/portfolio');
+      closeMegaMenu();
+      return;
+    }
+    if (category === 'Services') {
+      const sectionMap: Record<string, string> = {
+        'Web Development': 'web-development',
+        'Cloud Infrastructure': 'cloud-infrastructure',
+        'IT Consulting': 'it-consulting',
+        'Digital Transformation': 'digital-transformation'
+      };
+      const sectionId = sectionMap[item];
+      if (sectionId) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          navigate(`/${category.toLowerCase()}/${sectionId}`);
+        }
+      } else {
+        navigate(`/${category.toLowerCase()}`);
+      }
+      closeMegaMenu();
+      return;
+    }
+    if (category === 'Solutions') {
+      const sectionMap: Record<string, string> = {
+        'Enterprise Software': 'enterprise-software',
+        'AI & Automation': 'ai-automation',
+        'Cybersecurity Suite': 'cybersecurity-suite',
+        'Data Analytics': 'data-analytics'
+      };
+      const sectionId = sectionMap[item];
+      if (sectionId) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          navigate(`/${category.toLowerCase()}/${sectionId}`);
+        }
+      } else {
+        navigate(`/${category.toLowerCase()}`);
+      }
+      closeMegaMenu();
+      return;
+    }
+    if (category === 'Technology') {
+      const sectionMap: Record<string, string> = {
+        'WebGPU / 3D Rendering': 'webgpu-3d',
+        'Blockchain / Web3': 'blockchain-web3',
+        'IoT & Edge Computing': 'iot-edge',
+        'Custom APIs': 'custom-apis'
+      };
+      const sectionId = sectionMap[item];
+      if (sectionId) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          navigate(`/${category.toLowerCase()}/${sectionId}`);
+        }
+      } else {
+        navigate(`/${category.toLowerCase()}`);
+      }
+      closeMegaMenu();
+      return;
+    }
+    if (category === 'Resources') {
+      const sectionMap: Record<string, string> = {
+        'Case Studies': 'case-studies',
+        'Documentation': 'documentation',
+        'Blog / Insights': 'blog-insights',
+        'Support & Community': 'support-community'
+      };
+      const sectionId = sectionMap[item];
+      if (sectionId) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          navigate(`/${category.toLowerCase()}/${sectionId}`);
+        }
+      } else {
+        navigate(`/${category.toLowerCase()}`);
+      }
+      closeMegaMenu();
+      return;
+    }
     const slug = item.toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace('webgpu-3d-rendering', 'webgpu-3d')
@@ -210,7 +333,7 @@ export default function Header({
         <div className="fixed top-4 right-4 z-50">
           <button
             onClick={openMobileMenu}
-            className="btn btn-ghost btn-circle text-white hover:bg-white/10 transition-colors bg-black/40 backdrop-blur-sm border border-white/20 w-10 h-10 rounded-full flex items-center justify-center"
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 text-white hover:bg-black/60 transition-all"
             aria-label="Open menu"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -220,27 +343,10 @@ export default function Header({
         </div>
       )}
 
-      {/* Desktop Auth Buttons — rendered only on desktop */}
+      {/* Desktop User Account Dropdown */}
       {showAuthButtons && isDesktop && (
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
-          <AuthButton
-            variant="ghost"
-            themeColor={themeColor}
-            onClick={() => authModal.open('login')}
-            className="text-white/80 hover:text-white text-sm px-4 py-2 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 hover:bg-black/60 transition-all"
-            ariaLabel="Login"
-          >
-            Login
-          </AuthButton>
-          <AuthButton
-            variant="primary"
-            themeColor={themeColor}
-            onClick={() => authModal.open('register')}
-            className="text-sm px-4 py-2 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/20 transition-all"
-            ariaLabel="Register"
-          >
-            Register
-          </AuthButton>
+        <div className="fixed top-4 right-4 z-50">
+          <UserDropdown themeColor={themeColor} />
         </div>
       )}
 
@@ -256,8 +362,19 @@ export default function Header({
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
                   <h2
-                    onClick={() => { navigate(`/${String(activeCategory).toLowerCase()}`); closeMegaMenu(); }}
-                    className="text-white font-semibold text-lg cursor-pointer"
+                    onClick={() => { 
+                      if (activeCategory === 'About') {
+                        navigate('/about');
+                        closeMegaMenu();
+                      } else if (activeCategory === 'Portfolio') {
+                        navigate('/portfolio');
+                        closeMegaMenu();
+                      } else {
+                        navigate(`/${String(activeCategory).toLowerCase()}`);
+                        closeMegaMenu();
+                      }
+                    }}
+                    className="text-white font-semibold text-lg cursor-pointer hover:opacity-80 transition-opacity"
                     style={{ color: themeColor }}
                   >
                     {activeCategory}
@@ -316,7 +433,7 @@ export default function Header({
       )}
 
       {/* Mobile Side Menu */}
-      {!disableSideMenu && (
+      {!disableSideMenu && !isDesktop && (
         <SideMenu
           open={mobileMenuOpen}
           onClose={closeMobileMenu}

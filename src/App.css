@@ -2,131 +2,113 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes snake-rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+/* Admin page specific styles only */
+.admin-panel-container {
+  max-width: 400px;
+  margin: 80px auto 0;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-@keyframes status-pulse {
-  0% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.2); }
-  100% { opacity: 0.4; transform: scale(1); }
-}
-
-/* Canvas – background, no touch capture */
-#threecanvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 0;
-  pointer-events: none;  /* crucial: lets touches reach the UI */
-}
-
-/* Scrollable container – receives all touch events */
-#app {
-  position: relative;
-  z-index: 10;
-  height: 100vh;
-  width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background: transparent;
-  pointer-events: auto;   /* allows scrolling everywhere */
-  -webkit-overflow-scrolling: touch;  /* smooth iOS scroll */
-}
-
-/* Interactive UI elements */
-header, main, section, footer, button, .snake-btn {
-  pointer-events: auto;
-}
-
-/* Snake button styles (unchanged) */
-.snake-btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px;
-  overflow: hidden;
-  background: transparent;
-  transition: all 0.5s ease;
-}
-
-.snake-line {
-  position: absolute;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(transparent, transparent, transparent, var(--theme-color));
-  animation: snake-rotate 3s linear infinite;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.snake-btn:hover .snake-line {
-  opacity: 1;
-}
-
-.snake-btn:hover {
-  box-shadow: 0 0 30px var(--theme-color);
-}
-
-.btn-inner {
-  position: relative;
-  z-index: 10;
-  background: transparent;
-  width: 100%;
-  height: 100%;
+.logo-row {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 12px;
+  margin-bottom: 2rem;
 }
 
-.status-dot {
-  animation: status-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.admin-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
 }
 
-/* Custom scrollbar - glassy style, accessible contrast */
-#app::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-#app::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.02);
-  border-radius: 10px;
-}
-#app::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.06);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4) inset;
-}
-#app::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.12));
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.5rem;
 }
 
-/* Firefox */
-#app {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.12) rgba(255,255,255,0.02);
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.side-indicator {
-  position: fixed;
-  right: 40px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 60;
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-btn.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.tab-panel {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  pointer-events: auto;
+  gap: 1rem;
 }
 
-.vertical-text {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  transform: rotate(180deg); /* Makes it read from top to bottom */
+.form label {
+  display: block;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.375rem;
+}
+
+.form input {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.form .submit {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  color: black;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.form .submit:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.form .submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error {
+  padding: 12px;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 8px;
+  color: #fca5a5;
+  font-size: 0.875rem;
 }
