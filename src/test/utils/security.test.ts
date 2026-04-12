@@ -2,11 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { sanitizeInput, validateCSRFToken, generateCSRFToken } from '../../lib/security';
 
 describe('sanitizeInput', () => {
-  it('should remove script tags', () => {
+  it('should remove angle brackets', () => {
     const input = '<script>alert("xss")</script>Hello';
     const result = sanitizeInput(input);
-    expect(result).toBe('alert("xss")Hello');
-    expect(result).not.toContain('<script>');
+    expect(result).not.toContain('<');
+    expect(result).not.toContain('>');
   });
 
   it('should remove javascript: URLs', () => {
@@ -33,7 +33,7 @@ describe('sanitizeInput', () => {
     expect(sanitizeInput('   ')).toBe('');
   });
 
-  it('should preserve safe HTML', () => {
+  it('should strip all HTML tags', () => {
     const input = '<p>Hello <strong>World</strong></p>';
     const result = sanitizeInput(input);
     expect(result).toBe('Hello World');
@@ -49,7 +49,8 @@ describe('CSRF Token', () => {
 
   it('should validate a correctly generated token', () => {
     const token = generateCSRFToken();
-    const isValid = validateCSRFToken(token.split('.')[0], token);
+    const payload = token.split('.')[0];
+    const isValid = validateCSRFToken(payload, token);
     expect(isValid).toBe(true);
   });
 

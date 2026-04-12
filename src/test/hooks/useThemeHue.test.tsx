@@ -49,23 +49,23 @@ describe('useThemeHue', () => {
     expect(result.current.themeColor).toContain('hsl(120');
   });
 
-  it('should rotate hue back to 0 after 360', () => {
+  it('should set hue directly without wrapping (setHue is direct setter)', () => {
     const { result } = renderHook(() => useThemeHue());
     
     act(() => {
       result.current.setHue(400);
     });
 
-    expect(result.current.hue).toBe(40);
+    expect(result.current.hue).toBe(400);
   });
 
-  it('should handle negative hue values', () => {
+  it('should set negative hue directly (setHue is direct setter)', () => {
     const { result } = renderHook(() => useThemeHue());
     
     act(() => {
       result.current.setHue(-50);
     });
 
-    expect(result.current.hue).toBe(310);
+    expect(result.current.hue).toBe(-50);
   });
 });

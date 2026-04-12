@@ -7,7 +7,7 @@ on:
     branches: [main, dev]
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
 
 jobs:
   lint:
@@ -116,7 +116,7 @@ jobs:
       - name: Build and serve
         run: |
           npm run build
-          npx serve dist -l 4173 &
+          npx serve dist -l 4173 --single &
           sleep 5
       
       - name: Run E2E tests

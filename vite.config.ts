@@ -82,12 +82,6 @@ export default defineConfig({
     minify: 'esbuild',
     sourcemap: false,
     reportCompressedSize: true,
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
   },
   esbuild: {
     target: 'esnext'

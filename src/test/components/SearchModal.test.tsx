@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import SearchModal from '../../components/SearchModal';
 
 const mockResults = [
@@ -17,8 +18,12 @@ const defaultProps = {
   isLoading: false,
 };
 
-const renderSearchModal = (props = {}) => {
-  return render(<SearchModal {...defaultProps} {...props} />);
+const renderSearchModal = (props = {}, initialEntries = ['/']) => {
+  return render(
+    <MemoryRouter initialEntries={initialEntries}>
+      <SearchModal {...defaultProps} {...props} />
+    </MemoryRouter>
+  );
 };
 
 describe('SearchModal', () => {
