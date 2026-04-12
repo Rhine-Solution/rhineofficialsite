@@ -25,7 +25,7 @@ export default function useThemeHue(speed = 0.5) {
       return () => cancelAnimationFrame(rafId);
     } catch (err) {
       // If WebGPU detection or requestAnimationFrame scheduling fails, fallback to non-blocking safe behavior
-      // eslint-disable-next-line no-console
+       
       console.warn('useThemeHue: WebGPU detection failed, using fallback animation.', err);
       setHasWebGPU(false);
 

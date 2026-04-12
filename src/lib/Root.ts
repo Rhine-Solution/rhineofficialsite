@@ -1,6 +1,7 @@
 // src/lib/Root.ts
+ 
 // @ts-nocheck
-import { ACESFilmicToneMapping, Clock, PerspectiveCamera, Scene, Vector2, Vector3, SRGBColorSpace } from "three/webgpu";
+import { Clock, PerspectiveCamera, Scene, SRGBColorSpace } from "three/webgpu";
 import { IAnimatedElement } from "./interfaces/IAnimatedElement";
 import { pass, PostProcessing, WebGPURenderer } from "three/webgpu";
 import { OrbitControls } from "three/examples/jsm/Addons.js";

@@ -15,6 +15,8 @@ export default function LargeCollapsable({
 }: ILargeCollapsableProps) {
 
     const [isOpen, setIsOpen] = useState(false);
+     
+    const [_isOpen, _setIsOpen] = useState(false);
     const handleOpenCloseChange = () => {
         //setIsOpen(!isOpen);
         if (onOpenCloseChange) {

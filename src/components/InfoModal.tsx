@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import LargeCollapsable from "./LargeCollapsable";
-import { closeCross, crosshairIcon, saveIcon, tools, uploadIcon } from "./GFX";
+import { closeCross } from "./GFX";
 
 interface IInfoModalProps {
 	isOpen: boolean;
@@ -12,7 +12,7 @@ export default function InfoModal({
 	onClose,
 }: IInfoModalProps) {
 
-	const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+	const [_theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
 
 	useEffect(() => {
 		setTheme(localStorage.getItem('theme') || 'dark');

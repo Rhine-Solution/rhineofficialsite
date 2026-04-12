@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { User, LogIn } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuthModal } from '../auth/AuthModalProvider';
 
@@ -29,7 +28,8 @@ export default function SideMenu({
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [user, setUser] = useState<{ id: string; email?: string; user_metadata?: Record<string, unknown> } | null>(null);
   const [userLoading, setUserLoading] = useState(true);
-  const authModal = useAuthModal();
+   
+  const _authModal = useAuthModal();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -69,13 +69,15 @@ export default function SideMenu({
     onClose();
   };
 
-  const getUserInitials = () => {
+   
+  const _getUserInitials = () => {
     const name = String(user?.user_metadata?.full_name || user?.user_metadata?.fullName || user?.email || '');
     if (!name) return 'U';
     return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
   };
 
-  const getDisplayName = (): string => {
+   
+  const _getDisplayName = (): string => {
     const name = user?.user_metadata?.full_name || user?.user_metadata?.fullName;
     if (name) return String(name);
     if (user?.email) return user.email.split('@')[0];

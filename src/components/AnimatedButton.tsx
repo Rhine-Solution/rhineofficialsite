@@ -76,15 +76,8 @@ export default function AnimatedButton({
     });
   };
 
-  const handleMouseLeaveButton = () => {
-    if (!magnetic || !buttonRef.current) return;
-
-    gsap.to(buttonRef.current, {
-      x: 0,
-      y: 0,
-      duration: 0.4,
-      ease: 'elastic.out(1, 0.3)',
-    });
+   
+  const _handleMouseLeaveButton = () => {
     setIsHovered(false);
   };
 

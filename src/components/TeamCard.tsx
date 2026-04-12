@@ -1,5 +1,3 @@
-import { MessageCircle, Link2 } from 'lucide-react';
-
 interface TeamCardProps {
   name: string;
   role: string;

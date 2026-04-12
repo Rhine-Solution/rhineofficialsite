@@ -7,7 +7,7 @@ interface ProfileProps {
   onClose?: () => void;
 }
 
-export default function UserProfile({ onClose }: ProfileProps) {
+export default function UserProfile({ onClose: _onClose }: ProfileProps) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);

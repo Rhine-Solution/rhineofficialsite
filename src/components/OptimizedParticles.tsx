@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo, useState } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import * as THREE from 'three';
 import { useAdaptiveQuality } from '../hooks/useDeviceCapabilities';
 
@@ -20,8 +20,7 @@ export default function OptimizedParticles({
   const sceneRef = useRef<THREE.Scene | null>(null);
   const particlesRef = useRef<THREE.Points | null>(null);
   const animationRef = useRef<number>(0);
-  const { getParticleCount, shouldUsePostProcessing, gpuTier } = useAdaptiveQuality();
-  const [isSupported, setIsSupported] = useState(true);
+  const { getParticleCount, gpuTier } = useAdaptiveQuality();
 
   const actualCount = useMemo(() => getParticleCount(count), [getParticleCount, count]);
 
@@ -125,8 +124,6 @@ export default function OptimizedParticles({
       }
     };
   }, [actualCount, color, size, speed, gpuTier]);
-
-  if (!isSupported) return null;
 
   return (
     <div 

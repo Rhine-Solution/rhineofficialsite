@@ -26,7 +26,8 @@ export default function ScrollReveal({
   onReveal,
 }: ScrollRevealProps) {
   const elementRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
+   
+  const [_isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const element = elementRef.current;

@@ -45,7 +45,7 @@ type NotificationItem = {
 };
 
 // Security helpers
-const ALLOWED_NAME_RE = /^[\w \-\._'@*!:]{3,80}$/;
+const ALLOWED_NAME_RE = /^[\w \-._'@*!:]{3,80}$/;
 function sanitizeForDisplay(input: string | null | undefined, max = 100) {
   if (!input) return '';
   const trimmed = input.trim();

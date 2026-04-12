@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import WebGPU from "three/examples/jsm/capabilities/WebGPU.js";
-import { questionIcon, tools } from "./GFX";
+import { closeCross } from "./GFX";
 
 interface IIntroModalProps {
     onClose?: () => void;

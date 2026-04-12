@@ -13,7 +13,7 @@ export default function PortfolioCard({
   category, 
   description, 
   thumbnail, 
-  slug,
+  slug: _slug,
   technologies = [],
   themeColor = '#0082D8'
 }: PortfolioCardProps) {
