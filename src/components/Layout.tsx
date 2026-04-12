@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import ScrollToTop from './ScrollToTop';
+import SocialSidebar from './SocialSidebar';
 
 const ThreeRoot = lazy(() => import('./threeroot'));
 
@@ -39,7 +40,7 @@ export default function Layout({
   };
 
   return (
-    <div className="app-background min-h-screen flex flex-col relative z-10" style={backgroundStyle}>
+    <div className="app-background min-h-screen sm:min-h-[100dvh] flex flex-col relative z-10" style={backgroundStyle}>
       <Suspense fallback={null}>
         <ThreeRoot />
       </Suspense>
@@ -50,6 +51,7 @@ export default function Layout({
         disableSideMenu={disableSideMenu}
         onLogoClick={handleLogoClick}
       />
+      <SocialSidebar themeColor={themeColor} />
       <ScrollToTop />
       <main className="pt-[72px] flex-1 relative z-10">
         {children}

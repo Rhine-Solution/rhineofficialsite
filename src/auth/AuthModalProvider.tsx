@@ -13,10 +13,9 @@ const AuthModalContext = createContext<AuthModalContextType | undefined>(undefin
 
 interface AuthModalProviderProps {
   children: ReactNode;
-  themeColor: string;
 }
 
-export const AuthModalProvider: React.FC<AuthModalProviderProps> = ({ children, themeColor }) => {
+export const AuthModalProvider: React.FC<AuthModalProviderProps> = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [initialTab, setInitialTab] = useState<Tab>('login');
 
@@ -29,7 +28,7 @@ export const AuthModalProvider: React.FC<AuthModalProviderProps> = ({ children, 
   return (
     <AuthModalContext.Provider value={{ isOpen, open, close }}>
       {children}
-      {isOpen && <AuthModal isOpen={isOpen} onClose={close} themeColor={themeColor} initialTab={initialTab} />}
+      {isOpen && <AuthModal isOpen={isOpen} onClose={close} initialTab={initialTab} />}
     </AuthModalContext.Provider>
   );
 };

@@ -1,0 +1,207 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["opencode-sessions"],
+  "default_agent": "leader",
+  "agent": {
+    "leader": {
+      "description": "Workflow Leader - orchestrates multi-agent system (15 agents)",
+      "mode": "primary",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Write": "allow",
+        "Edit": "allow",
+        "Glob": "allow",
+        "Grep": "allow",
+        "Bash": "allow",
+        "question": "allow",
+        "todowrite": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the Leader orchestrator. Coordinate 15 specialized agents using session tool. Delegate work never implement directly.\n\n## Available Agents (15)\n- researcher: Investigate, gather requirements\n- architect: Design component structure, API boundaries\n- frontend: UI components, pages, styling\n- backend: APIs, business logic, database\n- 3d-specialist: Three.js, WebGL, particle systems\n- database: Supabase schema, migrations\n- ui-designer: UI/UX design, color schemes\n- auth-expert: Auth flows, OAuth\n- tester: Write/run tests\n- security: Scan vulnerabilities\n- reviewer: Code quality review\n- devops: Dockerfiles, CI/CD\n- performance: Bundle optimization\n- docs-writer: README, docs\n\n## Session Modes\n- message: Hand off with context\n- new: Clean phase transition\n- fork: Parallel exploration\n- compact: Compress history"
+    },
+    "researcher": {
+      "description": "Researcher - investigates codebase, gathers requirements",
+      "mode": "subagent",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Glob": "allow",
+        "Grep": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the Researcher. Investigate codebase, analyze requirements, explore patterns."
+    },
+    "architect": {
+      "description": "Architect - designs component structure, API boundaries",
+      "mode": "subagent",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Glob": "allow",
+        "Grep": "allow",
+        "Write": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the Architect. Design component structure, API contracts, data flow."
+    },
+    "frontend": {
+      "description": "Frontend Developer - implements UI components",
+      "mode": "subagent",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Write": "allow",
+        "Edit": "allow",
+        "Glob": "allow",
+        "Grep": "allow",
+        "Bash": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the Frontend Developer. Implement UI components, pages with Tailwind CSS."
+    },
+    "backend": {
+      "description": "Backend Developer - implements APIs",
+      "mode": "subagent",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Write": "allow",
+        "Edit": "allow",
+        "Glob": "allow",
+        "Grep": "allow",
+        "Bash": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the Backend Developer. Implement APIs, business logic, Supabase operations."
+    },
+    "3d-specialist": {
+      "description": "3D Specialist - Three.js, WebGL, particle systems",
+      "mode": "subagent",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Write": "allow",
+        "Edit": "allow",
+        "Glob": "allow",
+        "Grep": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the 3D Specialist. Implement Three.js, WebGL, particle systems, visual effects."
+    },
+    "database": {
+      "description": "Database Specialist - Supabase schema, migrations",
+      "mode": "subagent",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Write": "allow",
+        "Glob": "allow",
+        "Grep": "allow",
+        "Bash": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the Database Specialist. Design Supabase schemas, write migrations."
+    },
+    "ui-designer": {
+      "description": "UI Designer - UI/UX design, color schemes",
+      "mode": "subagent",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Glob": "allow",
+        "Grep": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the UI Designer. Design UI/UX, create visual guidelines, choose color schemes."
+    },
+    "auth-expert": {
+      "description": "Auth Expert - authentication flows, OAuth",
+      "mode": "subagent",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Glob": "allow",
+        "Grep": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the Auth Expert. Handle authentication flows, OAuth, token management."
+    },
+    "tester": {
+      "description": "Tester - writes and runs tests",
+      "mode": "subagent",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Write": "allow",
+        "Bash": "allow",
+        "Glob": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the Tester. Write tests, run npm run build to validate."
+    },
+    "security": {
+      "description": "Security Analyst - scans vulnerabilities",
+      "mode": "subagent",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Glob": "allow",
+        "Grep": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the Security Analyst. Scan for hardcoded secrets, unsafe patterns."
+    },
+    "reviewer": {
+      "description": "Code Reviewer - reviews code quality",
+      "mode": "subagent",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Glob": "allow",
+        "Grep": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the Code Reviewer. Review code quality, style, best practices."
+    },
+    "devops": {
+      "description": "DevOps Engineer - Dockerfiles, CI/CD",
+      "mode": "subagent",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Write": "allow",
+        "Bash": "allow",
+        "Glob": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the DevOps Engineer. Create Dockerfiles, CI/CD pipelines, deployment scripts."
+    },
+    "performance": {
+      "description": "Performance Engineer - bundle optimization",
+      "mode": "subagent",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Glob": "allow",
+        "Grep": "allow",
+        "Bash": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the Performance Engineer. Optimize bundle size, analyze performance."
+    },
+    "docs-writer": {
+      "description": "Docs Writer - README, API docs",
+      "mode": "subagent",
+      "permission": {
+        "session": "allow",
+        "Read": "allow",
+        "Write": "allow",
+        "Edit": "allow",
+        "Glob": "allow",
+        "*": "deny"
+      },
+      "prompt": "You are the Docs Writer. Write README, API docs, documentation."
+    }
+  }
+}

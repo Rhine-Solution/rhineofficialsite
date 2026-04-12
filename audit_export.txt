@@ -8,10 +8,6 @@ Source: C:\Users\teoal\Desktop\rhineofficialsite
 FILE: .env
 ============================================================
 
-VITE_SUPABASE_URL=https://gdulqiykbczxeenvmoyq.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkdWxxaXlrYmN6eGVlbnZtb3lxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNDk1MDcsImV4cCI6MjA5MDYyNTUwN30.S5WIQoYiV_1rEPXBFLePu3tZdC1A6iH5z0HfYL7GgQ4
-VITE_TURNSTILE_SITE_KEY=0x4AAAAAAC0dqZ7Ghagz7QaS
-VITE_TURNSTILE_SECRET_KEY=0x4AAAAAAC0dqak1M34MkUalZt6y-kPsGVc
 
 ============================================================
 FILE: .gitattributes

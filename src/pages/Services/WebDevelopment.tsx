@@ -11,30 +11,79 @@ export default function WebDevelopment() {
 
   return (
     <Layout themeColor={themeColor} showAuthButtons={true} onLogoClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-      <div className="py-20 px-6 md:px-10">
-        <div className="bg-black/80 backdrop-blur-xl border-l border-white/20 rounded-r-2xl p-8 md:p-12 relative z-10 hover:bg-black/90 transition-all duration-300">
-          <div className="container mx-auto text-white">
-            <h1 className="text-4xl font-black uppercase tracking-tighter mb-6">Web Development</h1>
+      <div className="relative z-10 min-h-screen">
+        <section className="py-12 md:py-40 px-4 md:px-10">
+          <div className="max-w-4xl mx-auto">
+            <a href="/services" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white mb-6 transition-colors">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+              Back to Services
+            </a>
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-16 h-[2px]" style={{ backgroundColor: themeColor }}></div>
+              <h3 className="text-[10px] uppercase tracking-[0.8em]" style={{ color: themeColor }}>Service</h3>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-8">Web Development</h1>
+            <p className="text-white/70 text-lg max-w-2xl">
+              Custom web applications and progressive web apps built with modern frontend and backend stacks. 
+              We focus on scalable component architectures using React and TypeScript, strict typing and CI pipelines 
+              to ensure maintainability, and performance optimisations.
+            </p>
+          </div>
+        </section>
 
-            <div className="prose prose-invert max-w-none text-white/80 space-y-6">
-              <p>
-                Custom web applications and progressive web apps built with modern frontend and backend stacks. We focus on scalable component architectures using React and TypeScript, strict typing and CI pipelines to ensure maintainability, and performance optimisations such as code-splitting, server-side rendering where appropriate, and critical-path rendering improvements to reduce Time-to-Interactive.
-              </p>
-
-              <h2 className="text-2xl font-bold text-white mt-8">Core Capabilities:</h2>
-              <ul className="list-disc pl-6 space-y-2 text-white/80">
-                <li>React & TypeScript architecture and component libraries</li>
-                <li>Performance budgets, SSR/SSG and hydration strategies</li>
-                <li>Automated testing & CI-driven releases</li>
-                <li>Progressive Web Apps and offline-first strategies</li>
+        <section className="py-12 md:py-20 px-4 md:px-10 bg-black/40">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-black/80 backdrop-blur-xl border-l border-white/20 rounded-r-2xl p-8 md:p-12">
+              <h2 className="text-2xl font-bold text-white mb-6 uppercase tracking-wider">Core Capabilities</h2>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-4">
+                  <span className="w-2 h-2 rounded-full mt-2" style={{ backgroundColor: themeColor }}></span>
+                  <div>
+                    <strong className="text-white block mb-1">React & TypeScript Architecture</strong>
+                    <span className="text-white/60">Component libraries with strict typing for maintainability</span>
+                  </div>
+                </li>
+                <li className="flex items-start gap-4">
+                  <span className="w-2 h-2 rounded-full mt-2" style={{ backgroundColor: themeColor }}></span>
+                  <div>
+                    <strong className="text-white block mb-1">Performance Optimization</strong>
+                    <span className="text-white/60">SSR/SSG, hydration strategies, and critical-path rendering</span>
+                  </div>
+                </li>
+                <li className="flex items-start gap-4">
+                  <span className="w-2 h-2 rounded-full mt-2" style={{ backgroundColor: themeColor }}></span>
+                  <div>
+                    <strong className="text-white block mb-1">Automated Testing & CI</strong>
+                    <span className="text-white/60">CI-driven releases with measurable quality gates</span>
+                  </div>
+                </li>
+                <li className="flex items-start gap-4">
+                  <span className="w-2 h-2 rounded-full mt-2" style={{ backgroundColor: themeColor }}></span>
+                  <div>
+                    <strong className="text-white block mb-1">Progressive Web Apps</strong>
+                    <span className="text-white/60">Offline-first strategies for unreliable networks</span>
+                  </div>
+                </li>
               </ul>
+            </div>
+          </div>
+        </section>
 
-              <p>
-                Our engineering approach includes automated testing, measurable performance budgets, and observability hooks that allow teams to iterate quickly while keeping production reliability high. We design APIs and data contracts to be stable and versioned, minimising downstream breakage and enabling long-term evolution of your product.
+        <section className="py-12 md:py-20 px-4 md:px-10">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-black/80 backdrop-blur-xl border-l border-white/20 rounded-r-2xl p-8 md:p-12">
+              <h2 className="text-2xl font-bold text-white mb-6 uppercase tracking-wider">Why Choose Us</h2>
+              <p className="text-white/70 mb-6">
+                Our engineering approach includes automated testing, measurable performance budgets, and observability 
+                hooks that allow teams to iterate quickly while keeping production reliability high. We design APIs 
+                and data contracts to be stable and versioned, minimising downstream breakage.
+              </p>
+              <p className="text-white/70">
+                We deliver scalable solutions that grow with your business, maintaining performance at every scale.
               </p>
             </div>
           </div>
-        </div>
+        </section>
       </div>
     </Layout>
   );
