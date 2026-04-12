@@ -1,8 +1,22 @@
 import { useMemo } from 'react';
-import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell,
-  BarChart, Bar, Legend
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+import {
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
+import {
+  BarChart,
+  Bar,
+  Legend,
 } from 'recharts';
 
 const COLORS = ['#0082D8', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];

@@ -1,7 +1,10 @@
 import React, { Component, ReactNode } from 'react';
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
 interface Props {
   children: ReactNode;
+  fallback?: ReactNode;
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
 }
 
 interface State {
@@ -12,7 +15,7 @@ interface State {
 export default class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: undefined };
   }
 
   static getDerivedStateFromError(error: Error): State {
@@ -20,25 +23,46 @@ export default class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Log to console to surface runtime errors during SSR/build/runtime
-    // This is intentionally conservative: no external telemetry or network calls.
-    // Keep stack traces for debugging.
     console.error('ErrorBoundary caught:', error, errorInfo);
+    this.props.onError?.(error, errorInfo);
   }
+
+  handleRetry = () => {
+    this.setState({ hasError: false, error: undefined });
+  };
 
   render() {
     if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
       return (
-        <div className="min-h-screen flex items-center justify-center text-white p-8 text-center bg-black">
-          <div>
-            <h1 className="text-2xl font-bold mb-4">Something went wrong</h1>
-            <p className="text-white/70">{this.state.error?.message}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-white/20 rounded"
-            >
-              Reload page
-            </button>
+        <div className="min-h-[400px] flex items-center justify-center p-8">
+          <div className="max-w-md text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 mb-6">
+              <AlertTriangle className="w-8 h-8 text-red-500" />
+            </div>
+            <h2 className="text-xl font-semibold text-white mb-2">Something went wrong</h2>
+            <p className="text-white/60 mb-6">
+              {this.state.error?.message || 'An unexpected error occurred'}
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={this.handleRetry}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-white transition-colors"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Try Again
+              </button>
+              <button
+                onClick={() => window.location.href = '/'}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-lg text-white transition-colors"
+              >
+                <Home className="w-4 h-4" />
+                Go Home
+              </button>
+            </div>
           </div>
         </div>
       );

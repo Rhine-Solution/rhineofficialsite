@@ -46,5 +46,5 @@ export default function useThemeHue(speed = 0.5) {
   }, [speed]);
 
   const themeColor = `hsl(${hue}, 100%, 60%)`;
-  return { themeColor, hue, hasWebGPU } as const;
+  return { themeColor, hue, setHue, hasWebGPU };
 }

@@ -48,20 +48,46 @@ export default defineConfig({
     target: 'esnext',
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-three': ['three', '@splinetool/react-spline', '@splinetool/runtime'],
-          'vendor-ui': ['lucide-react', 'gsap'],
-          'vendor-auth': ['@supabase/supabase-js'],
-          'vendor-charts': ['recharts'],
-          'vendor-i18n': ['i18next', 'react-i18next'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('three') || id.includes('@splinetool')) {
+              return 'vendor-three';
+            }
+            if (id.includes('recharts')) {
+              return 'vendor-charts';
+            }
+            if (id.includes('@supabase')) {
+              return 'vendor-auth';
+            }
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'vendor-react';
+            }
+            if (id.includes('i18next') || id.includes('react-i18next')) {
+              return 'vendor-i18n';
+            }
+            if (id.includes('lucide-react') || id.includes('gsap')) {
+              return 'vendor-ui';
+            }
+            if (id.includes('@sentry')) {
+              return 'vendor-monitoring';
+            }
+          }
+          if (id.includes('lib/Root') || id.includes('lib/elements')) {
+            return 'three-scene';
+          }
         },
       },
     },
-    chunkSizeWarningLimit: 400,
+    chunkSizeWarningLimit: 500,
     minify: 'esbuild',
     sourcemap: false,
     reportCompressedSize: true,
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
   },
   esbuild: {
     target: 'esnext'
