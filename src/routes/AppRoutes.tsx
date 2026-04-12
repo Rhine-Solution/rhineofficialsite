@@ -38,6 +38,7 @@ const Documentation = lazy(() => import('../pages/Resources/Documentation'));
 const BlogInsights = lazy(() => import('../pages/Resources/BlogInsights'));
 
 const Contact = lazy(() => import('../pages/Contact'));
+const Pricing = lazy(() => import('../pages/Pricing'));
 
 const AdminPage = lazy(() => import('../pages/Admin'));
 const DashboardPage = lazy(() => import('../pages/Dashboard'));
@@ -91,6 +92,9 @@ export default function AppRoutes() {
 
         {/* Contact */}
         <Route path="/contact" element={<Contact />} />
+
+        {/* Pricing */}
+        <Route path="/pricing" element={<Pricing />} />
 
         {/* Existing admin/dashboard routes */}
         <Route path="/admin" element={<AdminPage />} />
