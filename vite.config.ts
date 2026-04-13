@@ -89,8 +89,5 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['three'],
     include: ['react', 'react-dom', 'react-router-dom'],
-    esbuildOptions: {
-      target: 'esnext'
-    }
   },
 })

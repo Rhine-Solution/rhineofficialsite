@@ -22,25 +22,19 @@ const sampleMember = {
 };
 
 export const Default: Story = {
-  args: {
-    member: sampleMember,
-  },
+  args: sampleMember,
 };
 
 export const WithImage: Story = {
   args: {
-    member: {
-      ...sampleMember,
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop',
-    },
+    ...sampleMember,
+    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop',
   },
 };
 
 export const LongBio: Story = {
   args: {
-    member: {
-      ...sampleMember,
-      bio: 'Dr. Sarah Chen is a renowned expert in distributed systems and artificial intelligence. With a PhD from MIT and over 15 years of industry experience, she has led teams at major tech companies and contributed to numerous open-source projects.',
-    },
+    ...sampleMember,
+    bio: 'Dr. Sarah Chen is a renowned expert in distributed systems and artificial intelligence. With a PhD from MIT and over 15 years of industry experience, she has led teams at major tech companies and contributed to numerous open-source projects.',
   },
 };

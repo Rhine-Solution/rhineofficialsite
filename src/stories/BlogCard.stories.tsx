@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { BrowserRouter } from 'react-router-dom';
 import BlogCard from '../components/BlogCard';
 
 const meta: Meta<typeof BlogCard> = {
@@ -8,6 +9,13 @@ const meta: Meta<typeof BlogCard> = {
     layout: 'centered',
   },
   tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <BrowserRouter>
+        <Story />
+      </BrowserRouter>
+    ),
+  ],
 };
 
 export default meta;
@@ -17,7 +25,6 @@ const samplePost = {
   title: 'The Future of AI in Enterprise Software',
   excerpt: 'Explore how artificial intelligence is transforming enterprise software development and what it means for your business.',
   date: '2024-03-15',
-  author: 'Alex Chen',
   category: 'AI & Machine Learning',
   readTime: '8 min read',
   image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=250&fit=crop',
@@ -25,22 +32,19 @@ const samplePost = {
 };
 
 export const Default: Story = {
-  args: {
-    post: samplePost,
-  },
+  args: samplePost,
 };
 
 export const NoImage: Story = {
   args: {
-    post: { ...samplePost, image: undefined },
+    ...samplePost,
+    image: undefined,
   },
 };
 
 export const LongTitle: Story = {
   args: {
-    post: {
-      ...samplePost,
-      title: 'Building Scalable Microservices Architecture with Kubernetes and Docker in Production Environments',
-    },
+    ...samplePost,
+    title: 'Building Scalable Microservices Architecture with Kubernetes and Docker in Production Environments',
   },
 };
