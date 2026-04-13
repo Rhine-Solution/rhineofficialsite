@@ -4,8 +4,3 @@ pages_build_output_dir = "dist"
 
 [vars]
 ENVIRONMENT = "production"
-
-[[redirects]]
-from = "/*"
-to = "/index.html"
-status = 200

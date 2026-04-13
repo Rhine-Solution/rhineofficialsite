@@ -22,35 +22,39 @@ type Story = StoryObj<typeof PortfolioCard>;
 const sampleProject = {
   title: 'AI-Powered Dashboard',
   description: 'A real-time analytics dashboard with machine learning predictions and interactive visualizations.',
-  tags: ['React', 'TypeScript', 'TensorFlow', 'D3.js'],
-  image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
-  link: '#',
+  category: 'AI & ML',
+  slug: 'ai-dashboard',
+  technologies: ['React', 'TypeScript', 'TensorFlow', 'D3.js'],
+  thumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
 };
 
 export const Default: Story = {
   args: {
-    project: sampleProject,
+    ...sampleProject,
     variant: 'default',
   },
 };
 
 export const Featured: Story = {
   args: {
-    project: { ...sampleProject, title: 'Featured Project' },
+    ...sampleProject,
+    title: 'Featured Project',
     variant: 'featured',
   },
 };
 
 export const Compact: Story = {
   args: {
-    project: { ...sampleProject, title: 'Compact View' },
+    ...sampleProject,
+    title: 'Compact View',
     variant: 'compact',
   },
 };
 
 export const NoImage: Story = {
   args: {
-    project: { ...sampleProject, image: undefined },
+    ...sampleProject,
+    thumbnail: undefined,
     variant: 'default',
   },
 };
