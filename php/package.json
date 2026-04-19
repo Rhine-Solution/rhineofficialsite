@@ -1,0 +1,8 @@
+{
+  "name": "rhine-php-shop",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "vercel-php"
+  },
+  "dependencies": {}
+}
