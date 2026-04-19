@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  python-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install flake8
+        run: pip install flake8
+      - name: Lint Python
+        run: flake8 python/ --count --max-line-length=127
+
+  php-lint:
+    runs-on: ubuntu-latest
+    if: false # Disable if no PHP files yet
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - name: Install PHP_CodeSniffer
+        run: composer require squizlabs/php_codesniffer --dev
+      - name: Lint PHP
+        run: ./vendor/bin/phpcs --standard=PSR12 php/ -n
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    if: false # Disable if not ready
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+        working-directory: frontend
+      - name: Build
+        run: npm run build
+        working-directory: frontend
+
+  deploy:
+    needs: [python-lint, php-lint, frontend-build]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: rhineofficialsite
+          directory: frontend/dist

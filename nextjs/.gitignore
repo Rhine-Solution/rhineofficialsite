@@ -1,0 +1,14 @@
+# Next.js
+node_modules/
+.next/
+out/
+dist/
+build/
+*.log
+.env
+.env.local
+.env.production
+.DS_Store
+Thumbs.db
+.vercel
+.turbo

@@ -1,0 +1,12 @@
+# PHP
+/vendor/
+node_modules/
+*.log
+.env
+.env.local
+.phpunit.result.cache
+.DS_Store
+Thumbs.db
+/uploads/
+/storage/*.key
+*.sqlitedb
