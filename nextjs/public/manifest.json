@@ -1,0 +1,16 @@
+{
+  "name": "Rhine Solution",
+  "short_name": "Rhine",
+  "description": "Enterprise-grade multi-service platform with e-commerce, travel booking, and more",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

@@ -5,6 +5,9 @@ import Card, { CardContent, CardTitle } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Input, { Textarea } from '../../components/ui/Input'
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://crqjedivobupxbbathux.supabase.co'
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNycWplZGl2b2J1cHhiYmF0aHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTA5MDEsImV4cCI6MjA5MDM2NjkwMX0.0_HAu_sj7j-3racZK9nWIghKdNEXWRTHgLme2sUMAhM'
+
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: '',
@@ -14,16 +17,45 @@ export default function ContactPage() {
   })
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
+    setError('')
 
-    // Demo mode - just simulate submission
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setSuccess(true)
-    setFormData({ name: '', email: '', subject: '', message: '' })
-    setLoading(false)
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/contacts`,
+        {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject || 'No subject',
+            message: formData.message
+          })
+        }
+      )
+
+      if (res.ok) {
+        setSuccess(true)
+        setFormData({ name: '', email: '', subject: '', message: '' })
+      } else {
+        throw new Error('Failed to send message')
+      }
+    } catch (err) {
+      console.error('Contact form error:', err)
+      setError('Failed to send message. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const contactMethods = [
@@ -47,7 +79,7 @@ export default function ContactPage() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-6">
             {contactMethods.map(method => (
-              <Card key={method.label}>
+              <Card key={method.label} className="hover-lift">
                 <CardContent className="text-center p-6">
                   <div className="text-3xl mb-3">{method.icon}</div>
                   <h3 className="font-semibold mb-1">{method.label}</h3>
@@ -62,7 +94,7 @@ export default function ContactPage() {
       {/* Contact Form */}
       <section className="py-12">
         <div className="max-w-2xl mx-auto px-4">
-          <Card>
+          <Card className="hover-lift">
             <CardContent className="p-8">
               {success ? (
                 <div className="text-center py-8">
@@ -75,6 +107,11 @@ export default function ContactPage() {
                 <>
                   <CardTitle className="mb-6">Send us a message</CardTitle>
                   <form onSubmit={handleSubmit} className="space-y-6">
+                    {error && (
+                      <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+                        {error}
+                      </div>
+                    )}
                     <div className="grid md:grid-cols-2 gap-6">
                       <Input
                         label="Name"
