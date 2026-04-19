@@ -16,8 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initScrollEffects();
     initContactForm();
     initSkillBars();
+    initAuth();
     loadProjects();
     loadBooks();
+    updateAuthUI();
 });
 
 async function loadProjects() {
@@ -220,6 +222,141 @@ function debounce(func, wait) {
     };
 }
 
+function initAuth() {
+    const authLink = document.getElementById('auth-link');
+    const authModal = document.getElementById('auth-modal');
+    const closeBtn = document.querySelector('.auth-close');
+    const tabBtns = document.querySelectorAll('.auth-tab-btn');
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+
+    // Open modal
+    authLink?.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (window.auth?.isAuthenticated()) {
+            handleLogout();
+        } else {
+            authModal?.classList.add('active');
+        }
+    });
+
+    // Close modal
+    closeBtn?.addEventListener('click', () => {
+        authModal?.classList.remove('active');
+    });
+
+    // Close on background click
+    authModal?.addEventListener('click', (e) => {
+        if (e.target === authModal) {
+            authModal.classList.remove('active');
+        }
+    });
+
+    // Switch tabs
+    tabBtns?.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.dataset.tab;
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            if (tab === 'login') {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+            }
+        });
+    });
+
+    // Login form
+    loginForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = loginForm.email.value;
+        const password = loginForm.password.value;
+        const btn = loginForm.querySelector('button');
+        
+        btn.textContent = 'Logging in...';
+        btn.disabled = true;
+
+        const result = await window.auth.signIn(email, password);
+        
+        if (result.success) {
+            authModal?.classList.remove('active');
+            updateAuthUI();
+            showNotification('Welcome back!', 'success');
+        } else {
+            showNotification(result.error, 'error');
+        }
+        
+        btn.textContent = 'Login';
+        btn.disabled = false;
+    });
+
+    // Signup form
+    signupForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = signupForm.name.value;
+        const email = signupForm.email.value;
+        const password = signupForm.password.value;
+        const btn = signupForm.querySelector('button');
+        
+        btn.textContent = 'Creating account...';
+        btn.disabled = true;
+
+        const result = await window.auth.signUp(email, password, name);
+        
+        if (result.success) {
+            showNotification('Account created! Please check your email to verify.', 'success');
+            // Switch to login tab
+            document.querySelector('[data-tab="login"]')?.click();
+        } else {
+            showNotification(result.error, 'error');
+        }
+        
+        btn.textContent = 'Sign Up';
+        btn.disabled = false;
+    });
+}
+
+function handleLogout() {
+    window.auth.signOut();
+    updateAuthUI();
+    showNotification('Logged out successfully', 'success');
+}
+
+function updateAuthUI() {
+    const authLink = document.getElementById('auth-link');
+    if (!authLink) return;
+
+    const user = window.auth?.getUser();
+    const isAuth = window.auth?.isAuthenticated();
+
+    if (isAuth && user) {
+        authLink.textContent = 'Logout';
+        authLink.title = user.email;
+    } else {
+        authLink.textContent = 'Login';
+        authLink.title = '';
+    }
+}
+
+function showNotification(message, type = 'success') {
+    const existing = document.querySelector('.notification');
+    existing?.remove();
+
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => notification.classList.add('show'), 10);
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { debounce, loadProjects, loadBooks };
+    module.exports = { debounce, loadProjects, loadBooks, initAuth, updateAuthUI };
 }
