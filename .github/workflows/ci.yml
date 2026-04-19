@@ -1,88 +1,106 @@
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
     branches: [main, dev]
   pull_request:
-    branches: [main, dev]
+    branches: [main]
 
 env:
-  NODE_VERSION: '22'
+  SUPABASE_URL: https://crqjedivobupxbbathux.supabase.co
+  CLOUDFLARE_ACCOUNT_ID: 1e717a236c87cc50f0a396da20218343
 
 jobs:
-  lint:
-    name: Lint & Type Check
+  # Static analysis for Python
+  python-lint:
     runs-on: ubuntu-latest
+    if: contains(github.changed_files, 'python/')
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          package-manager: npm
-      - run: npm ci --legacy-peer-deps
-      - run: npm run lint
-      - run: npx tsc --noEmit
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: lint
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          package-manager: npm
-      - run: npm ci --legacy-peer-deps
-      - run: npm run build
-        env:
-          CI: true
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist
-          retention-days: 7
-
-  test-unit:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    needs: lint
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          package-manager: npm
-      - run: npm ci --legacy-peer-deps
-      - run: npm run test -- --run
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: coverage
-          path: coverage
-          retention-days: 7
-
-  test-e2e:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          package-manager: npm
-      - run: npm ci --legacy-peer-deps
-      - run: npx playwright install --with-deps chromium
-      - name: Build and serve
+          python-version: '3.12'
+      - name: Install flake8
+        run: pip install flake8 black
+      - name: Lint Python files
         run: |
-          npm run build
-          npx serve dist -l 4173 --single &
-          sleep 5
-      - run: npx playwright test
-      - uses: actions/upload-artifact@v4
-        if: always()
+          flake8 python/ --count --max-line-length=127 --statistics
+          black --check python/ --diff
+
+  # Static analysis for PHP
+  php-lint:
+    runs-on: ubuntu-latest
+    if: contains(github.changed_files, 'php/') || contains(github.changed_files, 'php2/')
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 7
+          php-version: '8.3'
+      - name: Install PHP_CodeSniffer
+        run: |
+          composer require squizlabs/php_codesniffer --dev --no-interaction
+      - name: Lint PHP files
+        run: |
+          ./vendor/bin/phpcs --standard=PSR12 php/ php2/ -n --ignore=vendor
+
+  # Build Next.js project
+  nextjs-build:
+    runs-on: ubuntu-latest
+    if: contains(github.changed_files, 'nextjs/')
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: nextjs/package.json
+      - name: Install dependencies
+        run: npm ci
+        working-directory: nextjs
+      - name: Build project
+        run: npm run build
+        working-directory: nextjs
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nextjs-build
+          path: nextjs/.next
+          retention-days: 1
+
+  # Build Svelte project
+  svelte-build:
+    runs-on: ubuntu-latest
+    if: contains(github.changed_files, 'svelte/')
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: svelte/package.json
+      - name: Install dependencies
+        run: npm ci
+        working-directory: svelte
+      - name: Build project
+        run: npm run build
+        working-directory: svelte
+
+  # Deploy frontend to Cloudflare Pages
+  deploy-frontend:
+    needs: [nextjs-build, svelte-build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: rhineofficialsite
+          directory: frontend
+          branch: main
