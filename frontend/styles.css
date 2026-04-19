@@ -217,6 +217,26 @@ h3 { font-size: 1.5rem; }
     transform: translateY(-2px);
 }
 
+.btn-shop {
+    background: linear-gradient(135deg, #f472b6, #ec4899);
+    color: white;
+    font-weight: 600;
+}
+
+.btn-shop:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(244, 114, 182, 0.4);
+}
+
+.shop-link {
+    color: #f472b6 !important;
+    font-weight: 600;
+}
+
+.shop-link:hover {
+    color: #ec4899 !important;
+}
+
 .hero-tech {
     display: flex;
     align-items: center;
