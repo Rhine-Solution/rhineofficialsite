@@ -1,0 +1,16 @@
+{
+  "name": "rhine-official-site",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:php\" \"npm run dev:nextjs\"",
+    "dev:frontend": "C:\\xampp\\php\\php.exe -S localhost:8000 -t frontend",
+    "dev:php": "C:\\xampp\\php\\php.exe -S localhost:8080 -t php",
+    "dev:nextjs": "cd nextjs && npx next dev",
+    "install:all": "npm install && cd nextjs && npm install",
+    "build": "cd nextjs && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

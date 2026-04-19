@@ -9,10 +9,10 @@ define('DB_HOST', 'db.crqjedivobupxbbathux.supabase.co');
 define('DB_PORT', '5432');
 define('DB_NAME', 'postgres');
 define('DB_USER', 'postgres');
-define('DB_PASS', 'your-password-here');
+define('DB_PASS', 'YOUR_SUPABASE_PASSWORD_HERE'); // Replace with your actual Supabase password
 
 define('SUPABASE_URL', 'https://crqjedivobupxbbathux.supabase.co');
-define('SUPABASE_KEY', 'your-anon-key-here');
+define('SUPABASE_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNycWplZGl2b2J1cHhiYmF0aHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTA5MDEsImV4cCI6MjA5MDM2NjkwMX0.0_HAu_sj7j-3racZK9nWIghKdNEXWRTHgLme2sUMAhM');
 
 session_start();
 

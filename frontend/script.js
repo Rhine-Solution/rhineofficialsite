@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initContactForm();
     initSkillBars();
     initAuth();
+    initFileUpload();
     loadProjects();
     loadBooks();
     updateAuthUI();
@@ -170,24 +171,24 @@ function initContactForm() {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData);
         
+        const btn = form.querySelector('button');
+        btn.textContent = 'Sending...';
+        btn.disabled = true;
+        
         try {
             if (window.supabase) {
-                await window.supabase.request('reviews', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        comment: data.message,
-                        rating: 5,
-                        created_at: new Date().toISOString()
-                    })
-                });
+                await window.supabase.saveContact(data);
             }
             
-            alert(`Thanks ${data.name}! Your message has been sent.`);
+            showNotification(`Thanks ${data.name}! Your message has been sent.`, 'success');
             form.reset();
         } catch (error) {
-            alert(`Thanks ${data.name}! Your message has been sent.`);
+            showNotification(`Thanks ${data.name}! Your message has been sent.`, 'success');
             form.reset();
         }
+        
+        btn.textContent = 'Send Message';
+        btn.disabled = false;
     });
 }
 
@@ -208,6 +209,85 @@ function initSkillBars() {
     }, { threshold: 0.5 });
     
     skillBars.forEach(bar => observer.observe(bar));
+}
+
+function initFileUpload() {
+    const fileInput = document.getElementById('file-input');
+    const uploadBtn = document.getElementById('upload-btn');
+    const dropzone = document.getElementById('upload-dropzone');
+    const uploadArea = document.getElementById('file-upload-area');
+    const uploadProgress = document.getElementById('upload-progress');
+    const progressFill = document.getElementById('progress-fill');
+    const uploadStatus = document.getElementById('upload-status');
+    const uploadedFiles = document.getElementById('uploaded-files');
+
+    if (!fileInput) return;
+
+    uploadBtn?.addEventListener('click', () => fileInput.click());
+
+    dropzone?.addEventListener('click', () => fileInput.click());
+
+    dropzone?.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+    });
+
+    dropzone?.addEventListener('dragleave', () => {
+        dropzone.classList.remove('dragover');
+    });
+
+    dropzone?.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length) handleFileUpload(files[0]);
+    });
+
+    fileInput?.addEventListener('change', (e) => {
+        if (e.target.files.length) handleFileUpload(e.target.files[0]);
+    });
+
+    async function handleFileUpload(file) {
+        const isAuth = window.auth?.isAuthenticated();
+        if (!isAuth) {
+            showNotification('Please login to upload files', 'error');
+            return;
+        }
+
+        uploadProgress.style.display = 'block';
+        dropzone.style.display = 'none';
+        progressFill.style.width = '50%';
+        uploadStatus.textContent = `Uploading ${file.name}...`;
+
+        try {
+            const url = await window.supabase.uploadFile(file, 'user-files');
+            
+            progressFill.style.width = '100%';
+            uploadStatus.textContent = 'Upload complete!';
+            
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `
+                <span class="file-icon">📄</span>
+                <span class="file-name">${escapeHtml(file.name)}</span>
+                <a href="${url}" target="_blank" class="file-link">View</a>
+            `;
+            uploadedFiles?.appendChild(fileItem);
+
+            setTimeout(() => {
+                uploadProgress.style.display = 'none';
+                dropzone.style.display = 'block';
+                progressFill.style.width = '0';
+            }, 2000);
+
+            showNotification('File uploaded successfully!', 'success');
+        } catch (error) {
+            console.error('Upload error:', error);
+            showNotification('Upload failed. Please try again.', 'error');
+            uploadProgress.style.display = 'none';
+            dropzone.style.display = 'block';
+        }
+    }
 }
 
 function debounce(func, wait) {
@@ -327,6 +407,9 @@ function handleLogout() {
 
 function updateAuthUI() {
     const authLink = document.getElementById('auth-link');
+    const dashboardLink = document.getElementById('dashboard-link');
+    const dashboardSection = document.getElementById('dashboard');
+    const membersSection = document.getElementById('members');
     if (!authLink) return;
 
     const user = window.auth?.getUser();
@@ -335,9 +418,58 @@ function updateAuthUI() {
     if (isAuth && user) {
         authLink.textContent = 'Logout';
         authLink.title = user.email;
+        if (dashboardLink) dashboardLink.style.display = 'inline';
+        if (membersSection) membersSection.style.display = 'block';
+        loadDashboardData(user);
     } else {
         authLink.textContent = 'Login';
         authLink.title = '';
+        if (dashboardLink) dashboardLink.style.display = 'none';
+        if (dashboardSection) dashboardSection.style.display = 'none';
+        if (membersSection) membersSection.style.display = 'none';
+    }
+}
+
+async function loadDashboardData(user) {
+    const dashboardSection = document.getElementById('dashboard');
+    const userEmail = document.getElementById('user-email');
+    const userCreated = document.getElementById('user-created');
+    const userMessages = document.getElementById('user-messages');
+
+    if (!dashboardSection) return;
+
+    dashboardSection.style.display = 'block';
+
+    if (userEmail) userEmail.textContent = user.email || '-';
+
+    try {
+        if (window.supabase) {
+            const profile = await window.supabase.getUserProfile(user.email);
+            if (profile && profile.created_at && userCreated) {
+                const created = new Date(profile.created_at);
+                userCreated.textContent = created.toLocaleDateString();
+            } else if (userCreated) {
+                userCreated.textContent = 'N/A';
+            }
+
+            const contacts = await window.supabase.getContactsByEmail(user.email);
+            if (contacts && contacts.length > 0) {
+                if (userMessages) {
+                    userMessages.innerHTML = contacts.slice(0, 5).map(c => `
+                        <div class="message-item">
+                            <p><strong>${escapeHtml(c.subject || 'No subject')}</strong></p>
+                            <p>${escapeHtml(c.message.substring(0, 100))}${c.message.length > 100 ? '...' : ''}</p>
+                            <small>${new Date(c.created_at).toLocaleDateString()}</small>
+                        </div>
+                    `).join('');
+                }
+            }
+        } else {
+            if (userCreated) userCreated.textContent = 'N/A';
+        }
+    } catch (e) {
+        console.log('Could not load user data');
+        if (userCreated) userCreated.textContent = 'N/A';
     }
 }
 

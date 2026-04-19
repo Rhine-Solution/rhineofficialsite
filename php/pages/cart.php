@@ -1,13 +1,45 @@
 <?php
-// Cart Page
-$products = [
-    1 => ['name' => 'Developer Keyboard', 'price' => 149.99],
-    2 => ['name' => 'Wireless Mouse', 'price' => 79.99],
-    3 => ['name' => 'HD Monitor', 'price' => 299.99],
-    4 => ['name' => 'USB-C Hub', 'price' => 49.99],
-    5 => ['name' => 'Webcam HD', 'price' => 89.99],
-    6 => ['name' => 'Desk Lamp', 'price' => 39.99],
+// Cart Page - Fetch products from Supabase
+
+function fetchProductsFromSupabase() {
+    $url = SUPABASE_URL . '/rest/v1/products?select=id,name,price';
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'apikey: ' . SUPABASE_KEY,
+        'Authorization: Bearer ' . SUPABASE_KEY
+    ]);
+    
+    $response = curl_exec($ch);
+    curl_close($ch);
+    
+    $data = json_decode($response, true);
+    if (is_array($data)) {
+        $products = [];
+        foreach ($data as $p) {
+            $products[$p['id']] = $p;
+        }
+        return $products;
+    }
+    return [];
+}
+
+// Fallback products
+$fallback_products = [
+    '1' => ['name' => 'Developer Keyboard', 'price' => 149.99],
+    '2' => ['name' => 'Wireless Mouse', 'price' => 79.99],
+    '3' => ['name' => 'HD Monitor', 'price' => 299.99],
+    '4' => ['name' => 'USB-C Hub', 'price' => 49.99],
+    '5' => ['name' => 'Webcam HD', 'price' => 89.99],
+    '6' => ['name' => 'Desk Lamp', 'price' => 39.99],
 ];
+
+$products = fetchProductsFromSupabase();
+if (empty($products)) {
+    $products = $fallback_products;
+}
 
 $cart = $_SESSION['cart'] ?? [];
 $cart_items = [];
@@ -16,11 +48,13 @@ $total = 0;
 foreach ($cart as $product_id => $quantity) {
     if (isset($products[$product_id])) {
         $product = $products[$product_id];
-        $subtotal = $product['price'] * $quantity;
+        $price = is_array($product) ? ($product['price'] ?? 0) : 0;
+        $name = is_array($product) ? ($product['name'] ?? 'Product') : $product;
+        $subtotal = $price * $quantity;
         $cart_items[] = [
             'id' => $product_id,
-            'name' => $product['name'],
-            'price' => $product['price'],
+            'name' => $name,
+            'price' => $price,
             'quantity' => $quantity,
             'subtotal' => $subtotal
         ];

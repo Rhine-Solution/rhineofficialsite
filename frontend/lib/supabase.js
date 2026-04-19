@@ -61,6 +61,57 @@ class SupabaseClient {
   async getAppointments() {
     return this.request('appointments?select=*&order=datetime.asc');
   }
+
+  // Contact form submissions
+  async saveContact(data) {
+    return this.request('contacts', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: data.name,
+        email: data.email,
+        subject: data.subject || '',
+        message: data.message,
+        created_at: new Date().toISOString()
+      })
+    });
+  }
+
+  async getContactsByEmail(email) {
+    return this.request(`contacts?email=eq.${encodeURIComponent(email)}&order=created_at.desc`);
+  }
+
+  async getUserProfile(email) {
+    const results = await this.request(`users?email=eq.${encodeURIComponent(email)}&select=*`);
+    return results[0] || null;
+  }
+
+  // File Storage
+  async uploadFile(file, folder = 'uploads') {
+    const fileName = `${folder}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('path', fileName);
+
+    const response = await fetch(`${this.url}/storage/v1/object/${fileName}`, {
+      method: 'POST',
+      headers: {
+        'apikey': this.key,
+        'Authorization': `Bearer ${this.key}`
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.status}`);
+    }
+
+    return `${this.url}/storage/v1/object/public/${fileName}`;
+  }
+
+  async listFiles(folder = 'uploads') {
+    return this.request(`storage/v1/object/list/public/${folder}`);
+  }
 }
 
 const supabase = new SupabaseClient(SUPABASE_URL, SUPABASE_ANON_KEY);

@@ -1,12 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['images.unsplash.com'],
+    domains: ['images.unsplash.com', 'source.unsplash.com'],
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60,
   },
-  env: {
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  },
+  compress: true,
+  poweredByHeader: false,
 }
 
 module.exports = nextConfig

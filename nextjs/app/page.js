@@ -1,131 +1,195 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { fetchFromSupabase } from '../lib/supabase'
+import { useState, useEffect } from 'react'
+import Card, { CardImage, CardContent, CardTitle, CardDescription, CardPrice } from '../components/ui/Card'
+import Button from '../components/ui/Button'
 
-const FALLBACK_DESTINATIONS = [
-  { id: 1, name: 'Bali Paradise', location: 'Bali, Indonesia', price: 1299, category: 'beach' },
-  { id: 2, name: 'Paris Adventure', location: 'Paris, France', price: 1899, category: 'city' },
-  { id: 3, name: 'Tokyo Explorer', location: 'Tokyo, Japan', price: 2199, category: 'city' },
-  { id: 4, name: 'Maldives Luxury', location: 'Maldives', price: 3499, category: 'beach' },
-  { id: 5, name: 'Swiss Alps', location: 'Zurich, Switzerland', price: 2499, category: 'mountain' },
-  { id: 6, name: 'New York City', location: 'New York, USA', price: 1799, category: 'city' },
+const features = [
+  { icon: '🛒', title: 'E-commerce', description: 'Full online store with cart and checkout', href: '/shop', color: 'from-pink-500 to-rose-500' },
+  { icon: '✈️', title: 'Travel Booking', description: 'Discover and book amazing destinations', href: '/travel', color: 'from-cyan-500 to-blue-500' },
+  { icon: '💼', title: 'Portfolio', description: 'Showcase your projects and work', href: '/portfolio', color: 'from-indigo-500 to-purple-500' },
+  { icon: '📊', title: 'Dashboard', description: 'Manage your account and orders', href: '/dashboard', color: 'from-amber-500 to-orange-500' },
 ]
 
-const EMOJI_MAP = {
-  beach: '🏝️',
-  city: '🗼',
-  mountain: '⛰️',
-  default: '🌍'
-}
+const techStack = [
+  'Next.js', 'React', 'TypeScript', 'Tailwind CSS', 
+  'Supabase', 'Cloudflare', 'PostgreSQL', 'GitHub Actions'
+]
+
+const fallbackProducts = [
+  { id: 1, name: 'Premium Web Hosting', description: 'High-performance hosting for your applications', price: 29, image_url: null },
+  { id: 2, name: 'Domain Registration', description: 'Secure your perfect domain name', price: 12, image_url: null },
+  { id: 3, name: 'SSL Certificate', description: 'Enterprise-grade security for your site', price: 49, image_url: null },
+  { id: 4, name: 'Cloud Backup', description: 'Automated backups for peace of mind', price: 19, image_url: null },
+]
 
 export default function Home() {
-  const [destinations, setDestinations] = useState(FALLBACK_DESTINATIONS)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [category, setCategory] = useState('')
-  const [loading, setLoading] = useState(true)
+  const [products, setProducts] = useState(fallbackProducts)
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    loadDestinations()
+    setLoaded(true)
   }, [])
-
-  async function loadDestinations() {
-    try {
-      const data = await fetchFromSupabase('products', { 
-        select: 'id,name,description,price,category',
-        limit: 20 
-      })
-      
-      if (data && data.length > 0) {
-        const mapped = data.map(p => ({
-          id: p.id,
-          name: p.name,
-          location: p.description || 'Various Locations',
-          price: parseFloat(p.price) || 999,
-          category: p.category || 'tourism'
-        }))
-        setDestinations(mapped)
-      }
-    } catch (e) {
-      console.log('Using fallback destinations')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const filteredDestinations = destinations.filter(dest => {
-    const matchesSearch = dest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      dest.location.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = !category || dest.category === category
-    return matchesSearch && matchesCategory
-  })
-
-  const getEmoji = (cat) => EMOJI_MAP[cat] || EMOJI_MAP.default
 
   return (
     <>
-      <nav>
-        <div className="container">
-          <Link href="/" className="logo">Sunny Travels</Link>
-          <ul className="nav-links">
-            <li><Link href="/">Home</Link></li>
-            <li><Link href="/destinations">Destinations</Link></li>
-          </ul>
-        </div>
-      </nav>
-
-      <section className="hero">
-        <h1>Discover Your Next Adventure</h1>
-        <p>Explore amazing destinations around the world and book your dream vacation today.</p>
+      {/* Hero Section */}
+      <section className="relative py-20 md:py-32 overflow-hidden">
+        {/* Background effects */}
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 via-transparent to-transparent" />
+        <div className="absolute top-20 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
         
-        <div className="search-box">
-          <input
-            type="text"
-            placeholder="Search destinations..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="">All Categories</option>
-            <option value="beach">Beach</option>
-            <option value="city">City</option>
-            <option value="mountain">Mountain</option>
-          </select>
-          <button className="btn">Search</button>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center">
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm mb-6 ${loaded ? 'animate-fade-in' : 'opacity-0'}`}>
+              <span className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse" />
+              Now with Stripe Payments
+            </div>
+            
+            <h1 className={`text-4xl md:text-6xl lg:text-7xl font-bold mb-6 ${loaded ? 'animate-slide-up' : 'opacity-0'}`}>
+              <span className="text-white">Welcome to </span>
+              <span className="gradient-text">Rhine</span>
+            </h1>
+            
+            <p className={`text-xl text-zinc-400 max-w-2xl mx-auto mb-8 ${loaded ? 'animate-slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.1s' }}>
+              Enterprise-grade multi-service platform built with modern web technologies. 
+              E-commerce, travel booking, portfolio, and more.
+            </p>
+            
+            <div className={`flex flex-col sm:flex-row gap-4 justify-center ${loaded ? 'animate-slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
+              <Link href="/shop">
+                <Button size="lg" className="glow-primary hover-lift">Browse Shop</Button>
+              </Link>
+              <Link href="/contact">
+                <Button variant="outline" size="lg">Get In Touch</Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Tech Stack */}
+          <div className={`mt-20 text-center ${loaded ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
+            <p className="text-sm text-zinc-500 mb-6">Built with modern technologies</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {techStack.map((tech, i) => (
+                <span 
+                  key={tech} 
+                  className="px-4 py-2 bg-zinc-900/80 border border-zinc-800 rounded-full text-sm text-zinc-400 hover:border-zinc-700 hover:text-white transition-all hover-lift"
+                  style={{ animationDelay: `${0.4 + i * 0.05}s` }}
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="destinations">
-        <div className="container">
-          <h2>{loading ? 'Loading...' : 'Popular Destinations'}</h2>
-          <div className="grid">
-            {filteredDestinations.map((dest, index) => (
-              <div key={dest.id} className="card" style={{ animationDelay: `${index * 0.1}s` }}>
-                <div className="card-image">{getEmoji(dest.category)}</div>
-                <div className="card-content">
-                  <h3 className="card-title">{dest.name}</h3>
-                  <p className="card-location">{dest.location}</p>
-                  <div className="card-price">
-                    ${dest.price} <span>/ person</span>
-                  </div>
-                  <Link href={`/booking?id=${dest.id}`}>
-                    <button className="btn" style={{ marginTop: '16px', width: '100%' }}>
-                      Book Now
-                    </button>
+      {/* Features Section */}
+      <section className="py-20 bg-zinc-900/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Our Services</h2>
+          <p className="text-zinc-400 text-center mb-12 max-w-xl mx-auto">
+            Everything you need to build, launch, and grow your business online
+          </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, index) => (
+              <Link key={feature.title} href={feature.href}>
+                <Card className="h-full group card-animate hover-lift" style={{ animationDelay: `${index * 0.1}s` }}>
+                  <div className={`h-1 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
+                  <CardContent className="text-center p-6">
+                    <div className="text-5xl mb-4 transform group-hover:scale-110 transition-transform duration-300">{feature.icon}</div>
+                    <CardTitle className="group-hover:text-indigo-400 transition-colors">{feature.title}</CardTitle>
+                    <CardDescription>{feature.description}</CardDescription>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Products Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center mb-12">
+            <div>
+              <h2 className="text-3xl font-bold">Featured Products</h2>
+              <p className="text-zinc-400 mt-2">Premium services for your business</p>
+            </div>
+            <Link href="/shop">
+              <Button variant="ghost" className="hidden md:inline-flex">View All →</Button>
+            </Link>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {products.map((product, index) => (
+              <Card key={product.id} className="card-animate hover-lift group" style={{ animationDelay: `${index * 0.1}s` }}>
+                <CardImage 
+                  src={product.image_url} 
+                  alt={product.name}
+                  className="group-hover:scale-105 transition-transform duration-300"
+                />
+                <CardContent>
+                  <CardTitle className="group-hover:text-indigo-400 transition-colors">{product.name}</CardTitle>
+                  <CardDescription>{product.description}</CardDescription>
+                  <CardPrice>${product.price}/mo</CardPrice>
+                  <Link href="/checkout">
+                    <Button className="w-full mt-4">Add to Cart</Button>
                   </Link>
-                </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          
+          <div className="mt-8 text-center md:hidden">
+            <Link href="/shop">
+              <Button variant="outline">View All Products</Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 bg-zinc-900/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {[
+              { value: '10K+', label: 'Happy Customers' },
+              { value: '99.9%', label: 'Uptime' },
+              { value: '50+', label: 'Integrations' },
+              { value: '24/7', label: 'Support' },
+            ].map((stat, i) => (
+              <div key={stat.label} className={`text-center card-animate`} style={{ animationDelay: `${i * 0.1}s` }}>
+                <div className="text-4xl md:text-5xl font-bold gradient-text">{stat.value}</div>
+                <div className="text-zinc-500 mt-2">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <footer>
-        <div className="container">
-          <p>&copy; 2026 Sunny Travels. All rights reserved.</p>
+      {/* CTA Section */}
+      <section className="py-20">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <div className="p-12 bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-2xl border border-zinc-800">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
+            <p className="text-zinc-400 mb-8 max-w-lg mx-auto">
+              Join thousands of users who trust Rhine for their digital needs. 
+              Start your free trial today.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/register">
+                <Button size="lg" className="glow-primary">Create Account</Button>
+              </Link>
+              <Link href="/pricing">
+                <Button variant="outline" size="lg">View Pricing</Button>
+              </Link>
+            </div>
+          </div>
         </div>
-      </footer>
+      </section>
     </>
   )
 }

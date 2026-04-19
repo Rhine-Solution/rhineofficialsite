@@ -817,3 +817,166 @@ section {
 .auth-link:hover {
     color: var(--color-primary-hover) !important;
 }
+
+/* Dashboard Section */
+.dashboard {
+    padding: 80px 0;
+    background: var(--color-bg-secondary);
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 40px;
+}
+
+.dashboard-card {
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+}
+
+.dashboard-card h3 {
+    color: var(--color-secondary);
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+}
+
+.dashboard-info p {
+    margin: 8px 0;
+    color: var(--color-text-muted);
+}
+
+.dashboard-info strong {
+    color: var(--color-text);
+}
+
+.dashboard-messages {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.message-item {
+    padding: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+    background: var(--color-bg-secondary);
+}
+
+.message-item p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+}
+
+.message-item small {
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+}
+
+.dashboard-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dashboard-actions .btn {
+    text-align: center;
+}
+
+/* File Upload */
+.file-upload-area {
+    margin-top: 12px;
+}
+
+.upload-dropzone {
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.upload-dropzone:hover, .upload-dropzone.dragover {
+    border-color: var(--color-primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.upload-dropzone p {
+    color: var(--color-text-muted);
+    margin-bottom: 12px;
+}
+
+.upload-progress {
+    margin-top: 16px;
+}
+
+.progress-bar {
+    height: 8px;
+    background: var(--color-bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+}
+
+#upload-status {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-top: 8px;
+}
+
+.uploaded-files {
+    margin-top: 16px;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+}
+
+.file-icon {
+    font-size: 1.2rem;
+}
+
+.file-name {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.file-link {
+    color: var(--color-primary);
+    font-size: 0.85rem;
+}
+
+.empty-state {
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+/* Members Section */
+.members {
+    padding: 80px 0;
+    background: linear-gradient(135deg, var(--color-bg-secondary) 0%, rgba(99, 102, 241, 0.1) 100%);
+    border-top: 1px solid var(--color-primary);
+    border-bottom: 1px solid var(--color-primary);
+}
+
+.section-subtitle {
+    text-align: center;
+    color: var(--color-text-muted);
+    margin-top: -20px;
+    margin-bottom: 40px;
+}

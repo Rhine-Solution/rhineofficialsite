@@ -1,0 +1,68 @@
+name: Next.js CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: nextjs/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd nextjs
+          npm ci
+
+      - name: Lint
+        run: |
+          cd nextjs
+          npm run lint
+
+      - name: Build
+        run: |
+          cd nextjs
+          npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nextjs-build
+          path: nextjs/.next
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nextjs-build
+          path: nextjs/.next
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          project-name: rhineofficialsite
+          directory: nextjs/.next
+          # Optional: Branch to deploy (default: production)
+          # branch: main

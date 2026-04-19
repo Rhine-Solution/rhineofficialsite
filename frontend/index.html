@@ -20,6 +20,7 @@
                 <li><a href="#skills">Skills</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#contact">Contact</a></li>
+                <li><a href="#dashboard" id="dashboard-link" class="dashboard-link" style="display: none;">Dashboard</a></li>
                 <li><a href="#" id="auth-link" class="auth-link">Login</a></li>
             </ul>
             <button class="menu-toggle" aria-label="Toggle menu">
@@ -69,6 +70,49 @@
     <span class="code-keyword">def</span> <span class="code-function">__init__</span>(<span class="code-keyword">self</span>):
         <span class="code-keyword">self</span>.skills = [<span class="code-string">"Python"</span>, <span class="code-string">"PHP"</span>, <span class="code-string">"React"</span>]
         <span class="code-keyword">self</span>.passion = <span class="code-string">"Creating"</span></code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="dashboard" class="dashboard" style="display: none;">
+            <div class="container">
+                <h2 class="section-title">My Dashboard</h2>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Profile</h3>
+                        <div class="dashboard-info">
+                            <p><strong>Email:</strong> <span id="user-email">-</span></p>
+                            <p><strong>Member since:</strong> <span id="user-created">-</span></p>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Your Messages</h3>
+                        <div id="user-messages" class="dashboard-messages">
+                            <p class="empty-state">No messages yet</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Quick Actions</h3>
+                        <div class="dashboard-actions">
+                            <a href="#contact" class="btn btn-secondary">Send a Message</a>
+                            <a href="#projects" class="btn btn-secondary">View Projects</a>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>File Upload</h3>
+                        <div class="file-upload-area" id="file-upload-area">
+                            <input type="file" id="file-input" accept="image/*,.pdf,.doc,.docx,.txt" hidden>
+                            <div class="upload-dropzone" id="upload-dropzone">
+                                <p>Drag & drop files here or click to upload</p>
+                                <button type="button" class="btn btn-secondary" id="upload-btn">Choose File</button>
+                            </div>
+                            <div id="upload-progress" class="upload-progress" style="display: none;">
+                                <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+                                <p id="upload-status">Uploading...</p>
+                            </div>
+                            <div id="uploaded-files" class="uploaded-files"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -170,6 +214,29 @@
         <section id="projects" class="projects">
             <div class="container">
                 <h2 class="section-title">Projects</h2>
+                <div class="projects-grid"></div>
+            </div>
+        </section>
+
+        <section id="members" class="members" style="display: none;">
+            <div class="container">
+                <h2 class="section-title">Members Only</h2>
+                <p class="section-subtitle">Exclusive content available to registered members</p>
+                <div class="projects-grid">
+                    <article class="project-card">
+                        <div class="project-image">
+                            <span class="project-icon">🔒</span>
+                        </div>
+                        <div class="project-content">
+                            <h3>Laravel Job Board</h3>
+                            <p>Full-stack job board with auth, admin dashboard, and job management.</p>
+                            <div class="project-tags"><span>Laravel</span><span>PHP</span><span>MySQL</span></div>
+                            <a href="https://rhine-laravel.pages.dev" class="project-link" target="_blank">View Project →</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
                 <div class="projects-grid">
                     <article class="project-card">
                         <div class="project-image">
@@ -293,6 +360,10 @@
                         <div class="form-group">
                             <label for="email">Email</label>
                             <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject">
                         </div>
                         <div class="form-group">
                             <label for="message">Message</label>

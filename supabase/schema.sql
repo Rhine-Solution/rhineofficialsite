@@ -176,6 +176,25 @@ CREATE POLICY "Users can update own appointments" ON public.appointments FOR UPD
 );
 
 -- ================================================
+-- CONTACTS TABLE (for contact form)
+-- ================================================
+CREATE TABLE IF NOT EXISTS public.contacts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    subject TEXT,
+    message TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.contacts ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can submit contact form" ON public.contacts FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can view own contacts" ON public.contacts FOR SELECT USING (
+    auth.uid() IN (SELECT id FROM public.users WHERE email = auth.jwt()->>'email')
+);
+
+-- ================================================
 -- STORAGE BUCKET
 -- ================================================
 INSERT INTO storage.buckets (id, name, public)
