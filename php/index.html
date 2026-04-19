@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhine Shop - PHP Webshop on Vercel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0f; color: #e4e4e7; line-height: 1.6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        nav { background: rgba(10,10,15,0.95); border-bottom: 1px solid #27272a; padding: 16px 0; position: sticky; top: 0; z-index: 100; }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: #6366f1; text-decoration: none; }
+        .logo span { color: #ec4899; }
+        .nav-links { display: flex; gap: 24px; list-style: none; }
+        .nav-links a { color: #a1a1aa; text-decoration: none; transition: color 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; }
+        .cart-badge { background: #ec4899; color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; }
+        
+        .hero { text-align: center; padding: 60px 0; background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0f 100%); }
+        .hero h1 { font-size: 3rem; margin-bottom: 16px; }
+        .hero h1 span { background: linear-gradient(90deg, #6366f1, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { color: #a1a1aa; font-size: 1.2rem; max-width: 600px; margin: 0 auto 24px; }
+        .tech-badge { display: inline-block; padding: 8px 16px; background: #1e1e2e; border-radius: 8px; margin: 4px; color: #22d3ee; font-size: 0.9rem; }
+        
+        .products-section { padding: 40px 0; }
+        .section-title { font-size: 2rem; margin-bottom: 32px; text-align: center; }
+        
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+        .product-card { background: #12121a; border: 1px solid #27272a; border-radius: 12px; overflow: hidden; transition: transform 0.3s, border-color 0.3s; }
+        .product-card:hover { transform: translateY(-4px); border-color: #6366f1; }
+        .product-image { height: 160px; background: linear-gradient(135deg, #1e1e2e, #2a2a3e); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+        .product-info { padding: 20px; }
+        .product-title { font-size: 1.2rem; margin-bottom: 8px; color: #fff; }
+        .product-price { color: #22d3ee; font-size: 1.3rem; font-weight: 600; margin-bottom: 12px; }
+        .product-desc { color: #a1a1aa; font-size: 0.9rem; margin-bottom: 16px; }
+        .btn { display: inline-block; padding: 12px 24px; background: #6366f1; color: #fff; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; transition: background 0.3s; font-size: 1rem; }
+        .btn:hover { background: #818cf8; }
+        .btn-outline { background: transparent; border: 1px solid #6366f1; }
+        .btn-outline:hover { background: #6366f1; }
+        
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; padding: 40px 0; }
+        .feature-card { background: #12121a; padding: 24px; border-radius: 12px; border: 1px solid #27272a; text-align: center; }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 16px; }
+        .feature-title { font-size: 1.2rem; margin-bottom: 8px; color: #fff; }
+        .feature-desc { color: #a1a1aa; font-size: 0.9rem; }
+        
+        footer { background: #12121a; border-top: 1px solid #27272a; padding: 24px 0; text-align: center; color: #a1a1aa; }
+        
+        .loading { text-align: center; padding: 40px; color: #a1a1aa; }
+        .error { background: rgba(239,68,68,0.2); border: 1px solid #ef4444; color: #ef4444; padding: 16px; border-radius: 8px; margin: 20px 0; }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .nav-links { display: none; }
+            .products-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="/" class="logo">Rhine<span>Shop</span></a>
+            <ul class="nav-links">
+                <li><a href="#products">Products</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#">Cart <span class="cart-badge" id="cart-count">0</span></a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <section class="hero">
+        <div class="container">
+            <h1>Welcome to <span>Rhine Shop</span></h1>
+            <p>Full-featured e-commerce platform powered by PHP on Vercel Serverless Functions</p>
+            <div>
+                <span class="tech-badge">PHP 8.2</span>
+                <span class="tech-badge">Vercel</span>
+                <span class="tech-badge">Supabase</span>
+                <span class="tech-badge">Cloudflare</span>
+            </div>
+        </div>
+    </section>
+    
+    <section class="products-section" id="products">
+        <div class="container">
+            <h2 class="section-title">Our Products</h2>
+            <div id="products-container">
+                <div class="loading">Loading products...</div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="features">
+        <div class="container">
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">Serverless PHP</h3>
+                    <p class="feature-desc">Powered by Vercel's PHP runtime for infinite scalability</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🗄️</div>
+                    <h3 class="feature-title">Supabase Backend</h3>
+                    <p class="feature-desc">PostgreSQL database with real-time capabilities</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Global CDN</h3>
+                    <p class="feature-desc">Deployed on Cloudflare edge network</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Rhine Shop. Built with PHP + Vercel. Powered by Cloudflare.</p>
+            <p style="margin-top: 8px; font-size: 0.9rem;">
+                <a href="/" style="color: #6366f1;">Main Site</a> | 
+                <a href="https://github.com/Rhine-Solution/rhineofficialsite" style="color: #6366f1;">GitHub</a>
+            </p>
+        </div>
+    </footer>
+    
+    <script>
+        // Cart state
+        let cart = [];
+        
+        // Fetch products from API
+        async function loadProducts() {
+            const container = document.getElementById('products-container');
+            
+            try {
+                const response = await fetch('/api/');
+                const data = await response.json();
+                
+                if (data.success && data.products) {
+                    renderProducts(data.products);
+                } else {
+                    container.innerHTML = '<div class="error">Failed to load products</div>';
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+                container.innerHTML = '<div class="error">Error connecting to API. Make sure the PHP function is deployed.</div>';
+            }
+        }
+        
+        function renderProducts(products) {
+            const container = document.getElementById('products-container');
+            
+            container.innerHTML = '<div class="products-grid">' + 
+                products.map(product => `
+                    <div class="product-card">
+                        <div class="product-image">🛒</div>
+                        <div class="product-info">
+                            <h3 class="product-title">${product.name}</h3>
+                            <div class="product-price">$${product.price}</div>
+                            <p class="product-desc">${product.description || 'Premium quality product'}</p>
+                            <button class="btn" onclick="addToCart(${product.id}, '${product.name}', ${product.price})">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `).join('') + 
+                '</div>';
+        }
+        
+        function addToCart(id, name, price) {
+            cart.push({ id, name, price });
+            updateCartCount();
+            alert('Added to cart: ' + name);
+        }
+        
+        function updateCartCount() {
+            document.getElementById('cart-count').textContent = cart.length;
+        }
+        
+        // Load products on page load
+        loadProducts();
+    </script>
+</body>
+</html>
