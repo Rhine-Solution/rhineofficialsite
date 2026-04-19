@@ -1,67 +1,52 @@
 # Rhine Official Site
 
-A React + TypeScript website with Three.js 3D effects, Supabase auth, and modern UI. Plus comprehensive developer portfolio demonstrating multiple technologies.
+Developer portfolio demonstrating full-stack development skills across multiple technologies.
 
-## Tech Stack
+## Projects
 
-### Production Site (Live)
-- **Frontend**: React 18, TypeScript, Vite
-- **Styling**: Tailwind CSS, DaisyUI
-- **3D**: Three.js, WebGPU
-- **Auth**: Supabase
-- **Routing**: React Router DOM
+| Section | Technology | Description |
+|---------|------------|-------------|
+| **python/** | Python | Chatbot & Book Manager CLI apps |
+| **php/** | PHP | Webshop with cart, auth, orders |
+| **php2/** | PHP OOP | Classes, inheritance, design patterns |
+| **laravel/** | Laravel | Job board application (blueprint) |
+| **frontend/** | HTML/CSS/JS | Portfolio website |
+| **nextjs/** | Next.js | Sunny Travels booking app |
+| **svelte/** | Svelte | Appointment scheduling app |
+| **supabase/** | Database | Schema & configuration |
 
-### Learning Projects (This Repo)
-| Technology | Purpose | Status |
-|------------|---------|--------|
-| Python | CLI tools, fundamentals | ✅ Complete |
-| PHP | Web development | ✅ Complete |
-| PHP 2 | OOP Portfolio | ✅ Complete |
-| Laravel | Full-stack framework | 🔧 Blueprint |
-| HTML/CSS/JS | Frontend fundamentals | ✅ Complete |
-| Next.js | React framework | ✅ Complete |
-| Svelte | Lightweight frontend | ✅ Complete |
-| Supabase | Backend-as-a-Service | ✅ Setup |
+## Running Projects
 
-## Quick Start
-
-### Production Site
 ```bash
-npm run dev      # Start development server
-npm run build    # Build for production
-```
-
-### Learning Projects
-```bash
-# Python demos
-cd python && python chatbot.py
+# Frontend (HTML/CSS/JS)
+cd frontend && open index.html
 
 # PHP Webshop
 cd php && php -S localhost:8000
 
-# Next.js app
+# PHP OOP Portfolio
+cd php2 && php -S localhost:8000
+
+# Next.js (requires Node.js)
 cd nextjs && npm install && npm run dev
+
+# Svelte (requires Node.js)
+cd svelte && npm install && npm run dev
+
+# Python
+cd python && python chatbot.py
 ```
 
-## Project Structure
+## Tech Stack Demonstrated
 
-```
-rhineofficialsite/
-├── src/                  # Production React app
-├── python/               # Python learning demos
-├── php/                  # PHP webshop
-├── php2/                 # PHP OOP Portfolio
-├── laravel/              # Laravel job board
-├── frontend/             # HTML/CSS portfolio
-├── nextjs/               # Next.js Sunny Travels
-├── svelte/               # Svelte appointments
-├── supabase/             # Database schema
-└── docs/                 # Planning docs
-```
-
-## Domain
-- **Live**: https://rhinesolution.com
-- **Pages**: https://rhineofficialsite.pages.dev
+- Python (fundamentals, file I/O, JSON)
+- PHP (sessions, database, OOP)
+- Laravel (full-stack framework)
+- HTML/CSS/JavaScript
+- React/Next.js
+- Svelte
+- Supabase (backend)
+- Cloudflare (deployment)
 
 ## License
 MIT
