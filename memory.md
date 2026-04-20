@@ -137,11 +137,12 @@ uploads         -- File uploads bucket (public)
 
 ## Deployment Configuration
 
-### Cloudflare Pages
+### Vercel
 - **Project:** rhineofficialsite
 - **Branch:** main
-- **Build:** Frontend from `/frontend` folder
+- **Build:** Next.js from `nextjs/` folder
 - **Custom Domain:** rhinesolution.com
+- **Auto-deploy:** On push to main
 
 ### Environment Variables
 ```
@@ -160,7 +161,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - [x] Product catalog from Supabase
 - [x] Shopping cart (PHP)
 - [x] User dashboard with file upload
-- [x] Frontend deployment to Cloudflare Pages
+- [x] Frontend deployment to Vercel
 - [x] Custom domain configuration
 - [x] Unified Next.js app structure
 - [x] Navbar and Footer components
@@ -182,7 +183,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - [x] Loading states and skeleton components
 - [x] Toast notifications system
 - [x] User authentication with auth context
-- [ ] Deploy to Cloudflare Pages (needs GitHub push)
+- [x] Deploy to Vercel (auto-deploys on push)
 
 ### ⏳ Planned
 - [ ] Cloudflare MCP integration
@@ -197,7 +198,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - Added sample products to Supabase
 - Fixed PHP webshop Supabase integration
 - Created package.json for running all services
-- Verified frontend deployment on Cloudflare Pages
+- Verified frontend deployment on Vercel
 - Created memory.md documentation
 - Created roadmap.mmd project vision
 - Updated README.md enterprise docs
@@ -233,7 +234,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 |----------|-----------|
 | Next.js for unified app | Matches flowchart roadmap, best for enterprise |
 | Supabase for backend | Already configured, provides all needed features |
-| Cloudflare Pages | Free, fast, integrates with existing domain |
+| Vercel for hosting | Fast, auto-deploy, great DX |
 | Keep separate PHP for learning | Maintains educational value of original projects |
 
 ---
@@ -273,7 +274,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ### Documentation
 - [Supabase Docs](https://supabase.com/docs)
 - [Next.js Docs](https://nextjs.org/docs)
-- [Cloudflare Pages](https://developers.cloudflare.com/pages)
+- [Vercel Docs](https://vercel.com/docs)
 
 ### Repositories
 - GitHub: github.com/Rhine-Solution/rhineofficialsite

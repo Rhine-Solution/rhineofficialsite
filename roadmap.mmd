@@ -125,7 +125,7 @@ graph TD
     end
     
     subgraph Infrastructure
-        H[Cloudflare Pages]
+        H[Vercel]
         I[Cloudflare DNS]
         J[GitHub Actions]
     end
@@ -224,7 +224,7 @@ npm run build
 flowchart LR
     A[Commit] --> B[GitHub]
     B --> C[CI Checks]
-    C --> D[Cloudflare Pages]
+    C --> D[Vercel]
     D --> E[Production]
 ```
 
@@ -254,13 +254,14 @@ flowchart LR
 - **Documentation:** See `/docs` folder
 - **Supabase:** [supabase.com/docs](https://supabase.com/docs)
 - **Next.js:** [nextjs.org/docs](https://nextjs.org/docs)
-- **Cloudflare:** [developers.cloudflare.com](https://developers.cloudflare.com)
+- **Vercel:** [vercel.com/docs](https://vercel.com/docs)
+- **Cloudflare:** [developers.cloudflare.com](https://developers.cloudflare.com) (DNS only)
 
 ### Getting Help
 1. Check memory.md for context
 2. Review existing code
 3. Check Supabase dashboard
-4. Check Cloudflare logs
+4. Check Vercel dashboard
 
 ---
 

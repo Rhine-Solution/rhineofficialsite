@@ -33,17 +33,30 @@ export default function Home() {
 
   useEffect(() => {
     setLoaded(true)
-    // Show verification after 2 seconds
-    const timer = setTimeout(() => {
-      setShowVerify(true)
-    }, 2000)
-    return () => clearTimeout(timer)
+    
+    // Check if already verified (cookie set for 24 hours)
+    const isVerified = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('turnstile_verified='))
+    
+    if (!isVerified) {
+      // Show verification after 2 seconds if not verified
+      const timer = setTimeout(() => {
+        setShowVerify(true)
+      }, 2000)
+      return () => clearTimeout(timer)
+    } else {
+      setVerified(true)
+    }
   }, [])
 
   const handleVerify = (token) => {
     if (token) {
       setVerified(true)
       setShowVerify(false)
+      // Set cookie for 24 hours
+      const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString()
+      document.cookie = `turnstile_verified=true; expires=${expires}; path=/; SameSite=Strict`
     }
   }
 

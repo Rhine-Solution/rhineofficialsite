@@ -1,31 +1,74 @@
 <script>
-  let appointments = [
-    { id: 1, title: 'Consultation', client: 'John Doe', date: '2026-04-20', time: '10:00', status: 'confirmed' },
-    { id: 2, title: 'Design Review', client: 'Jane Smith', date: '2026-04-21', time: '14:00', status: 'pending' },
-    { id: 3, title: 'Project Update', client: 'Bob Wilson', date: '2026-04-22', time: '11:00', status: 'confirmed' },
-  ]
+  import { onMount } from 'svelte'
+  import { user, profile } from '$lib/auth.js'
+  import { supabase } from '$lib/supabase.js'
 
+  let appointments = []
+  let loading = true
   let showBookingForm = false
   let selectedDate = ''
   let selectedTime = ''
   let appointmentTitle = ''
 
-  function bookAppointment() {
-    if (selectedDate && selectedTime && appointmentTitle) {
-      appointments = [...appointments, {
-        id: appointments.length + 1,
-        title: appointmentTitle,
-        client: 'You',
-        date: selectedDate,
-        time: selectedTime,
-        status: 'pending'
-      }]
+  onMount(async () => {
+    await fetchAppointments()
+  })
+
+  async function fetchAppointments() {
+    if (!$user) return
+    
+    loading = true
+    
+    let query = supabase
+      .from('appointments')
+      .select('*')
+      .order('datetime', { ascending: true })
+    
+    // Clients see their own, employees/admins see all
+    if ($profile?.role === 'client') {
+      query = query.eq('user_id', $user.id)
+    }
+    
+    const { data, error } = await query
+    
+    if (!error && data) {
+      appointments = data
+    }
+    
+    loading = false
+  }
+
+  async function bookAppointment() {
+    if (!selectedDate || !selectedTime || !appointmentTitle) return
+    
+    const datetime = `${selectedDate}T${selectedTime}:00`
+    
+    const { error } = await supabase.from('appointments').insert({
+      user_id: $user.id,
+      title: appointmentTitle,
+      datetime: datetime,
+      duration_minutes: 60,
+      status: 'pending'
+    })
+    
+    if (!error) {
       showBookingForm = false
       appointmentTitle = ''
       selectedDate = ''
       selectedTime = ''
+      await fetchAppointments()
       alert('Appointment booked successfully!')
     }
+  }
+
+  function formatDate(datetime) {
+    const date = new Date(datetime)
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }
+
+  function formatTime(datetime) {
+    const date = new Date(datetime)
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
   }
 </script>
 
@@ -46,49 +89,67 @@
     <section class="hero">
       <h1>Appointment Dashboard</h1>
       <p>Manage your scheduled appointments and book new ones.</p>
+      {#if $profile}
+        <span class="role-badge">{$profile.role}</span>
+      {/if}
     </section>
 
-    {#if showBookingForm}
-      <section class="booking-form">
-        <h2>Book New Appointment</h2>
-        <form on:submit|preventDefault={bookAppointment}>
-          <div class="form-group">
-            <label for="title">Appointment Title</label>
-            <input type="text" id="title" bind:value={appointmentTitle} required placeholder="e.g., Consultation" />
+    {#if $user}
+      {#if showBookingForm}
+        <section class="booking-form">
+          <h2>Book New Appointment</h2>
+          <form on:submit|preventDefault={bookAppointment}>
+            <div class="form-group">
+              <label for="title">Appointment Title</label>
+              <input type="text" id="title" bind:value={appointmentTitle} required placeholder="e.g., Consultation" />
+            </div>
+            <div class="form-group">
+              <label for="date">Date</label>
+              <input type="date" id="date" bind:value={selectedDate} required />
+            </div>
+            <div class="form-group">
+              <label for="time">Time</label>
+              <input type="time" id="time" bind:value={selectedTime} required />
+            </div>
+            <button type="submit" class="btn">Book Appointment</button>
+          </form>
+        </section>
+      {/if}
+
+      <section class="appointments">
+        <h2>
+          {$profile?.role === 'client' ? 'Your Appointments' : 'All Appointments'}
+        </h2>
+        
+        {#if loading}
+          <p class="loading">Loading appointments...</p>
+        {:else if appointments.length === 0}
+          <p class="empty">No appointments found.</p>
+        {:else}
+          <div class="appointment-list">
+            {#each appointments as apt}
+              <div class="appointment-card">
+                <div class="appointment-date">
+                  <span class="day">{new Date(apt.datetime).getDate()}</span>
+                  <span class="month">{new Date(apt.datetime).toLocaleString('default', { month: 'short' })}</span>
+                </div>
+                <div class="appointment-details">
+                  <h3>{apt.title}</h3>
+                  <p>{formatTime(apt.datetime)}</p>
+                </div>
+                <div class="appointment-status" class:confirmed={apt.status === 'confirmed'} class:pending={apt.status === 'pending'}>
+                  {apt.status}
+                </div>
+              </div>
+            {/each}
           </div>
-          <div class="form-group">
-            <label for="date">Date</label>
-            <input type="date" id="date" bind:value={selectedDate} required />
-          </div>
-          <div class="form-group">
-            <label for="time">Time</label>
-            <input type="time" id="time" bind:value={selectedTime} required />
-          </div>
-          <button type="submit" class="btn">Book Appointment</button>
-        </form>
+        {/if}
       </section>
-    {/if}
-
-    <section class="appointments">
-      <h2>Your Appointments</h2>
-      <div class="appointment-list">
-        {#each appointments as apt}
-          <div class="appointment-card">
-            <div class="appointment-date">
-              <span class="day">{apt.date.split('-')[2]}</span>
-              <span class="month">APR</span>
-            </div>
-            <div class="appointment-details">
-              <h3>{apt.title}</h3>
-              <p>{apt.client} • {apt.time}</p>
-            </div>
-            <div class="appointment-status" class:confirmed={apt.status === 'confirmed'}>
-              {apt.status}
-            </div>
-          </div>
-        {/each}
+    {:else}
+      <div class="not-logged-in">
+        <p>Please <a href="/login">sign in</a> to view your appointments.</p>
       </div>
-    </section>
+    {/if}
   </div>
 </main>
 
@@ -167,6 +228,39 @@
 
   .hero p {
     color: #a1a1aa;
+  }
+
+  .role-badge {
+    display: inline-block;
+    background: #6366f1;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-top: 12px;
+    text-transform: capitalize;
+  }
+
+  .loading, .empty {
+    text-align: center;
+    color: #71717a;
+    padding: 40px;
+  }
+
+  .not-logged-in {
+    text-align: center;
+    padding: 40px;
+    background: #12121a;
+    border-radius: 12px;
+  }
+
+  .not-logged-in a {
+    color: #6366f1;
+  }
+
+  .appointment-status.pending {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
   }
 
   .booking-form {

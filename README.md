@@ -33,7 +33,7 @@ Rhine Official Site is a production-ready enterprise platform demonstrating full
 |-------|------------|---------|
 | Frontend | Next.js 14, React 18 | UI Framework |
 | Styling | Tailwind CSS | Responsive design |
-| Language | JavaScript | Language |
+| Language | TypeScript, PHP | Language |
 | Backend | Supabase | Database, Auth, Storage |
 | Hosting | Vercel | Deployment |
 | CDN | Cloudflare | DNS only |
@@ -48,8 +48,8 @@ Rhine Official Site is a production-ready enterprise platform demonstrating full
 │  │    DNS      │  (Domain management only)         │
 │  └─────────────┘                                    │
 └─────────────────────────────────────────────────────┘
-                           │
-                           ▼
+                            │
+                            ▼
 ┌─────────────────────────────────────────────────────┐
 │                      Vercel                         │
 │  ┌─────────────┐  ┌─────────────┐                   │
@@ -57,8 +57,8 @@ Rhine Official Site is a production-ready enterprise platform demonstrating full
 │  │  (Next.js)  │  │  (PHP)      │                   │
 │  └─────────────┘  └─────────────┘                   │
 └─────────────────────────────────────────────────────┘
-```
-                          ▼
+                            │
+                            ▼
 ┌─────────────────────────────────────────────────────┐
 │                     Supabase                         │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  │
@@ -109,21 +109,15 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 
 ```
 rhineofficialsite/
-├── app/                    # Next.js App Router
-│   ├── (public)/          # Public pages
-│   ├── (auth)/            # Authentication
-│   ├── (dashboard)/       # User dashboard
-│   └── (admin)/           # Admin panel
-├── components/            # React components
-│   ├── ui/               # Base UI components
-│   ├── layout/           # Layout components
-│   └── features/         # Feature components
-├── lib/                   # Utilities
-│   ├── supabase.ts       # Supabase client
-│   └── utils.ts          # Helper functions
-├── public/                # Static assets
+├── nextjs/                # Main site (Next.js 14)
+│   ├── app/               # Next.js App Router
+│   ├── components/       # React components
+│   ├── lib/              # Utilities & Supabase client
+│   └── public/           # Static assets
+├── php/                   # PHP Shop (Vercel)
+├── supabase/              # Database configuration
+├── .github/workflows/     # CI/CD pipelines
 ├── memory.md             # Project documentation
-├── roadmap.mmd           # Project roadmap
 └── README.md             # This file
 ```
 
@@ -168,23 +162,19 @@ All tables have Row Level Security enabled with policies for:
 
 | Service | URL | Platform |
 |---------|-----|----------|
-| Main Site | https://www.rhinesolution.com | Cloudflare Pages |
+| Main Site | https://www.rhinesolution.com | Vercel (Next.js) |
 | PHP Shop | https://shop.rhinesolution.com | Vercel (PHP) |
-| Next.js App | https://rhineofficialsite.vercel.app | Vercel |
 
 ### Auto-Deployment
 
-- **Frontend (Cloudflare Pages):** Automatic on push to main
-- **Shop (Vercel PHP):** Automatic on push to main
+- **Main Site (Vercel):** Automatic on push to main
+- **PHP Shop (Vercel):** Automatic on push to main
 
 ### Manual Deployment
 
 ```bash
-# Build the project
-npm run build
-
-# Deploy to Cloudflare Pages
-npx wrangler pages deploy dist
+# Deploy to Vercel (or connect GitHub for auto-deploy)
+vercel --prod
 ```
 
 ---
@@ -240,4 +230,4 @@ MIT License - see LICENSE file for details.
 
 ---
 
-*Built with ❤️ using Next.js, Supabase, and Cloudflare.*
+*Built with ❤️ using Next.js, Supabase, Vercel, and Cloudflare DNS.*
