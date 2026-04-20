@@ -29,9 +29,11 @@
 
 ---
 
-## Google OAuth (To be configured)
+## Google OAuth
 
-- **Client ID:** TODO - Create in Google Cloud Console
+- **User support email:** rhinesolution@gmail.com
+- **App name:** Rhine Solution
+- **Client ID:** TODO - Get from Google Cloud Console
 - **Client Secret:** TODO - Get from Google Cloud Console
 - **Callback URL:** https://crqjedivobupxbbathux.supabase.co/auth/v1/callback
 
@@ -40,6 +42,7 @@
 2. Create OAuth 2.0 Client ID (Web application)
 3. Add callback URL to "Authorized redirect URIs"
 4. Copy Client ID and Client Secret to Supabase (Authentication → Providers → Google)
+5. Add test user: rhinesolution@gmail.com
 
 ---
 
