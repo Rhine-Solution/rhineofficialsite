@@ -8,17 +8,64 @@ import Button from '../../components/ui/Button'
 import { useAuth } from '../../components/AuthProvider'
 import { useCart } from '../../components/CartProvider'
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://crqjedivobupxbbathux.supabase.co'
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNycWplZGl2b2J1cHhiYmF0aHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTA5MDEsImV4cCI6MjA5MDM2NjkwMX0.0_HAu_sj7j-3racZK9nWIghKdNEXWRTHgLme2sUMAhM'
+
 export default function DashboardPage() {
-  const { user, loading: authLoading, signOut, isAuthenticated } = useAuth()
+  const { user, loading: authLoading, signOut, isAuthenticated, profile } = useAuth()
   const { cartCount } = useCart()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState('overview')
+  const [orders, setOrders] = useState([])
+  const [bookings, setBookings] = useState([])
+  const [loadingData, setLoadingData] = useState(true)
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.push('/login')
     }
   }, [authLoading, isAuthenticated, router])
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchUserData()
+    }
+  }, [isAuthenticated, user])
+
+  async function fetchUserData() {
+    setLoadingData(true)
+    try {
+      // Fetch orders
+      const ordersRes = await fetch(
+        `${SUPABASE_URL}/rest/v1/orders?user_id=eq.${user.id}&order=created_at.desc&limit=5`,
+        {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+          }
+        }
+      )
+      const ordersData = await ordersRes.json()
+      setOrders(Array.isArray(ordersData) ? ordersData : [])
+
+      // Fetch appointments
+      const appointmentsRes = await fetch(
+        `${SUPABASE_URL}/rest/v1/appointments?user_id=eq.${user.id}&order=datetime.desc&limit=5`,
+        {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+          }
+        }
+      )
+      const appointmentsData = await appointmentsRes.json()
+      setBookings(Array.isArray(appointmentsData) ? appointmentsData : [])
+    } catch (error) {
+      console.error('Failed to fetch user data:', error)
+    } finally {
+      setLoadingData(false)
+    }
+  }
 
   const handleSignOut = () => {
     signOut()
@@ -37,16 +84,10 @@ export default function DashboardPage() {
   }
 
   const stats = [
-    { label: 'Orders', value: '12', icon: '📦' },
-    { label: 'Bookings', value: '3', icon: '📅' },
+    { label: 'Orders', value: orders.length, icon: '📦' },
+    { label: 'Bookings', value: bookings.length, icon: '📅' },
     { label: 'Cart Items', value: cartCount || '0', icon: '🛒' },
-    { label: 'Messages', value: '5', icon: '💬' },
-  ]
-
-  const recentOrders = [
-    { id: '1', date: '2026-04-15', status: 'Delivered', total: 149.99 },
-    { id: '2', date: '2026-04-10', status: 'Processing', total: 89.99 },
-    { id: '3', date: '2026-04-05', status: 'Shipped', total: 299.99 },
+    { label: 'Appointments', value: bookings.filter(b => b.status === 'confirmed').length, icon: '✅' },
   ]
 
   const getInitials = (email) => {
@@ -99,28 +140,37 @@ export default function DashboardPage() {
                 <CardContent>
                   <div className="flex justify-between items-center mb-6">
                     <CardTitle>Recent Orders</CardTitle>
-                    <Button variant="ghost" size="sm">View All</Button>
+                    <Link href="/orders"><Button variant="ghost" size="sm">View All</Button></Link>
                   </div>
-                  <div className="space-y-4">
-                    {recentOrders.map(order => (
-                      <div key={order.id} className="flex items-center justify-between p-4 bg-zinc-900 rounded-lg hover:bg-zinc-800 transition-colors">
-                        <div>
-                          <p className="font-medium">Order #{order.id}</p>
-                          <p className="text-sm text-zinc-500">{order.date}</p>
+                  {loadingData ? (
+                    <div className="text-center py-4 text-zinc-500">Loading...</div>
+                  ) : orders.length === 0 ? (
+                    <div className="text-center py-4 text-zinc-500">
+                      <p>No orders yet.</p>
+                      <Link href="/shop" className="text-indigo-400 text-sm">Browse shop</Link>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {orders.map(order => (
+                        <div key={order.id} className="flex items-center justify-between p-4 bg-zinc-900 rounded-lg hover:bg-zinc-800 transition-colors">
+                          <div>
+                            <p className="font-medium">Order #{order.id.slice(0, 8)}</p>
+                            <p className="text-sm text-zinc-500">{new Date(order.created_at).toLocaleDateString()}</p>
+                          </div>
+                          <div className="text-right">
+                            <span className={`px-2 py-1 rounded text-xs ${
+                              order.status === 'paid' ? 'bg-green-500/20 text-green-400' :
+                              order.status === 'shipped' ? 'bg-blue-500/20 text-blue-400' :
+                              'bg-yellow-500/20 text-yellow-400'
+                            }`}>
+                              {order.status || 'pending'}
+                            </span>
+                            <p className="text-cyan-400 font-semibold mt-1">${order.total}</p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            order.status === 'Delivered' ? 'bg-green-500/20 text-green-400' :
-                            order.status === 'Shipped' ? 'bg-blue-500/20 text-blue-400' :
-                            'bg-yellow-500/20 text-yellow-400'
-                          }`}>
-                            {order.status}
-                          </span>
-                          <p className="text-cyan-400 font-semibold mt-1">${order.total}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 

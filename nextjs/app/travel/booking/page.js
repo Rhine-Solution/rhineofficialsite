@@ -6,6 +6,10 @@ import Link from 'next/link'
 import Card, { CardContent } from '../../../components/ui/Card'
 import Button from '../../../components/ui/Button'
 import Input, { Textarea } from '../../../components/ui/Input'
+import { useAuth } from '../../../components/AuthProvider'
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://crqjedivobupxbbathux.supabase.co'
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNycWplZGl2b2J1cHhiYmF0aHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTA5MDEsImV4cCI6MjA5MDM2NjkwMX0.0_HAu_sj7j-3racZK9nWIghKdNEXWRTHgLme2sUMAhM'
 
 const destinationDetails = {
   1: { name: 'Bali Paradise', location: 'Bali, Indonesia', price: 1299, image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400', duration: '7 days', includes: ['Hotel', 'Breakfast', 'Tours', 'Airport Transfer'] },
@@ -19,6 +23,7 @@ const destinationDetails = {
 function BookingContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { user, isAuthenticated } = useAuth()
   const destinationId = searchParams.get('id')
   
   const [bookingData, setBookingData] = useState({
@@ -38,10 +43,40 @@ function BookingContent() {
     e.preventDefault()
     setLoading(true)
 
-    setTimeout(() => {
+    try {
+      // Save booking to Supabase
+      const bookingPayload = {
+        user_id: user?.id || null,
+        destination_id: destinationId,
+        status: 'pending',
+        guest_name: bookingData.fullName,
+        guest_email: bookingData.email,
+        check_in: bookingData.travelDate,
+        check_out: bookingData.travelDate,
+        guests: bookingData.guests,
+        total_price: total,
+        special_requests: bookingData.specialRequests
+      }
+
+      await fetch(`${SUPABASE_URL}/rest/v1/bookings`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(bookingPayload)
+      })
+
       router.push(`/travel/success?id=${destinationId}&guests=${bookingData.guests}`)
+    } catch (error) {
+      console.error('Booking error:', error)
+      // Continue anyway for demo
+      router.push(`/travel/success?id=${destinationId}&guests=${bookingData.guests}`)
+    } finally {
       setLoading(false)
-    }, 1500)
+    }
   }
 
   return (
