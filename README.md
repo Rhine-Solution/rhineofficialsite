@@ -2,7 +2,7 @@
 
 > Enterprise-grade multi-service platform built with modern web technologies.
 
-[![Deployment](https://img.shields.io/badge/Frontend-Cloudflare%20Pages-blue)](https://www.rhinesolution.com)
+[![Deployment](https://img.shields.io/badge/Main%20Site-Vercel-blue)](https://www.rhinesolution.com)
 [![Shop](https://img.shields.io/badge/Shop-Vercel%20PHP-green)](https://shop.rhinesolution.com)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-green)](https://supabase.com)
 
@@ -21,6 +21,7 @@ Rhine Official Site is a production-ready enterprise platform demonstrating full
 - 📞 **Contact System** - Form with database storage
 - 🔐 **Authentication** - Secure login with Supabase Auth
 - 📊 **Admin Panel** - User and content management
+- 🛡️ **Human Verification** - Cloudflare Turnstile
 
 ---
 
@@ -32,22 +33,31 @@ Rhine Official Site is a production-ready enterprise platform demonstrating full
 |-------|------------|---------|
 | Frontend | Next.js 14, React 18 | UI Framework |
 | Styling | Tailwind CSS | Responsive design |
-| Language | TypeScript | Type safety |
+| Language | JavaScript | Language |
 | Backend | Supabase | Database, Auth, Storage |
-| CDN | Cloudflare | DNS, Pages, R2 |
+| Hosting | Vercel | Deployment |
+| CDN | Cloudflare | DNS only |
 | CI/CD | GitHub Actions | Automated deployment |
 
 ### Infrastructure
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                    Cloudflare                        │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  │
-│  │    DNS      │  │   Pages     │  │     R2      │  │
-│  │  (Domains)  │  │  (Frontend) │  │  (Storage)  │  │
-│  └─────────────┘  └─────────────┘  └─────────────┘  │
+│                    Cloudflare                       │
+│  ┌─────────────┐                                    │
+│  │    DNS      │  (Domain management only)         │
+│  └─────────────┘                                    │
 └─────────────────────────────────────────────────────┘
-                          │
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────┐
+│                      Vercel                         │
+│  ┌─────────────┐  ┌─────────────┐                   │
+│  │  Main Site  │  │  PHP Shop   │                   │
+│  │  (Next.js)  │  │  (PHP)      │                   │
+│  └─────────────┘  └─────────────┘                   │
+└─────────────────────────────────────────────────────┘
+```
                           ▼
 ┌─────────────────────────────────────────────────────┐
 │                     Supabase                         │

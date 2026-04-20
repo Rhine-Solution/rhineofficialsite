@@ -1,8 +1,8 @@
 # Rhine Official Site - Project Memory
 
-> **Last Updated:** April 2026
-> **Status:** Active Development
-> **Version:** 1.0.0
+> **Last Updated:** April 20, 2026
+> **Status:** Production
+> **Version:** 2.0.0
 
 ---
 
@@ -15,11 +15,11 @@ Multi-service enterprise platform built with modern web technologies. Demonstrat
 Build a scalable, production-ready platform that showcases expertise across multiple technologies (Python, PHP, Laravel, React/Next.js, Svelte) while maintaining clean code quality and professional development practices.
 
 ### Key Metrics
-- **Deployment:** Cloudflare Pages (production)
+- **Deployment:** Vercel (production)
 - **Domain:** rhinesolution.com
 - **Database:** Supabase (PostgreSQL)
 - **Auth:** Supabase Auth
-- **Storage:** Supabase Storage + Cloudflare R2
+- **Security:** Cloudflare Turnstile (human verification)
 
 ---
 
@@ -31,7 +31,7 @@ Build a scalable, production-ready platform that showcases expertise across mult
 | Next.js | 14.x | Main framework |
 | React | 18.x | UI Library |
 | Tailwind CSS | 3.x | Styling |
-| TypeScript | 5.x | Type safety |
+| Cloudflare Turnstile | - | Human verification |
 
 ### Backend
 | Technology | Purpose |
@@ -43,11 +43,10 @@ Build a scalable, production-ready platform that showcases expertise across mult
 ### Infrastructure
 | Service | Purpose |
 |---------|---------|
-| Cloudflare Pages | Frontend hosting |
-| Cloudflare DNS | Domain management |
-| Cloudflare R2 | File storage |
-| GitHub Actions | CI/CD |
-| Supabase | Backend-as-a-Service |
+| **Vercel** | Frontend & PHP hosting |
+| **Cloudflare** | DNS only (no Pages) |
+| **GitHub** | CI/CD (auto-deploy) |
+| **Supabase** | Backend-as-a-Service |
 
 ---
 
@@ -55,23 +54,39 @@ Build a scalable, production-ready platform that showcases expertise across mult
 
 ```
 rhineofficialsite/
-├── frontend/          # HTML/CSS/JS portfolio (deployed)
-├── php/               # PHP Webshop (local development)
-├── php2/              # PHP OOP Portfolio (local)
-├── nextjs/            # Sunny Travels (local)
-├── svelte/            # Appointment App (local)
-├── laravel/           # Job Board blueprints
-├── python/            # CLI Apps (Chatbot, Book Manager)
-└── supabase/          # Database schema & config
+├── nextjs/            # Main site (Next.js 14) - Vercel ✅
+├── php/               # PHP Shop - Vercel ✅
+├── svelte/            # Appointment App (not deployed)
+├── supabase/          # Database schema & config
+└── .github/workflows/ # CI/CD config
 ```
 
-### Deployment Status
+### Deployment Status (April 2026)
 
-| Component | Status | URL |
-|-----------|--------|-----|
-| Frontend Portfolio | ✅ Live | rhinesolution.com |
-| PHP Webshop | 🔶 Local | localhost:8080 |
-| Next.js Travel | 🔶 Local | localhost:3000 |
+| Component | Status | URL | Platform |
+|-----------|--------|-----|----------|
+| Main Site | ✅ Live | rhinesolution.com | Vercel |
+| Shop | ✅ Live | shop.rhinesolution.com | Vercel PHP |
+| Next.js App | ✅ Live | rhineofficialsite.vercel.app | Vercel |
+| Cloudflare | DNS Only | - | Cloudflare DNS |
+
+---
+
+## Migration History
+
+### April 20, 2026 - Migration to Vercel
+- **Problem:** Cloudflare Pages had broken settings causing deployment failures
+- **Solution:** Migrated entire site to Vercel
+- **Changes:**
+  - Removed old Cloudflare Pages project
+  - Added custom domains in Vercel
+  - Updated DNS records in Cloudflare to point to Vercel
+  - Now auto-deploys on GitHub push
+
+### April 20, 2026 - Cloudflare Turnstile Added
+- Added human verification on first site visit
+- Shows verification modal after 2 seconds
+- Protects against bots
 
 ---
 
