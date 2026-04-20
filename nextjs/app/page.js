@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import Card, { CardImage, CardContent, CardTitle, CardDescription, CardPrice } from '../components/ui/Card'
 import Button from '../components/ui/Button'
+import Turnstile from '../components/Turnstile'
 
 const features = [
   { icon: '🛒', title: 'E-commerce', description: 'Full online store with cart and checkout', href: '/shop', color: 'from-pink-500 to-rose-500' },
@@ -27,13 +28,42 @@ const fallbackProducts = [
 export default function Home() {
   const [products, setProducts] = useState(fallbackProducts)
   const [loaded, setLoaded] = useState(false)
+  const [showVerify, setShowVerify] = useState(false)
+  const [verified, setVerified] = useState(false)
 
   useEffect(() => {
     setLoaded(true)
+    // Show verification after 2 seconds
+    const timer = setTimeout(() => {
+      setShowVerify(true)
+    }, 2000)
+    return () => clearTimeout(timer)
   }, [])
+
+  const handleVerify = (token) => {
+    if (token) {
+      setVerified(true)
+      setShowVerify(false)
+    }
+  }
 
   return (
     <>
+      {/* Turnstile Verification Modal */}
+      {showVerify && !verified && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+          <div className="bg-gray-900 p-8 rounded-xl border border-indigo-500/30 max-w-md w-full mx-4">
+            <h3 className="text-xl font-bold text-white text-center mb-4">
+              Verify you're human
+            </h3>
+            <p className="text-gray-400 text-center mb-4">
+              Please complete the verification below to continue.
+            </p>
+            <Turnstile onVerify={handleVerify} action="homepage" />
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 overflow-hidden">
         {/* Background effects */}
