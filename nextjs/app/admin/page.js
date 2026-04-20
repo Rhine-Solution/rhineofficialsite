@@ -87,7 +87,16 @@ export default function AdminPage() {
         revenue: totalRevenue,
         products: productsData.length || 0,
         destinations: destinationsData.length || 0,
-        contacts: contactsData.length || 0
+        contacts: contactsData.length || 0,
+        appointments: appointmentsData.length || 0,
+        bookings: bookingsData.length || 0
+      })
+
+      // Calculate category breakdown
+      const categoryBreakdown = {}
+      productsData.forEach(p => {
+        const cat = p.category || 'Uncategorized'
+        categoryBreakdown[cat] = (categoryBreakdown[cat] || 0) + 1
       })
     } catch (error) {
       console.error('Error fetching data:', error)
