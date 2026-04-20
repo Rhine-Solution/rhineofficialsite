@@ -1,8 +1,7 @@
 name: CI/CD Pipeline
 
-# Vercel auto-deploys on push to main - no manual deploy needed!
-# - Main site (Next.js): rhinesolution.com → Vercel
-# - Shop (PHP): shop.rhinesolution.com → Vercel
+# Vercel auto-deploys on push to main
+# This workflow runs tests and linting only
 
 on:
   push:
@@ -10,24 +9,44 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  SUPABASE_URL: https://crqjedivobupxbbathux.supabase.co
-  CLOUDFLARE_ACCOUNT_ID: 1e717a236c87cc50f0a396da20218343
-
 jobs:
-  # Static analysis for PHP (shop)
+  # Next.js lint and build
+  nextjs-test:
+    runs-on: ubuntu-latest
+    if: contains(github.changed_files, 'nextjs/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: nextjs/package-lock.json
+
+      - name: Install dependencies
+        run: cd nextjs && npm ci
+
+      - name: Lint code
+        run: cd nextjs && npm run lint || true
+
+      - name: Build
+        run: cd nextjs && npm run build
+
+  # PHP lint
   php-lint:
     runs-on: ubuntu-latest
     if: contains(github.changed_files, 'php/')
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
+
       - name: Install PHP_CodeSniffer
-        run: |
-          composer require squizlabs/php_codesniffer --dev --no-interaction
-      - name: Lint PHP files
-        run: |
-          ./vendor/bin/phpcs --standard=PSR12 php/ -n --ignore=vendor
+        run: composer require squizlabs/php_codesniffer --dev --no-interaction
+
+      - name: Lint PHP
+        run: ./vendor/bin/phpcs --standard=PSR12 php/ -n --ignore=vendor
