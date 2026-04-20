@@ -17,6 +17,8 @@ export default function AdminPage() {
   const [orders, setOrders] = useState([])
   const [contacts, setContacts] = useState([])
   const [destinations, setDestinations] = useState([])
+  const [bookings, setBookings] = useState([])
+  const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({ users: 0, orders: 0, revenue: 0, products: 0 })
 
@@ -50,12 +52,14 @@ export default function AdminPage() {
         'Authorization': `Bearer ${SUPABASE_KEY}`
       }
 
-      const [productsRes, ordersRes, contactsRes, destinationsRes, profilesRes] = await Promise.all([
+      const [productsRes, ordersRes, contactsRes, destinationsRes, profilesRes, bookingsRes, appointmentsRes] = await Promise.all([
         fetch(`${SUPABASE_URL}/rest/v1/products?select=*`, { headers }),
         fetch(`${SUPABASE_URL}/rest/v1/orders?select=*`, { headers }),
         fetch(`${SUPABASE_URL}/rest/v1/contacts?select=*`, { headers }),
         fetch(`${SUPABASE_URL}/rest/v1/destinations?select=*`, { headers }),
-        fetch(`${SUPABASE_URL}/rest/v1/profiles?select=*`, { headers })
+        fetch(`${SUPABASE_URL}/rest/v1/profiles?select=*`, { headers }),
+        fetch(`${SUPABASE_URL}/rest/v1/bookings?select=*`, { headers }),
+        fetch(`${SUPABASE_URL}/rest/v1/appointments?select=*`, { headers })
       ])
 
       const productsData = await productsRes.json()
@@ -63,11 +67,15 @@ export default function AdminPage() {
       const contactsData = await contactsRes.json()
       const destinationsData = await destinationsRes.json()
       const profilesData = await profilesRes.json()
+      const bookingsData = await bookingsRes.json()
+      const appointmentsData = await appointmentsRes.json()
 
       setProducts(Array.isArray(productsData) ? productsData : [])
       setOrders(Array.isArray(ordersData) ? ordersData : [])
       setContacts(Array.isArray(contactsData) ? contactsData : [])
       setDestinations(Array.isArray(destinationsData) ? destinationsData : [])
+      setBookings(Array.isArray(bookingsData) ? bookingsData : [])
+      setAppointments(Array.isArray(appointmentsData) ? appointmentsData : [])
 
       const totalRevenue = Array.isArray(ordersData) 
         ? ordersData.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0) 
@@ -111,8 +119,10 @@ export default function AdminPage() {
     { id: 'users', label: 'Users', icon: '👥' },
     { id: 'products', label: 'Products', icon: '🏷️' },
     { id: 'orders', label: 'Orders', icon: '📦' },
+    { id: 'bookings', label: 'Travel Bookings', icon: '✈️' },
+    { id: 'appointments', label: 'Appointments', icon: '📅' },
     { id: 'contacts', label: 'Contacts', icon: '💬' },
-    { id: 'settings', label: 'Settings', icon: '⚙️' },
+    { id: 'destinations', label: 'Destinations', icon: '🌍' },
   ]
 
   return (
