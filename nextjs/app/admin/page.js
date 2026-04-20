@@ -100,6 +100,40 @@ export default function AdminPage() {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0)
   }
 
+  async function deleteProduct(id) {
+    if (!confirm('Are you sure you want to delete this product?')) return
+    
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${id}`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+      })
+      fetchData()
+    } catch (error) {
+      console.error('Error deleting product:', error)
+    }
+  }
+
+  async function updateOrderStatus(id, status) {
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/orders?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status })
+      })
+      fetchData()
+    } catch (error) {
+      console.error('Error updating order:', error)
+    }
+  }
+
   const adminStats = [
     { label: 'Total Users', value: stats.users, change: '+5%', icon: '👥' },
     { label: 'Total Orders', value: stats.orders, change: '+8%', icon: '📦' },
@@ -212,7 +246,14 @@ export default function AdminPage() {
                             <td className="py-3 px-4 text-cyan-400">${product.price}</td>
                             <td className="py-3 px-4">{product.stock || 0}</td>
                             <td className="py-3 px-4">
-                              <Button variant="ghost" size="sm">Edit</Button>
+                              <div className="flex gap-2">
+                                <Button variant="ghost" size="sm">Edit</Button>
+                                <Button 
+                                  variant="danger" 
+                                  size="sm"
+                                  onClick={() => deleteProduct(product.id)}
+                                >Delete</Button>
+                              </div>
                             </td>
                           </tr>
                         ))}
