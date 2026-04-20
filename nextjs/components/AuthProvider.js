@@ -94,7 +94,7 @@ export function AuthProvider({ children }) {
       const { data, error: googleError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`
+          redirectTo: 'https://rhinesolution.com/dashboard'
         }
       })
       
