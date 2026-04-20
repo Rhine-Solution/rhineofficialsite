@@ -1,5 +1,9 @@
 name: CI/CD Pipeline
 
+# Vercel auto-deploys on push to main - no manual deploy needed!
+# - Main site (Next.js): rhinesolution.com → Vercel
+# - Shop (PHP): shop.rhinesolution.com → Vercel
+
 on:
   push:
     branches: [main, dev]
@@ -27,18 +31,3 @@ jobs:
       - name: Lint PHP files
         run: |
           ./vendor/bin/phpcs --standard=PSR12 php/ -n --ignore=vendor
-
-  # Trigger Cloudflare deployment (Next.js will build automatically)
-  # Cloudflare Pages will detect Next.js and build from nextjs/ folder
-  deploy:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v4
-      - name: Trigger Cloudflare Deployment
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: rhineofficialsite
-          branch: main
