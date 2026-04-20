@@ -96,9 +96,80 @@ export default function ShopPage() {
         </div>
       </section>
 
+      {/* Featured Bundles */}
+      <section className="py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <span className="text-2xl">⭐</span> Premium Bundles
+          </h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-gradient-to-br from-amber-500/20 to-yellow-500/10 border border-amber-500/30 rounded-2xl p-6 hover:border-amber-400 transition-all">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-2xl">🚀</span>
+                <span className="font-bold text-amber-400">Startup Bundle</span>
+              </div>
+              <p className="text-sm text-zinc-400 mb-4">Everything you need to start your business online</p>
+              <ul className="text-sm text-zinc-300 space-y-1 mb-4">
+                <li>✓ Premium Hosting (1 year)</li>
+                <li>✓ Domain Registration</li>
+                <li>✓ SSL Certificate</li>
+                <li>✓ Business Email</li>
+              </ul>
+              <div className="flex items-baseline gap-2 mb-4">
+                <span className="text-2xl font-bold text-white">$399</span>
+                <span className="text-sm text-zinc-500 line-through">$599</span>
+                <span className="text-sm text-green-400">Save 33%</span>
+              </div>
+              <Button className="w-full bg-gradient-to-r from-amber-500 to-yellow-500">Get Started</Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-indigo-500/20 to-purple-500/10 border border-indigo-500/30 rounded-2xl p-6 hover:border-indigo-400 transition-all">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-2xl">💼</span>
+                <span className="font-bold text-indigo-400">Business Bundle</span>
+              </div>
+              <p className="text-sm text-zinc-400 mb-4">Complete solution for growing businesses</p>
+              <ul className="text-sm text-zinc-300 space-y-1 mb-4">
+                <li>✓ Dedicated Server Pro</li>
+                <li>✓ SEO Premium Package</li>
+                <li>✓ Cloud Backup 1TB</li>
+                <li>✓ Priority Support</li>
+              </ul>
+              <div className="flex items-baseline gap-2 mb-4">
+                <span className="text-2xl font-bold text-white">$799</span>
+                <span className="text-sm text-zinc-500 line-through">$1199</span>
+                <span className="text-sm text-green-400">Save 33%</span>
+              </div>
+              <Button className="w-full bg-gradient-to-r from-indigo-500 to-purple-500">Get Started</Button>
+            </div>
+
+            <div className="bg-gradient-to-br from-cyan-500/20 to-blue-500/10 border border-cyan-500/30 rounded-2xl p-6 hover:border-cyan-400 transition-all">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-2xl">🏢</span>
+                <span className="font-bold text-cyan-400">Enterprise Bundle</span>
+              </div>
+              <p className="text-sm text-zinc-400 mb-4">Full-scale solution for large organizations</p>
+              <ul className="text-sm text-zinc-300 space-y-1 mb-4">
+                <li>✓ Mobile App MVP</li>
+                <li>✓ API Development</li>
+                <li>✓ Custom Integration</li>
+                <li>✓ 24/7 Support</li>
+              </ul>
+              <div className="flex items-baseline gap-2 mb-4">
+                <span className="text-2xl font-bold text-white">$2499</span>
+                <span className="text-sm text-zinc-500 line-through">$3999</span>
+                <span className="text-sm text-green-400">Save 37%</span>
+              </div>
+              <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-500">Contact Sales</Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Products Grid */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-2xl font-bold mb-6">All Services</h2>
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(8)].map((_, i) => (
@@ -106,7 +177,7 @@ export default function ShopPage() {
               ))}
             </div>
           ) : filteredProducts.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {filteredProducts.map((product, index) => {
                 const isPremium = ['SEO Premium Package', 'Dedicated Server - Pro', 'Mobile App - MVP'].includes(product.name)
                 const hasDiscount = ['Domain Registration - .com', 'Cloud Backup - 100GB', 'Website Maintenance - Monthly'].includes(product.name)
@@ -119,45 +190,30 @@ export default function ShopPage() {
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   {isPremium && (
-                    <div className="absolute -top-3 left-4 z-10">
-                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-xs font-bold rounded-full shadow-lg">
-                        <span>⭐</span> PREMIUM
+                    <div className="absolute -top-2 left-3 z-10">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-xs font-bold rounded-full">
+                        ⭐
                       </span>
                     </div>
                   )}
                   {hasDiscount && (
                     <div className="absolute -top-2 -right-2 z-10">
-                      <span className="inline-flex items-center justify-center w-12 h-12 bg-red-500 text-white text-xs font-bold rounded-full shadow-lg animate-pulse">
+                      <span className="inline-flex items-center justify-center w-8 h-8 bg-red-500 text-white text-xs font-bold rounded-full">
                         -40%
                       </span>
                     </div>
                   )}
-                  <CardImage 
-                    src={product.image_url} 
-                    alt={product.name}
-                    className="group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <CardContent>
+                  <div className="aspect-square overflow-hidden">
+                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
+                  <CardContent className="p-3">
                     <div className="text-xs text-indigo-400 mb-1 uppercase tracking-wide">{product.category}</div>
-                    <CardTitle className="line-clamp-1 group-hover:text-indigo-400 transition-colors">
+                    <CardTitle className="text-sm line-clamp-1 group-hover:text-indigo-400 transition-colors">
                       {product.name}
                     </CardTitle>
-                    <CardDescription className="line-clamp-2">{product.description}</CardDescription>
-                    <div className="flex items-center justify-between mt-4">
-                      <div>
-                        {originalPrice && (
-                          <span className="text-sm text-zinc-500 line-through mr-2">${originalPrice}</span>
-                        )}
-                        <CardPrice>${product.price}</CardPrice>
-                      </div>
-                      <span className="text-sm text-zinc-500">{product.stock || 'In Stock'}</span>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="font-bold text-cyan-400 text-sm">${product.price}</span>
                     </div>
-                    <Button 
-                      className={`w-full mt-4 ${isPremium ? 'bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400' : ''}`}
-                      onClick={() => addItem(product)}
-                    >
-                      {isPremium ? '⭐ Add to Cart' : 'Add to Cart'}
-                    </Button>
                   </CardContent>
                 </Card>
               )})}
