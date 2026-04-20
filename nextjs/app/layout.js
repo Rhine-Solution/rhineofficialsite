@@ -9,6 +9,7 @@ import { NotificationProvider } from '../components/NotificationProvider'
 import { SearchProvider } from '../components/SearchContext'
 import CartSidebar from '../components/CartSidebar'
 import SearchModal from '../components/SearchModal'
+import { Analytics } from '@vercel/analytics/next'
 
 export const dynamic = 'force-dynamic'
 
@@ -66,6 +67,7 @@ export default function RootLayout({ children }) {
             </CartProvider>
           </ToastProvider>
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   )
