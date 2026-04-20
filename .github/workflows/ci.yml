@@ -28,7 +28,7 @@ jobs:
         run: |
           ./vendor/bin/phpcs --standard=PSR12 php/ -n --ignore=vendor
 
-  # Build and Deploy Next.js to Cloudflare Pages
+  # Build and Deploy Next.js to Cloudflare Pages using Wrangler
   deploy-nextjs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -46,13 +46,10 @@ jobs:
       - name: Build Next.js
         run: npm run build
         working-directory: nextjs
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: rhineofficialsite
-          directory: nextjs/.vercel/output/static
-          branch: main
-          # Add optional config to skip cloudflare build
-          # But this requires cloudflare to NOT run its own build
+      - name: Install Wrangler
+        run: npm install -g wrangler
+      - name: Deploy to Cloudflare Pages via Wrangler
+        run: npx wrangler pages deploy nextjs/.vercel/output/static --project-name=rhineofficialsite
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
