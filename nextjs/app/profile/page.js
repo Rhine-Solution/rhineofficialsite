@@ -12,7 +12,7 @@ const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIU
 
 export default function ProfilePage() {
   const router = useRouter()
-  const { user, loading: authLoading, isAuthenticated, updateProfile } = useAuth()
+  const { user, loading: authLoading, isAuthenticated, updateProfile, profile } = useAuth()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -28,11 +28,11 @@ export default function ProfilePage() {
       router.push('/login')
     } else if (user) {
       setFormData({
-        name: user.name || user.email?.split('@')[0] || '',
+        name: user.user_metadata?.name || user.email?.split('@')[0] || '',
         email: user.email || '',
-        phone: user.phone || '',
-        company: user.company || '',
-        bio: user.bio || ''
+        phone: user.user_metadata?.phone || '',
+        company: user.user_metadata?.company || '',
+        bio: user.user_metadata?.bio || ''
       })
     }
   }, [authLoading, isAuthenticated, user, router])
@@ -93,9 +93,12 @@ export default function ProfilePage() {
                 <h3 className="text-xl font-semibold">{formData.name || 'User'}</h3>
                 <p className="text-zinc-500 text-sm">{formData.email}</p>
                 <div className="mt-4">
-                  <span className="px-3 py-1 bg-indigo-500/20 text-indigo-400 text-xs rounded-full">
-                    {user?.role || 'Member'}
+                  <span className="px-3 py-1 bg-indigo-500/20 text-indigo-400 text-xs rounded-full capitalize">
+                    {profile?.role || user?.user_metadata?.role || 'client'}
                   </span>
+                </div>
+                <div className="mt-4 text-xs text-zinc-500">
+                  Joined {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'recently'}
                 </div>
               </CardContent>
             </Card>

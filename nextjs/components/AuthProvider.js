@@ -107,6 +107,24 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const signInWithGitHub = async () => {
+    try {
+      const { data, error: githubError } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: 'https://rhinesolution.com/dashboard'
+        }
+      })
+      
+      if (githubError) throw githubError
+      
+      return { success: true }
+    } catch (err) {
+      error(err.message || 'GitHub sign-in failed')
+      return { success: false, error: err.message }
+    }
+  }
+
   const updateProfile = async (updates) => {
     try {
       const { data, error: updateError } = await supabase.auth.updateUser(updates)
@@ -128,6 +146,7 @@ export function AuthProvider({ children }) {
       signIn,
       signOut,
       signInWithGoogle,
+      signInWithGitHub,
       updateProfile,
       isAuthenticated: !!user,
       isAdmin: user?.email?.includes('admin') || user?.user_metadata?.role === 'admin'
