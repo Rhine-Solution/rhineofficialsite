@@ -103,9 +103,13 @@ export default function DashboardPage() {
           <div className="flex justify-between items-start">
             <div>
               <h1 className="text-4xl font-bold mb-2">
-                Welcome back, {user?.name || user?.email?.split('@')[0] || 'User'}!
+                Welcome back, {profile?.username || user?.email?.split('@')[0] || 'User'}!
               </h1>
-              <p className="text-zinc-400">Manage your account and activity</p>
+              <p className="text-zinc-400">
+                {profile?.role === 'admin' ? 'Admin Dashboard' : 
+                 profile?.role === 'employee' ? 'Employee Dashboard' : 
+                 'Manage your account and activity'}
+              </p>
             </div>
             <Button onClick={handleSignOut} variant="outline">Sign Out</Button>
           </div>
@@ -174,6 +178,44 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
+              {/* Recent Appointments */}
+              <Card className="hover-lift">
+                <CardContent>
+                  <div className="flex justify-between items-center mb-6">
+                    <CardTitle>Upcoming Appointments</CardTitle>
+                    <Link href="/appointments"><Button variant="ghost" size="sm">View All</Button></Link>
+                  </div>
+                  {loadingData ? (
+                    <div className="text-center py-4 text-zinc-500">Loading...</div>
+                  ) : bookings.length === 0 ? (
+                    <div className="text-center py-4 text-zinc-500">
+                      <p>No appointments yet.</p>
+                      <Link href="/appointments/book" className="text-indigo-400 text-sm">Book appointment</Link>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {bookings.slice(0, 3).map(apt => (
+                        <div key={apt.id} className="flex items-center justify-between p-4 bg-zinc-900 rounded-lg hover:bg-zinc-800 transition-colors">
+                          <div>
+                            <p className="font-medium">{apt.title}</p>
+                            <p className="text-sm text-zinc-500">
+                              {new Date(apt.datetime).toLocaleDateString()} at {new Date(apt.datetime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </p>
+                          </div>
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            apt.status === 'confirmed' ? 'bg-green-500/20 text-green-400' :
+                            apt.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
+                            'bg-zinc-700 text-zinc-400'
+                          }`}>
+                            {apt.status || 'pending'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
               {/* Quick Actions */}
               <Card className="hover-lift">
                 <CardContent>
@@ -181,8 +223,8 @@ export default function DashboardPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <Link href="/shop"><Button variant="outline" className="w-full">🛒 Shop Now</Button></Link>
                     <Link href="/travel"><Button variant="outline" className="w-full">✈️ Book Travel</Button></Link>
+                    <Link href="/appointments/book"><Button variant="outline" className="w-full">📅 Book Appointment</Button></Link>
                     <Link href="/contact"><Button variant="outline" className="w-full">💬 Send Message</Button></Link>
-                    <Link href="/portfolio"><Button variant="outline" className="w-full">💼 View Portfolio</Button></Link>
                   </div>
                 </CardContent>
               </Card>
@@ -197,16 +239,23 @@ export default function DashboardPage() {
                     <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-cyan-500 rounded-full mx-auto flex items-center justify-center text-2xl font-bold mb-4">
                       {getInitials(user?.email)}
                     </div>
-                    <h3 className="font-semibold text-lg">{user?.name || 'User'}</h3>
+                    <h3 className="font-semibold text-lg">{profile?.username || user?.email?.split('@')[0] || 'User'}</h3>
                     <p className="text-sm text-zinc-500">{user?.email}</p>
                     <div className="mt-4">
-                      <span className="px-3 py-1 bg-indigo-500/20 text-indigo-400 text-xs rounded-full">
-                        {user?.role || 'Member'}
+                      <span className="px-3 py-1 bg-indigo-500/20 text-indigo-400 text-xs rounded-full capitalize">
+                        {profile?.role || 'client'}
                       </span>
                     </div>
-                    <Button className="w-full mt-4" variant="outline" onClick={() => setActiveTab('profile')}>
-                      Edit Profile
-                    </Button>
+                    {profile?.role === 'admin' && (
+                      <Link href="/admin" className="block mt-3">
+                        <Button variant="outline" className="w-full">⚙️ Admin Panel</Button>
+                      </Link>
+                    )}
+                    {profile?.role === 'employee' && (
+                      <Link href="/appointments/admin" className="block mt-3">
+                        <Button variant="outline" className="w-full">📋 Manage Appointments</Button>
+                      </Link>
+                    )}
                   </div>
                 </CardContent>
               </Card>
