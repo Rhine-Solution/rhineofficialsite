@@ -18,9 +18,13 @@ export const metadata = {
     default: 'Rhine Solution - Enterprise Web Platform',
     template: '%s | Rhine Solution'
   },
-  description: 'Enterprise-grade multi-service platform built with Next.js, Supabase, and Cloudflare. E-commerce, travel booking, portfolio, and more.',
+  description: 'Enterprise-grade multi-service platform built with Next.js, Supabase, and Vercel. E-commerce, travel booking, portfolio, and more.',
   keywords: ['web development', 'e-commerce', 'travel booking', 'portfolio', 'Next.js', 'Supabase', 'enterprise'],
   authors: [{ name: 'Rhine Solution' }],
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
