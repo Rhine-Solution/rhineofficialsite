@@ -88,6 +88,7 @@ export default function AdminPage() {
         products: productsData.length || 0,
         destinations: destinationsData.length || 0,
         contacts: contactsData.length || 0,
+        unreadContacts: contactsData.filter(c => !c.is_read).length || 0,
         appointments: appointmentsData.length || 0,
         bookings: bookingsData.length || 0
       })
@@ -123,6 +124,39 @@ export default function AdminPage() {
       fetchData()
     } catch (error) {
       console.error('Error deleting product:', error)
+    }
+  }
+
+  async function markContactRead(id) {
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/contacts?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ is_read: true })
+      })
+      fetchData()
+    } catch (error) {
+      console.error('Error marking contact as read:', error)
+    }
+  }
+
+  async function deleteContact(id) {
+    if (!confirm('Delete this contact message?')) return
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/contacts?id=eq.${id}`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+      })
+      fetchData()
+    } catch (error) {
+      console.error('Error deleting contact:', error)
     }
   }
 
