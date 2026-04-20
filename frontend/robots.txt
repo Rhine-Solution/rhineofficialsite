@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.rhinesolution.com/sitemap.xml
+
+# Disallow admin/private areas (if any)
+Disallow: /api/
+Disallow: /dashboard
+
+# Crawl delay (optional, be nice to servers)
+Crawl-delay: 1

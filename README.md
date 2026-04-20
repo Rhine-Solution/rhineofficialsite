@@ -2,10 +2,9 @@
 
 > Enterprise-grade multi-service platform built with modern web technologies.
 
-[![Deployment](https://img.shields.io/badge/Deployed-rhinesolution.com-brightgreen)](https://rhinesolution.com)
-[![Cloudflare](https://img.shields.io/badge/Cloudflare-Pages-blue)](https://pages.dev)
+[![Deployment](https://img.shields.io/badge/Frontend-Cloudflare%20Pages-blue)](https://www.rhinesolution.com)
+[![Shop](https://img.shields.io/badge/Shop-Vercel%20PHP-green)](https://shop.rhinesolution.com)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-green)](https://supabase.com)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org)
 
 ---
 
@@ -155,11 +154,18 @@ All tables have Row Level Security enabled with policies for:
 
 ## 🌍 Deployment
 
-### Production
+### Production URLs
 
-The site is automatically deployed to Cloudflare Pages on push to main branch.
+| Service | URL | Platform |
+|---------|-----|----------|
+| Main Site | https://www.rhinesolution.com | Cloudflare Pages |
+| PHP Shop | https://shop.rhinesolution.com | Vercel (PHP) |
+| Next.js App | https://rhineofficialsite.vercel.app | Vercel |
 
-**Live URL:** https://rhinesolution.com
+### Auto-Deployment
+
+- **Frontend (Cloudflare Pages):** Automatic on push to main
+- **Shop (Vercel PHP):** Automatic on push to main
 
 ### Manual Deployment
 
@@ -215,10 +221,12 @@ MIT License - see LICENSE file for details.
 
 ## 🔗 Links
 
-- **Live Site:** https://rhinesolution.com
-- **GitHub:** https://github.com/Rhine-Solution/rhineofficialsite
+- **Main Site:** https://www.rhinesolution.com
+- **Shop:** https://shop.rhinesolution.com
+- **GitHub:** https://github.com/RAGNAROK-RS0/rhineofficialsite
 - **Supabase:** https://supabase.com/dashboard/project/crqjedivobupxbbathux
 - **Cloudflare:** https://dash.cloudflare.com
+- **Vercel:** https://vercel.com/dashboard
 
 ---
 

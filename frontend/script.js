@@ -1,14 +1,12 @@
 // Rhine Official Site - JavaScript with Supabase Integration
 
 const FALLBACK_PROJECTS = [
-    { title: 'Python Chatbot', description: 'Interactive CLI chatbot demonstrating Python fundamentals with menus, loops, and functions.', category: 'python', tech_stack: ['Python', 'CLI'], image_emoji: '🐍' },
-    { title: 'Book Manager', description: 'Book management system with JSON storage, search, and statistics features.', category: 'python', tech_stack: ['Python', 'JSON', 'File I/O'], image_emoji: '📚' },
-    { title: 'PHP Webshop', description: 'E-commerce platform with user authentication, shopping cart, and admin panel.', category: 'php', tech_stack: ['PHP', 'MySQL', 'Supabase'], image_emoji: '🛒' },
-    { title: 'OOP Portfolio', description: 'Object-oriented portfolio with classes, inheritance, and design patterns.', category: 'php2', tech_stack: ['PHP', 'OOP', 'PSR-12'], image_emoji: '💼' },
-    { title: 'Laravel Job Board', description: 'Full-stack job board application with authentication and admin dashboard.', category: 'laravel', tech_stack: ['Laravel', 'PHP', 'Blade'], image_emoji: '💼' },
-    { title: 'Portfolio Website', description: 'Responsive portfolio website with modern dark theme and animations.', category: 'frontend', tech_stack: ['HTML', 'CSS', 'JavaScript'], image_emoji: '🎨' },
+    { title: 'PHP Webshop', description: 'E-commerce platform with user authentication, shopping cart, and Supabase backend.', category: 'php', tech_stack: ['PHP', 'MySQL', 'Supabase'], image_emoji: '🛒' },
+    { title: 'Portfolio Website', description: 'Responsive portfolio website with modern dark theme, glassmorphism, and animations.', category: 'frontend', tech_stack: ['HTML', 'CSS', 'JavaScript'], image_emoji: '🎨' },
     { title: 'Sunny Travels', description: 'Travel booking application with React, filtering, and booking functionality.', category: 'nextjs', tech_stack: ['React', 'Next.js', 'Vite'], image_emoji: '✈️' },
-    { title: 'Appointment App', description: 'Scheduling application with role-based access and booking management.', category: 'svelte', tech_stack: ['Svelte', 'SvelteKit', 'API'], image_emoji: '📅' }
+    { title: 'Appointment App', description: 'Scheduling application with role-based access and booking management.', category: 'nextjs', tech_stack: ['Next.js', 'API', 'Supabase'], image_emoji: '📅' },
+    { title: 'Cloudflare Deployment', description: 'High-performance static site deployment with custom domain and SSL.', category: 'devops', tech_stack: ['Cloudflare Pages', 'GitHub Actions'], image_emoji: '☁️' },
+    { title: 'Vercel PHP API', description: 'Serverless PHP API endpoints for dynamic content and database integration.', category: 'php', tech_stack: ['PHP', 'Vercel', 'Supabase'], image_emoji: '🚀' }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -23,14 +21,28 @@ document.addEventListener('DOMContentLoaded', () => {
     updateAuthUI();
 });
 
+const LOADING_SKELETON = `<div class="skeleton-card"><div class="skeleton skeleton-icon"></div><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-text short"></div></div>`;
+
+function showLoading(container, count = 3) {
+    if (!container) return;
+    container.innerHTML = Array(count).fill(LOADING_SKELETON).join('');
+}
+
+function hideLoading() {
+    document.querySelectorAll('.skeleton-card').forEach(el => el.remove());
+}
+
 async function loadProjects() {
     const projectsGrid = document.querySelector('.projects-grid');
     if (!projectsGrid) return;
+
+    showLoading(projectsGrid, 6);
 
     try {
         if (window.supabase) {
             const projects = await window.supabase.getProjects();
             if (projects && projects.length > 0) {
+                hideLoading();
                 renderProjects(projects);
                 return;
             }
@@ -39,6 +51,7 @@ async function loadProjects() {
         console.log('Supabase not available, using fallback projects');
     }
 
+    hideLoading();
     renderProjects(FALLBACK_PROJECTS);
 }
 
