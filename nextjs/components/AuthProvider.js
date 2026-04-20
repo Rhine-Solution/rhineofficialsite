@@ -89,6 +89,24 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const signInWithGoogle = async () => {
+    try {
+      const { data, error: googleError } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      })
+      
+      if (googleError) throw googleError
+      
+      return { success: true }
+    } catch (err) {
+      error(err.message || 'Google sign-in failed')
+      return { success: false, error: err.message }
+    }
+  }
+
   const updateProfile = async (updates) => {
     try {
       const { data, error: updateError } = await supabase.auth.updateUser(updates)
@@ -109,6 +127,7 @@ export function AuthProvider({ children }) {
       signUp,
       signIn,
       signOut,
+      signInWithGoogle,
       updateProfile,
       isAuthenticated: !!user,
       isAdmin: user?.email?.includes('admin') || user?.user_metadata?.role === 'admin'
