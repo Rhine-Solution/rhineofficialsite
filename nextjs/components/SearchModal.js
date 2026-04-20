@@ -30,25 +30,26 @@ export default function SearchModal() {
       
       setLoading(true)
       try {
-        const [productsRes, destinationsRes, postsRes] = await Promise.all([
-          fetch(`${SUPABASE_URL}/rest/v1/products?select=*&is_active=true&name=ilike.*${query}*&limit=5`, {
+        const [productsRes, destinationsRes] = await Promise.all([
+          fetch(`${SUPABASE_URL}/rest/v1/products?select=*&name=ilike.*${encodeURIComponent(query)}*&limit=5`, {
             headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
           }),
-          fetch(`${SUPABASE_URL}/rest/v1/destinations?select=*&is_active=true&name=ilike.*${query}*&limit=5`, {
-            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-          }),
-          fetch(`${SUPABASE_URL}/rest/v1/posts?select=*&is_published=true&title=ilike.*${query}*&limit=5`, {
+          fetch(`${SUPABASE_URL}/rest/v1/destinations?select=*&name=ilike.*${encodeURIComponent(query)}*&limit=5`, {
             headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
           })
         ])
 
+        const products = productsRes.ok ? await productsRes.json() : []
+        const destinations = destinationsRes.ok ? await destinationsRes.json() : []
+
         setResults({
-          products: await productsRes.json(),
-          destinations: await destinationsRes.json(),
-          posts: await postsRes.json()
+          products: Array.isArray(products) ? products : [],
+          destinations: Array.isArray(destinations) ? destinations : [],
+          posts: []
         })
       } catch (error) {
         console.error('Search error:', error)
+        setResults({ products: [], destinations: [], posts: [] })
       } finally {
         setLoading(false)
       }
