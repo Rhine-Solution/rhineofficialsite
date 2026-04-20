@@ -107,36 +107,60 @@ export default function ShopPage() {
             </div>
           ) : filteredProducts.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.map((product, index) => (
+              {filteredProducts.map((product, index) => {
+                const isPremium = ['SEO Premium Package', 'Dedicated Server - Pro', 'Mobile App - MVP'].includes(product.name)
+                const hasDiscount = ['Domain Registration - .com', 'Cloud Backup - 100GB', 'Website Maintenance - Monthly'].includes(product.name)
+                const originalPrice = hasDiscount ? Math.round(product.price * 1.6) : null
+                
+                return (
                 <Card 
                   key={product.id} 
-                  className="card-animate hover-lift group"
+                  className={`card-animate hover-lift group relative ${isPremium ? 'border-amber-500/50 bg-gradient-to-b from-amber-500/10 to-transparent' : ''}`}
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
+                  {isPremium && (
+                    <div className="absolute -top-3 left-4 z-10">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-xs font-bold rounded-full shadow-lg">
+                        <span>⭐</span> PREMIUM
+                      </span>
+                    </div>
+                  )}
+                  {hasDiscount && (
+                    <div className="absolute -top-2 -right-2 z-10">
+                      <span className="inline-flex items-center justify-center w-12 h-12 bg-red-500 text-white text-xs font-bold rounded-full shadow-lg animate-pulse">
+                        -40%
+                      </span>
+                    </div>
+                  )}
                   <CardImage 
                     src={product.image_url} 
                     alt={product.name}
                     className="group-hover:scale-105 transition-transform duration-300"
                   />
                   <CardContent>
-                    <div className="text-xs text-indigo-400 mb-1">{product.category}</div>
+                    <div className="text-xs text-indigo-400 mb-1 uppercase tracking-wide">{product.category}</div>
                     <CardTitle className="line-clamp-1 group-hover:text-indigo-400 transition-colors">
                       {product.name}
                     </CardTitle>
                     <CardDescription className="line-clamp-2">{product.description}</CardDescription>
                     <div className="flex items-center justify-between mt-4">
-                      <CardPrice>${product.price}</CardPrice>
-                      <span className="text-sm text-zinc-500">{product.stock || 'Unlimited'}</span>
+                      <div>
+                        {originalPrice && (
+                          <span className="text-sm text-zinc-500 line-through mr-2">${originalPrice}</span>
+                        )}
+                        <CardPrice>${product.price}</CardPrice>
+                      </div>
+                      <span className="text-sm text-zinc-500">{product.stock || 'In Stock'}</span>
                     </div>
                     <Button 
-                      className="w-full mt-4"
+                      className={`w-full mt-4 ${isPremium ? 'bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400' : ''}`}
                       onClick={() => addItem(product)}
                     >
-                      Add to Cart
+                      {isPremium ? '⭐ Add to Cart' : 'Add to Cart'}
                     </Button>
                   </CardContent>
                 </Card>
-              ))}
+              )})}
             </div>
           ) : (
             <div className="text-center py-12 text-zinc-500">
