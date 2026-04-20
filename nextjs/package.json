@@ -1,12 +1,13 @@
 {
-  "name": "sunny-travels",
+  "name": "rhineofficialsite",
   "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "npx @cloudflare/next-on-pages"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^6.2.0",
@@ -18,6 +19,7 @@
     "react-dom": "18.3.0"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.12.0",
     "autoprefixer": "^10.5.0",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.0",

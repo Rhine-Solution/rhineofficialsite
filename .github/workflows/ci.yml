@@ -28,10 +28,10 @@ jobs:
         run: |
           ./vendor/bin/phpcs --standard=PSR12 php/ -n --ignore=vendor
 
-  # Build Next.js project
-  nextjs-build:
+  # Build and Deploy Next.js to Cloudflare Pages
+  deploy-nextjs:
     runs-on: ubuntu-latest
-    if: contains(github.changed_files, 'nextjs/')
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -43,46 +43,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
         working-directory: nextjs
-      - name: Build project
+      - name: Build Next.js for Cloudflare Pages
         run: npm run build
         working-directory: nextjs
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: nextjs-build
-          path: nextjs/.next
-          retention-days: 1
-
-  # Build Svelte project
-  svelte-build:
-    runs-on: ubuntu-latest
-    if: contains(github.changed_files, 'svelte/')
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: svelte/package.json
-      - name: Install dependencies
-        run: npm ci
-        working-directory: svelte
-      - name: Build project
-        run: npm run build
-        working-directory: svelte
-
-  # Deploy frontend to Cloudflare Pages
-  deploy-frontend:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v4
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
           projectName: rhineofficialsite
-          directory: frontend
+          directory: nextjs/.vercel/output
           branch: main
