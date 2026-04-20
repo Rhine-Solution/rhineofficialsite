@@ -11,7 +11,7 @@ env:
   CLOUDFLARE_ACCOUNT_ID: 1e717a236c87cc50f0a396da20218343
 
 jobs:
-  # Static analysis for PHP
+  # Static analysis for PHP (shop)
   php-lint:
     runs-on: ubuntu-latest
     if: contains(github.changed_files, 'php/')
@@ -28,28 +28,17 @@ jobs:
         run: |
           ./vendor/bin/phpcs --standard=PSR12 php/ -n --ignore=vendor
 
-  # Build and Deploy Next.js to Cloudflare Pages using Wrangler
-  deploy-nextjs:
+  # Trigger Cloudflare deployment (Next.js will build automatically)
+  # Cloudflare Pages will detect Next.js and build from nextjs/ folder
+  deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Trigger Cloudflare Deployment
+        uses: cloudflare/pages-action@v1
         with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: nextjs/package.json
-      - name: Install dependencies
-        run: npm ci
-        working-directory: nextjs
-      - name: Build Next.js
-        run: npm run build
-        working-directory: nextjs
-      - name: Install Wrangler
-        run: npm install -g wrangler
-      - name: Deploy to Cloudflare Pages via Wrangler
-        run: npx wrangler pages deploy nextjs/.vercel/output/static --project-name=rhineofficialsite
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: rhineofficialsite
+          branch: main
