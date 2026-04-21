@@ -12,7 +12,7 @@ const posts = [
     category: 'Development',
     date: 'April 15, 2026',
     readTime: '8 min read',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800',
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ const posts = [
     category: 'Technology',
     date: 'April 10, 2026',
     readTime: '6 min read',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800',
   },
   {
     id: 3,
@@ -30,7 +30,7 @@ const posts = [
     category: 'Security',
     date: 'April 5, 2026',
     readTime: '10 min read',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=800',
   },
   {
     id: 4,
@@ -39,7 +39,7 @@ const posts = [
     category: 'Database',
     date: 'March 28, 2026',
     readTime: '7 min read',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=800',
   },
   {
     id: 5,
@@ -48,7 +48,7 @@ const posts = [
     category: 'Infrastructure',
     date: 'March 20, 2026',
     readTime: '5 min read',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800',
   },
   {
     id: 6,
@@ -57,7 +57,7 @@ const posts = [
     category: 'DevOps',
     date: 'March 15, 2026',
     readTime: '12 min read',
-    image: null,
+    image: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=800',
   },
 ]
 
@@ -97,8 +97,9 @@ export default function BlogPage() {
         <div className="mb-12">
           <Card className="overflow-hidden hover-lift group">
             <div className="grid md:grid-cols-2">
-              <div className="aspect-video md:aspect-auto bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 flex items-center justify-center">
-                <span className="text-6xl">📝</span>
+              <div className="aspect-video md:aspect-auto relative">
+                <img src={posts[0].image} alt={posts[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/30 to-transparent md:hidden" />
               </div>
               <CardContent className="p-8 flex flex-col justify-center">
                 <div className="flex items-center gap-3 text-sm text-zinc-500 mb-3">
@@ -123,14 +124,9 @@ export default function BlogPage() {
         {/* Posts Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.slice(1).map((post, index) => (
-            <Card key={post.id} className="card-animate hover-lift group" style={{ animationDelay: `${index * 0.1}s` }}>
-              <CardImage 
-                src={post.image}
-                alt={post.title}
-                className="aspect-video bg-gradient-to-br from-zinc-800 to-zinc-900"
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-4xl opacity-50">📄</span>
+            <Card key={post.id} className="card-animate hover-lift group overflow-hidden" style={{ animationDelay: `${index * 0.1}s` }}>
+              <div className="aspect-video relative overflow-hidden">
+                <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
               </div>
               <CardContent className="p-6">
                 <div className="flex items-center gap-2 text-xs text-zinc-500 mb-3">
@@ -141,7 +137,7 @@ export default function BlogPage() {
                 <CardTitle className="text-lg mb-2 group-hover:text-indigo-400 transition-colors line-clamp-2">
                   {post.title}
                 </CardTitle>
-                <CardDescription className="text-sm line-clamp-2">{post.excerpt}</CardDescription>
+                <CardDescription className="text-sm line-clamp-2">{post.excerpt}</Description>
                 <div className="mt-4 text-xs text-zinc-500">{post.date}</div>
               </CardContent>
             </Card>
