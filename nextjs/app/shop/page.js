@@ -196,14 +196,23 @@ export default function ShopPage() {
                   ).slice(0, 8).map((product, index) => (
                     <div 
                       key={product.id}
-                      className="group relative bg-gradient-to-br from-amber-500/20 to-red-500/10 border border-amber-400/20 rounded-2xl p-4 hover:border-amber-400/60 hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-300 cursor-pointer"
+                      className="group relative bg-gradient-to-br from-amber-500/20 to-red-500/10 border border-amber-400/20 rounded-2xl p-4 hover:border-amber-400/60 hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-300 cursor-pointer overflow-hidden"
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
                       {/* Golden glow effect on hover */}
                       <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       
+                      {/* Image */}
+                      <div className="aspect-video mb-3 rounded-lg overflow-hidden bg-zinc-800">
+                        {product.image_url ? (
+                          <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-3xl">📦</div>
+                        )}
+                      </div>
+
                       {/* Badge */}
-                      <div className="absolute -top-2 -right-2">
+                      <div className="absolute top-2 right-2 z-10">
                         <span className="inline-flex items-center justify-center w-7 h-7 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-xs font-bold rounded-full shadow-lg">
                           ⭐
                         </span>
@@ -258,8 +267,12 @@ export default function ShopPage() {
                   className="card-animate hover-lift group relative"
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  <div className="aspect-square overflow-hidden">
-                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <div className="aspect-square overflow-hidden bg-zinc-800">
+                    {product.image_url ? (
+                      <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-4xl">📦</div>
+                    )}
                   </div>
                   <CardContent className="p-3">
                     <div className="text-xs text-indigo-400 mb-1 uppercase tracking-wide">{product.category}</div>
