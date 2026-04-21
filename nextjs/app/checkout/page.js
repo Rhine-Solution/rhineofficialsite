@@ -72,7 +72,7 @@ function CheckoutForm({ total, orderData, cartItems, onSuccess }) {
       const orders = await orderRes.json()
       const orderId = orders[0]?.id
 
-      if (orderId) {
+if (orderId) {
         // Create order items
         for (const item of cartItems) {
           await fetch(`${SUPABASE_URL}/rest/v1/order_items`, {
@@ -80,7 +80,7 @@ function CheckoutForm({ total, orderData, cartItems, onSuccess }) {
             headers: {
               'apikey': SUPABASE_KEY,
               'Authorization': `Bearer ${SUPABASE_KEY}`,
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
               order_id: orderId,
@@ -90,6 +90,33 @@ function CheckoutForm({ total, orderData, cartItems, onSuccess }) {
             })
           })
         }
+
+        // Send confirmation email
+        try {
+          await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: orderData.email,
+              subject: `Order Confirmed - #${orderId.slice(0, 8)}`,
+              html: `
+                <h1>Thank you for your order!</h1>
+                <p>Hi ${orderData.name},</p>
+                <p>Your order has been confirmed.</p>
+                <h2>Order Details:</h2>
+                <ul>
+                  ${cartItems.map(item => `<li>${item.name} - $${item.price} x ${item.quantity}</li>`).join('')}
+                </ul>
+                <p><strong>Total: $${total.toFixed(2)}</strong></p>
+                <p>Shipping to: ${shippingAddress}</p>
+                <p>Order ID: ${orderId}</p>
+              `
+            })
+          })
+        } catch (emailErr) {
+          console.log('Email sending failed (non-critical):', emailErr)
+        }
+      }
       }
 
       onSuccess(orderId || Date.now())

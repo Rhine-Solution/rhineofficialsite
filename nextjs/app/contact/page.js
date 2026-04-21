@@ -47,6 +47,27 @@ export default function ContactPage() {
       if (res.ok) {
         setSuccess(true)
         setFormData({ name: '', email: '', subject: '', message: '' })
+        
+        // Send confirmation email
+        try {
+          await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: formData.email,
+              subject: 'We received your message - Rhine Solution',
+              html: `
+                <h1>Thank you for contacting us!</h1>
+                <p>Hi ${formData.name},</p>
+                <p>We've received your message and will get back to you soon.</p>
+                <p><strong>Your message:</strong></p>
+                <p>${formData.message}</p>
+              `
+            })
+          })
+        } catch (emailErr) {
+          console.log('Email notification failed (non-critical)')
+        }
       } else {
         throw new Error('Failed to send message')
       }
