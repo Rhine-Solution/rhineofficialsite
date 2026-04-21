@@ -137,7 +137,7 @@ export default function BlogPage() {
                 <CardTitle className="text-lg mb-2 group-hover:text-indigo-400 transition-colors line-clamp-2">
                   {post.title}
                 </CardTitle>
-                <CardDescription className="text-sm line-clamp-2">{post.excerpt}</Description>
+                <CardDescription className="text-sm line-clamp-2">{post.excerpt}</CardDescription>
                 <div className="mt-4 text-xs text-zinc-500">{post.date}</div>
               </CardContent>
             </Card>
