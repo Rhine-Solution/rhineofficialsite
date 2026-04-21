@@ -36,8 +36,16 @@ function BookingContent() {
   })
   const [loading, setLoading] = useState(false)
 
-  const destination = destinationDetails[destinationId] || destinationDetails[1]
-  const total = destination.price * bookingData.guests
+  const numericId = parseInt(destinationId) || 1
+  const destination = destinationDetails[numericId] || destinationDetails[1] || {
+    name: 'Destination',
+    location: 'Location',
+    price: 0,
+    image: '',
+    duration: '0 days',
+    includes: []
+  }
+  const total = (destination?.price || 0) * bookingData.guests
 
   const handleSubmit = async (e) => {
     e.preventDefault()
