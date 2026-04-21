@@ -14,6 +14,8 @@ const navLinks = [
   { href: '/travel', label: 'Travel' },
   { href: '/appointments', label: 'Appointments' },
   { href: '/portfolio', label: 'Portfolio' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/faq', label: 'FAQ' },
   { href: '/contact', label: 'Contact' },
 ]
 
