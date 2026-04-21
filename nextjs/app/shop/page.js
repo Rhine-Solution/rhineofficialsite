@@ -166,6 +166,79 @@ export default function ShopPage() {
         </div>
       </section>
 
+      {/* Premium Items Container - Red Golden Glassy */}
+      <section className="py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="relative">
+            {/* Red Golden Glassy Container */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-red-900/80 via-red-800/60 to-amber-900/80 border border-amber-400/30 backdrop-blur-xl">
+              {/* Animated gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 via-amber-500/20 to-red-600/20 animate-pulse" />
+              
+              {/* Header */}
+              <div className="relative z-10 px-8 pt-8 pb-4">
+                <h2 className="text-3xl font-bold flex items-center gap-3">
+                  <span className="text-4xl">👑</span>
+                  <span className="bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-300 bg-clip-text text-transparent">Premium Collection</span>
+                </h2>
+                <p className="text-red-200/80 mt-2 text-lg">Exclusive premium services with elite features</p>
+              </div>
+
+              {/* Premium Items Grid */}
+              <div className="relative z-10 px-8 pb-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {products.filter(p => 
+                    p.name?.includes('Premium') || 
+                    p.name?.includes('Pro') || 
+                    p.name?.includes('MVP') ||
+                    p.name?.includes('Enterprise') ||
+                    p.is_premium === true
+                  ).slice(0, 8).map((product, index) => (
+                    <div 
+                      key={product.id}
+                      className="group relative bg-gradient-to-br from-amber-500/20 to-red-500/10 border border-amber-400/20 rounded-2xl p-4 hover:border-amber-400/60 hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-300 cursor-pointer"
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      {/* Golden glow effect on hover */}
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      
+                      {/* Badge */}
+                      <div className="absolute -top-2 -right-2">
+                        <span className="inline-flex items-center justify-center w-7 h-7 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-xs font-bold rounded-full shadow-lg">
+                          ⭐
+                        </span>
+                      </div>
+
+                      {/* Content */}
+                      <div className="relative">
+                        <div className="text-xs text-amber-400 mb-1 uppercase tracking-wide font-medium">{product.category}</div>
+                        <h3 className="font-bold text-white text-sm mb-2 group-hover:text-amber-300 transition-colors line-clamp-2">{product.name}</h3>
+                        {product.description && (
+                          <p className="text-xs text-red-200/70 mb-3 line-clamp-2">{product.description}</p>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <span className="text-xl font-bold text-amber-300">${product.price}</span>
+                          <button 
+                            onClick={() => addItem(product)}
+                            className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-black text-xs font-bold rounded-lg hover:shadow-lg hover:shadow-amber-500/30 transition-all"
+                          >
+                            Add
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Decorative elements */}
+              <div className="absolute top-4 right-4 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl" />
+              <div className="absolute bottom-4 left-4 w-24 h-24 bg-red-500/10 rounded-full blur-2xl" />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Products Grid */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4">
@@ -179,30 +252,12 @@ export default function ShopPage() {
           ) : filteredProducts.length > 0 ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {filteredProducts.map((product, index) => {
-                const isPremium = ['SEO Premium Package', 'Dedicated Server - Pro', 'Mobile App - MVP'].includes(product.name)
-                const hasDiscount = ['Domain Registration - .com', 'Cloud Backup - 100GB', 'Website Maintenance - Monthly'].includes(product.name)
-                const originalPrice = hasDiscount ? Math.round(product.price * 1.6) : null
-                
                 return (
                 <Card 
                   key={product.id} 
-                  className={`card-animate hover-lift group relative ${isPremium ? 'border-amber-500/50 bg-gradient-to-b from-amber-500/10 to-transparent' : ''}`}
+                  className="card-animate hover-lift group relative"
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  {isPremium && (
-                    <div className="absolute -top-2 left-3 z-10">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-xs font-bold rounded-full">
-                        ⭐
-                      </span>
-                    </div>
-                  )}
-                  {hasDiscount && (
-                    <div className="absolute -top-2 -right-2 z-10">
-                      <span className="inline-flex items-center justify-center w-8 h-8 bg-red-500 text-white text-xs font-bold rounded-full">
-                        -40%
-                      </span>
-                    </div>
-                  )}
                   <div className="aspect-square overflow-hidden">
                     <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>

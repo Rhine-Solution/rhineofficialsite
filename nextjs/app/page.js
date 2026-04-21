@@ -88,7 +88,7 @@ export default function Home() {
           <div className="text-center">
             <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm mb-6 ${loaded ? 'animate-fade-in' : 'opacity-0'}`}>
               <span className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse" />
-              Now with Stripe Payments
+              Enterprise-Grade Platform
             </div>
             
             <h1 className={`text-4xl md:text-6xl lg:text-7xl font-bold mb-6 ${loaded ? 'animate-slide-up' : 'opacity-0'}`}>
