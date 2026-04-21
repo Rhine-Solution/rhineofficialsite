@@ -117,7 +117,6 @@ if (orderId) {
           console.log('Email sending failed (non-critical):', emailErr)
         }
       }
-      }
 
       onSuccess(orderId || Date.now())
     } catch (err) {
