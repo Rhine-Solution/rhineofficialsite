@@ -68,6 +68,8 @@ export default function RootLayout({ children }) {
     <html lang="en" className="dark">
       <head>
         <link rel="manifest" href="/manifest.json" />
+        {/* Plausible Analytics - Replace with your domain */}
+        <script defer data-domain="rhinesolution.com" src="https://plausible.io/js/script.js"></script>
       </head>
       <body className="bg-zinc-950 text-zinc-100 antialiased">
         <AuthProvider>
