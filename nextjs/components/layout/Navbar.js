@@ -8,68 +8,58 @@ import { useCart } from '../CartProvider'
 import { useWishlist } from '../WishlistProvider'
 import { useSearch } from '../SearchContext'
 
-const menuItems = [
-  { 
-    label: 'Home', 
-    href: '/',
-    icon: '🏠'
-  },
-  { 
-    label: 'Services', 
-    href: '#',
-    icon: '🛠️',
-    dropdown: [
-      { label: 'Shop', href: '/shop', icon: '🛒', desc: 'Web hosting, domains & more' },
-      { label: 'Travel', href: '/travel', icon: '✈️', desc: 'Book your next trip' },
-      { label: 'Appointments', href: '/appointments', icon: '📅', desc: 'Schedule a meeting' },
+const megaMenuCategories = [
+  {
+    title: 'Services',
+    items: [
+      { label: 'Shop', href: '/shop', desc: 'Web hosting, domains, SSL' },
+      { label: 'Travel', href: '/travel', desc: 'Book your next trip' },
+      { label: 'Appointments', href: '/appointments', desc: 'Schedule a meeting' },
     ]
   },
-  { 
-    label: 'Portfolio', 
-    href: '/portfolio',
-    icon: '💼'
-  },
-  { 
-    label: 'Resources', 
-    href: '#',
-    icon: '📚',
-    dropdown: [
-      { label: 'Blog', href: '/blog', icon: '📝', desc: 'Latest articles & updates' },
-      { label: 'FAQ', href: '/faq', icon: '❓', desc: 'Common questions answered' },
-      { label: 'Reviews', href: '/reviews', icon: '⭐', desc: 'Customer feedback' },
+  {
+    title: 'Portfolio',
+    items: [
+      { label: 'Portfolio', href: '/portfolio', desc: 'View our work' },
+      { label: 'Pricing', href: '/pricing', desc: 'Our pricing plans' },
     ]
   },
-  { 
-    label: 'About', 
-    href: '/about',
-    icon: 'ℹ️'
+  {
+    title: 'Resources',
+    items: [
+      { label: 'Blog', href: '/blog', desc: 'Latest articles' },
+      { label: 'FAQ', href: '/faq', desc: 'Common questions' },
+      { label: 'Reviews', href: '/reviews', desc: 'Customer feedback' },
+    ]
   },
-  { 
-    label: 'Contact', 
-    href: '/contact',
-    icon: '📧'
+  {
+    title: 'Company',
+    items: [
+      { label: 'About', href: '/about', desc: 'Learn about us' },
+      { label: 'Contact', href: '/contact', desc: 'Get in touch' },
+      { label: 'Admin', href: '/admin', desc: 'Management' },
+    ]
   },
 ]
 
 const accountItems = [
-  { label: 'Dashboard', href: '/dashboard', icon: '📊' },
-  { label: 'Profile', href: '/profile', icon: '👤' },
-  { label: 'Orders', href: '/orders', icon: '📦' },
-  { label: 'Admin', href: '/admin', icon: '⚙️', adminOnly: true },
+  { label: 'Dashboard', href: '/dashboard' },
+  { label: 'Profile', href: '/profile' },
+  { label: 'Orders', href: '/orders' },
+  { label: 'Admin', href: '/admin', adminOnly: true },
 ]
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [megaMenuOpen, setMegaMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [activeDropdown, setActiveDropdown] = useState(null)
   const [accountDropdown, setAccountDropdown] = useState(false)
-  const [mobileOpenMenu, setMobileOpenMenu] = useState(null)
   const pathname = usePathname()
   const { user, isAuthenticated, signOut } = useAuth()
   const { cartCount, setIsOpen: setCartOpen } = useCart()
   const { count: wishlistCount } = useWishlist()
   const { open: openSearch } = useSearch()
-  const dropdownRef = useRef(null)
+  const megaMenuRef = useRef(null)
   const accountRef = useRef(null)
 
   useEffect(() => {
@@ -80,8 +70,8 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setActiveDropdown(null)
+      if (megaMenuRef.current && !megaMenuRef.current.contains(event.target)) {
+        setMegaMenuOpen(false)
       }
       if (accountRef.current && !accountRef.current.contains(event.target)) {
         setAccountDropdown(false)
@@ -92,9 +82,8 @@ export default function Navbar() {
   }, [])
 
   useEffect(() => {
-    setIsOpen(false)
-    setActiveDropdown(null)
-    setMobileOpenMenu(null)
+    setMegaMenuOpen(false)
+    setAccountDropdown(false)
   }, [pathname])
 
   return (
@@ -118,57 +107,72 @@ export default function Navbar() {
             <span className="text-xl font-bold gradient-text">Rhine</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1" ref={dropdownRef}>
-            {menuItems.map((item) => (
-              <div key={item.label} className="relative">
-                <button
-                  onClick={() => {
-                    if (item.dropdown) {
-                      setActiveDropdown(activeDropdown === item.label ? null : item.label)
-                    }
-                  }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    pathname === item.href && !item.dropdown
-                      ? 'text-white bg-indigo-500/20 border border-indigo-500/30'
-                      : 'text-zinc-300 hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <span>{item.icon}</span>
-                  <span>{item.label}</span>
-                  {item.dropdown && (
-                    <svg className={`w-4 h-4 transition-transform ${activeDropdown === item.label ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  )}
-                </button>
+          {/* Mega Menu Button */}
+          <div className="relative" ref={megaMenuRef}>
+            <button
+              onClick={() => setMegaMenuOpen(!megaMenuOpen)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-200 ${
+                megaMenuOpen 
+                  ? 'bg-indigo-600 text-white' 
+                  : 'text-zinc-300 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <span className="text-xl">☰</span>
+              <span className="hidden sm:inline">Menu</span>
+              <svg className={`w-4 h-4 transition-transform ${megaMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
 
-                {/* Dropdown Menu */}
-                {item.dropdown && activeDropdown === item.label && (
-                  <div className="absolute top-full left-0 mt-2 w-72 bg-zinc-900/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                    <div className="p-2">
-                      {item.dropdown.map((subItem) => (
-                        <Link
-                          key={subItem.href}
-                          href={subItem.href}
-                          className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group"
-                        >
-                          <span className="text-xl">{subItem.icon}</span>
-                          <div>
-                            <span className="block text-sm font-medium text-white group-hover:text-indigo-400 transition-colors">
-                              {subItem.label}
-                            </span>
-                            <span className="block text-xs text-zinc-500">
-                              {subItem.desc}
-                            </span>
-                          </div>
-                        </Link>
-                      ))}
+            {/* Mega Menu Panel */}
+            {megaMenuOpen && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-[90vw] max-w-4xl bg-zinc-950/95 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="p-6">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    {megaMenuCategories.map((category) => (
+                      <div key={category.title}>
+                        <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">
+                          {category.title}
+                        </h3>
+                        <div className="space-y-2">
+                          {category.items.map((item) => (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              className="block p-3 -mx-2 rounded-xl hover:bg-white/5 transition-colors group"
+                            >
+                              <span className="block text-base font-medium text-white group-hover:text-indigo-400 transition-colors">
+                                {item.label}
+                              </span>
+                              <span className="block text-xs text-zinc-500">
+                                {item.desc}
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Quick Links */}
+                  <div className="mt-8 pt-6 border-t border-white/10">
+                    <div className="flex flex-wrap items-center gap-4">
+                      <Link href="/" className="text-sm text-zinc-400 hover:text-white transition-colors">
+                        Home
+                      </Link>
+                      <span className="text-zinc-700">|</span>
+                      <Link href="/login" className="text-sm text-zinc-400 hover:text-white transition-colors">
+                        Sign In
+                      </Link>
+                      <span className="text-zinc-700">|</span>
+                      <Link href="/register" className="text-sm text-zinc-400 hover:text-white transition-colors">
+                        Create Account
+                      </Link>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
-            ))}
+            )}
           </div>
 
           {/* Right Side Actions */}
@@ -241,7 +245,7 @@ export default function Navbar() {
 
               {/* Account Dropdown */}
               {accountDropdown && (
-                <div className="absolute top-full right-0 mt-2 w-56 bg-zinc-900/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute top-full right-0 mt-2 w-56 bg-zinc-950/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                   {isAuthenticated && (
                     <>
                       <div className="p-4 border-b border-white/5">
@@ -254,10 +258,9 @@ export default function Navbar() {
                             <Link
                               key={item.href}
                               href={item.href}
-                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors"
+                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors text-zinc-300 hover:text-white"
                             >
-                              <span>{item.icon}</span>
-                              <span className="text-sm text-zinc-300">{item.label}</span>
+                              <span>{item.label}</span>
                             </Link>
                           )
                         ))}
@@ -288,122 +291,55 @@ export default function Navbar() {
                 Sign Up
               </Link>
             )}
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2.5 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {isOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-zinc-950/95 backdrop-blur-xl border-t border-white/5 shadow-2xl">
-          <div className="max-w-7xl mx-auto px-4 py-4 space-y-2">
-            {menuItems.map((item) => (
-              <div key={item.label}>
-                {item.dropdown ? (
-                  <>
-                    <button
-                      onClick={() => setMobileOpenMenu(mobileOpenMenu === item.label ? null : item.label)}
-                      className="flex items-center justify-between w-full p-4 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-xl">{item.icon}</span>
-                        <span className="font-medium">{item.label}</span>
-                      </div>
-                      <svg className={`w-5 h-5 transition-transform ${mobileOpenMenu === item.label ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    {mobileOpenMenu === item.label && (
-                      <div className="ml-4 pl-4 border-l border-white/10 space-y-1">
-                        {item.dropdown.map((subItem) => (
-                          <Link
-                            key={subItem.href}
-                            href={subItem.href}
-                            className="flex items-center gap-3 p-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
-                          >
-                            <span className="text-lg">{subItem.icon}</span>
-                            <div>
-                              <span className="block text-sm font-medium">{subItem.label}</span>
-                              <span className="block text-xs text-zinc-500">{subItem.desc}</span>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <Link
-                    href={item.href}
-                    className={`flex items-center gap-3 p-4 rounded-xl transition-colors ${
-                      pathname === item.href
-                        ? 'text-white bg-indigo-500/20 border border-indigo-500/30'
-                        : 'text-zinc-300 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    <span className="text-xl">{item.icon}</span>
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
-                )}
-              </div>
-            ))}
-
-            {/* Account Section */}
-            <div className="pt-4 mt-4 border-t border-white/10">
-              {isAuthenticated ? (
-                <>
-                  <div className="px-4 pb-2">
-                    <p className="text-sm text-zinc-500">Account</p>
-                  </div>
-                  {accountItems.map((item) => (
-                    (!item.adminOnly || user?.role === 'admin') && (
+      {/* Mobile Mega Menu Overlay */}
+      {megaMenuOpen && (
+        <div className="lg:hidden fixed inset-0 top-16 bg-zinc-950/95 backdrop-blur-xl z-40 overflow-y-auto">
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {megaMenuCategories.map((category) => (
+                <div key={category.title}>
+                  <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">
+                    {category.title}
+                  </h3>
+                  <div className="space-y-1">
+                    {category.items.map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
-                        className="flex items-center gap-3 p-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+                        onClick={() => setMegaMenuOpen(false)}
+                        className="block p-3 rounded-xl hover:bg-white/5 transition-colors"
                       >
-                        <span>{item.icon}</span>
-                        <span>{item.label}</span>
+                        <span className="block text-base font-medium text-white">
+                          {item.label}
+                        </span>
+                        <span className="block text-xs text-zinc-500">
+                          {item.desc}
+                        </span>
                       </Link>
-                    )
-                  ))}
-                  <button 
-                    onClick={signOut}
-                    className="flex items-center gap-3 w-full p-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    <span>Logout</span>
-                  </button>
-                </>
-              ) : (
-                <div className="grid grid-cols-2 gap-3">
-                  <Link 
-                    href="/login"
-                    className="text-center p-3 rounded-xl text-zinc-300 border border-zinc-700 hover:bg-white/5 transition-colors"
-                  >
-                    Login
-                  </Link>
-                  <Link 
-                    href="/register"
-                    className="text-center p-3 rounded-xl text-white bg-indigo-600 hover:bg-indigo-500 transition-colors"
-                  >
-                    Sign Up
-                  </Link>
+                    ))}
+                  </div>
                 </div>
+              ))}
+            </div>
+
+            {/* Mobile Quick Links */}
+            <div className="mt-8 pt-6 border-t border-white/10 space-y-2">
+              <Link href="/" onClick={() => setMegaMenuOpen(false)} className="block py-3 text-white font-medium">
+                Home
+              </Link>
+              {!isAuthenticated && (
+                <>
+                  <Link href="/login" onClick={() => setMegaMenuOpen(false)} className="block py-3 text-zinc-400 hover:text-white">
+                    Sign In
+                  </Link>
+                  <Link href="/register" onClick={() => setMegaMenuOpen(false)} className="block py-3 text-zinc-400 hover:text-white">
+                    Create Account
+                  </Link>
+                </>
               )}
             </div>
           </div>
