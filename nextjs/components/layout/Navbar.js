@@ -8,33 +8,33 @@ import { useCart } from '../CartProvider'
 import { useWishlist } from '../WishlistProvider'
 import { useSearch } from '../SearchContext'
 
-const megaMenuCategories = [
-  {
-    title: 'Services',
-    items: [
+const mainButtons = [
+  { 
+    label: 'Services', 
+    megaMenu: [
       { label: 'Shop', href: '/shop', desc: 'Web hosting, domains, SSL' },
       { label: 'Travel', href: '/travel', desc: 'Book your next trip' },
       { label: 'Appointments', href: '/appointments', desc: 'Schedule a meeting' },
     ]
   },
-  {
-    title: 'Portfolio',
-    items: [
+  { 
+    label: 'Portfolio', 
+    megaMenu: [
       { label: 'Portfolio', href: '/portfolio', desc: 'View our work' },
       { label: 'Pricing', href: '/pricing', desc: 'Our pricing plans' },
     ]
   },
-  {
-    title: 'Resources',
-    items: [
+  { 
+    label: 'Resources', 
+    megaMenu: [
       { label: 'Blog', href: '/blog', desc: 'Latest articles' },
       { label: 'FAQ', href: '/faq', desc: 'Common questions' },
       { label: 'Reviews', href: '/reviews', desc: 'Customer feedback' },
     ]
   },
-  {
-    title: 'Company',
-    items: [
+  { 
+    label: 'Company', 
+    megaMenu: [
       { label: 'About', href: '/about', desc: 'Learn about us' },
       { label: 'Contact', href: '/contact', desc: 'Get in touch' },
       { label: 'Admin', href: '/admin', desc: 'Management' },
@@ -51,7 +51,7 @@ const accountItems = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const [megaMenuOpen, setMegaMenuOpen] = useState(false)
+  const [activeMegaMenu, setActiveMegaMenu] = useState(null)
   const [scrolled, setScrolled] = useState(false)
   const [accountDropdown, setAccountDropdown] = useState(false)
   const pathname = usePathname()
@@ -71,7 +71,7 @@ export default function Navbar() {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (megaMenuRef.current && !megaMenuRef.current.contains(event.target)) {
-        setMegaMenuOpen(false)
+        setActiveMegaMenu(null)
       }
       if (accountRef.current && !accountRef.current.contains(event.target)) {
         setAccountDropdown(false)
@@ -82,7 +82,7 @@ export default function Navbar() {
   }, [])
 
   useEffect(() => {
-    setMegaMenuOpen(false)
+    setActiveMegaMenu(null)
     setAccountDropdown(false)
   }, [pathname])
 
@@ -107,72 +107,49 @@ export default function Navbar() {
             <span className="text-xl font-bold gradient-text">Rhine</span>
           </Link>
 
-          {/* Mega Menu Button */}
-          <div className="relative" ref={megaMenuRef}>
-            <button
-              onClick={() => setMegaMenuOpen(!megaMenuOpen)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-200 ${
-                megaMenuOpen 
-                  ? 'bg-indigo-600 text-white' 
-                  : 'text-zinc-300 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <span className="text-xl">☰</span>
-              <span className="hidden sm:inline">Menu</span>
-              <svg className={`w-4 h-4 transition-transform ${megaMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+          {/* Main Navigation Buttons */}
+          <div className="hidden lg:flex items-center gap-1" ref={megaMenuRef}>
+            {mainButtons.map((button) => (
+              <div key={button.label} className="relative">
+                <button
+                  onClick={() => setActiveMegaMenu(activeMegaMenu === button.label ? null : button.label)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    activeMegaMenu === button.label
+                      ? 'text-white bg-indigo-600'
+                      : 'text-zinc-300 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <span>{button.label}</span>
+                  <svg className={`w-4 h-4 transition-transform ${activeMegaMenu === button.label ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
 
-            {/* Mega Menu Panel */}
-            {megaMenuOpen && (
-              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-[90vw] max-w-4xl bg-zinc-950/95 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                <div className="p-6">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    {megaMenuCategories.map((category) => (
-                      <div key={category.title}>
-                        <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">
-                          {category.title}
-                        </h3>
-                        <div className="space-y-2">
-                          {category.items.map((item) => (
-                            <Link
-                              key={item.href}
-                              href={item.href}
-                              className="block p-3 -mx-2 rounded-xl hover:bg-white/5 transition-colors group"
-                            >
-                              <span className="block text-base font-medium text-white group-hover:text-indigo-400 transition-colors">
-                                {item.label}
-                              </span>
-                              <span className="block text-xs text-zinc-500">
-                                {item.desc}
-                              </span>
-                            </Link>
-                          ))}
-                        </div>
+                {/* Mega Menu Panel */}
+                {activeMegaMenu === button.label && (
+                  <div className="absolute top-full left-0 mt-4 w-72 bg-zinc-950/95 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="p-4">
+                      <div className="space-y-1">
+                        {button.megaMenu.map((item) => (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className="block p-3 -mx-2 rounded-xl hover:bg-white/5 transition-colors group"
+                          >
+                            <span className="block text-base font-medium text-white group-hover:text-indigo-400 transition-colors">
+                              {item.label}
+                            </span>
+                            <span className="block text-xs text-zinc-500">
+                              {item.desc}
+                            </span>
+                          </Link>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-
-                  {/* Quick Links */}
-                  <div className="mt-8 pt-6 border-t border-white/10">
-                    <div className="flex flex-wrap items-center gap-4">
-                      <Link href="/" className="text-sm text-zinc-400 hover:text-white transition-colors">
-                        Home
-                      </Link>
-                      <span className="text-zinc-700">|</span>
-                      <Link href="/login" className="text-sm text-zinc-400 hover:text-white transition-colors">
-                        Sign In
-                      </Link>
-                      <span className="text-zinc-700">|</span>
-                      <Link href="/register" className="text-sm text-zinc-400 hover:text-white transition-colors">
-                        Create Account
-                      </Link>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
-            )}
+            ))}
           </div>
 
           {/* Right Side Actions */}
@@ -291,53 +268,69 @@ export default function Navbar() {
                 Sign Up
               </Link>
             )}
+
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="lg:hidden p-2.5 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Mega Menu Overlay */}
-      {megaMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-16 bg-zinc-950/95 backdrop-blur-xl z-40 overflow-y-auto">
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {megaMenuCategories.map((category) => (
-                <div key={category.title}>
-                  <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">
-                    {category.title}
-                  </h3>
-                  <div className="space-y-1">
-                    {category.items.map((item) => (
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-zinc-950/95 backdrop-blur-xl border-t border-white/5 shadow-2xl">
+          <div className="max-w-7xl mx-auto px-4 py-4 space-y-2">
+            {mainButtons.map((button) => (
+              <div key={button.label}>
+                <button
+                  onClick={() => setActiveMegaMenu(activeMegaMenu === button.label ? null : button.label)}
+                  className="flex items-center justify-between w-full p-4 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                  <span className="font-medium">{button.label}</span>
+                  <svg className={`w-5 h-5 transition-transform ${activeMegaMenu === button.label ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {activeMegaMenu === button.label && (
+                  <div className="ml-4 pl-4 border-l border-white/10 space-y-1">
+                    {button.megaMenu.map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
-                        onClick={() => setMegaMenuOpen(false)}
-                        className="block p-3 rounded-xl hover:bg-white/5 transition-colors"
+                        onClick={() => setIsOpen(false)}
+                        className="block p-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
                       >
-                        <span className="block text-base font-medium text-white">
-                          {item.label}
-                        </span>
-                        <span className="block text-xs text-zinc-500">
-                          {item.desc}
-                        </span>
+                        <span className="block text-sm font-medium">{item.label}</span>
+                        <span className="block text-xs text-zinc-500">{item.desc}</span>
                       </Link>
                     ))}
                   </div>
-                </div>
-              ))}
-            </div>
+                )}
+              </div>
+            ))}
 
-            {/* Mobile Quick Links */}
-            <div className="mt-8 pt-6 border-t border-white/10 space-y-2">
-              <Link href="/" onClick={() => setMegaMenuOpen(false)} className="block py-3 text-white font-medium">
+            {/* Mobile Links */}
+            <div className="pt-4 mt-4 border-t border-white/10 space-y-2">
+              <Link href="/" onClick={() => setIsOpen(false)} className="block p-4 text-zinc-300 hover:text-white hover:bg-white/5 rounded-xl">
                 Home
               </Link>
               {!isAuthenticated && (
                 <>
-                  <Link href="/login" onClick={() => setMegaMenuOpen(false)} className="block py-3 text-zinc-400 hover:text-white">
+                  <Link href="/login" onClick={() => setIsOpen(false)} className="block p-4 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl">
                     Sign In
                   </Link>
-                  <Link href="/register" onClick={() => setMegaMenuOpen(false)} className="block py-3 text-zinc-400 hover:text-white">
-                    Create Account
+                  <Link href="/register" onClick={() => setIsOpen(false)} className="block p-4 text-white bg-indigo-600 rounded-xl text-center">
+                    Sign Up
                   </Link>
                 </>
               )}
