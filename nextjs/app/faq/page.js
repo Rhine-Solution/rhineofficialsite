@@ -6,15 +6,58 @@ import Card, { CardContent } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 
 const faqCategories = [
-  { id: 'general', label: 'General', icon: '🏢', color: 'from-blue-500 to-cyan-500' },
-  { id: 'account', label: 'Account', icon: '👤', color: 'from-purple-500 to-pink-500' },
-  { id: 'billing', label: 'Billing', icon: '💳', color: 'from-green-500 to-emerald-500' },
-  { id: 'technical', label: 'Technical', icon: '⚙️', color: 'from-orange-500 to-amber-500' },
-  { id: 'orders', label: 'Orders', icon: '📦', color: 'from-rose-500 to-red-500' },
-  { id: 'travel', label: 'Travel', icon: '✈️', color: 'from-indigo-500 to-violet-500' },
+  { 
+    id: 'general', 
+    label: 'Getting Started', 
+    icon: '🚀', 
+    desc: 'New here? Start here!',
+    color: 'from-emerald-500 to-teal-500',
+    steps: ['Create Account', 'Browse Services', 'Make First Purchase']
+  },
+  { 
+    id: 'account', 
+    label: 'My Account', 
+    icon: '👤', 
+    desc: 'Manage your profile',
+    color: 'from-violet-500 to-purple-500',
+    steps: ['Login', 'Update Profile', 'Change Password']
+  },
+  { 
+    id: 'billing', 
+    label: 'Billing & Payments', 
+    icon: '💳', 
+    desc: 'Payments & refunds',
+    color: 'from-amber-500 to-orange-500',
+    steps: ['Payment Methods', 'Invoices', 'Request Refund']
+  },
+  { 
+    id: 'technical', 
+    label: 'Technical Help', 
+    icon: '🔧', 
+    desc: 'Setup & troubleshooting',
+    color: 'from-blue-500 to-cyan-500',
+    steps: ['Setup Guide', 'API Access', 'Contact Support']
+  },
+  { 
+    id: 'orders', 
+    label: 'Orders & Delivery', 
+    icon: '📦', 
+    desc: 'Track your orders',
+    color: 'from-rose-500 to-pink-500',
+    steps: ['View Orders', 'Track Delivery', 'Cancel Order']
+  },
+  { 
+    id: 'travel', 
+    label: 'Travel Bookings', 
+    icon: '✈️', 
+    desc: 'Trip planning help',
+    color: 'from-indigo-500 to-violet-500',
+    steps: ['Browse Destinations', 'Book Trip', 'Modify Booking']
+  },
 ]
 
 const faqs = [
+  // Getting Started
   {
     category: 'general',
     question: 'What is Rhine Solution?',
@@ -22,304 +65,289 @@ const faqs = [
   },
   {
     category: 'general',
-    question: 'What services do you offer?',
-    answer: 'We offer a wide range of services including web hosting, domain registration, SSL certificates, SEO services, custom web development, travel booking, appointment scheduling, and portfolio management. Browse our shop for complete details.'
+    question: 'How do I get started?',
+    answer: '1. Create an account using Register\n2. Browse our services in the Shop\n3. Add items to your cart\n4. Complete checkout\n5. Receive confirmation email\n\nThat\'s it! You\'re ready to go.'
   },
   {
     category: 'general',
-    question: 'How do I get started?',
-    answer: 'Simply create an account by clicking "Register" in the navigation. You can sign up with email or use Google/GitHub for quick access. Once registered, you can browse our services, make bookings, and manage your account.'
+    question: 'What services do you offer?',
+    answer: 'We offer:\n• Web Hosting & Domains\n• SSL Certificates\n• SEO & Marketing Services\n• Custom Web Development\n• Travel Booking\n• Appointment Scheduling\n\nBrowse shop.rhinesolution.com for complete catalog.'
   },
   {
     category: 'general',
     question: 'Is my data secure?',
-    answer: 'Absolutely! We use industry-standard security practices including SSL encryption, secure database storage with Supabase (PostgreSQL), human verification via Cloudflare Turnstile, and regular security audits. Your data is protected with enterprise-grade security.'
+    answer: 'Yes! We use:\n• SSL encryption\n• Secure Supabase database\n• Cloudflare Turnstile verification\n• Enterprise-grade security\n• Regular security audits'
   },
+
+  // Account
   {
     category: 'account',
     question: 'How do I create an account?',
-    answer: 'Click on the "Register" button in the navigation bar. You can sign up using your email address or use Google/GitHub OAuth for faster one-click registration. It only takes a minute to get started!'
+    answer: 'Click "Register" in the nav bar:\n• Sign up with email\n• Or use Google/GitHub OAuth\n• Verify your email\n• Start browsing!'
   },
   {
     category: 'account',
     question: 'How do I reset my password?',
-    answer: 'Go to the login page and click "Forgot Password". Enter your email address and we\'ll send you a password reset link. Follow the instructions in the email to create a new password.'
+    answer: '1. Go to Login page\n2. Click "Forgot Password"\n3. Enter your email\n4. Check your inbox\n5. Click reset link\n6. Create new password'
   },
   {
     category: 'account',
-    question: 'Can I update my profile information?',
-    answer: 'Yes! Visit your Profile page to update your name, email, phone, company, and bio. Your profile information helps us provide better service and personalize your experience.'
+    question: 'How do I update my profile?',
+    answer: '1. Login to your account\n2. Go to Profile page\n3. Edit name, email, phone, company, bio\n4. Click Save\n\nYour changes are saved automatically.'
   },
+
+  // Billing
   {
     category: 'billing',
     question: 'What payment methods do you accept?',
-    answer: 'We accept all major credit cards (Visa, MasterCard, American Express) through our secure Stripe payment system. We also support digital wallets like Apple Pay and Google Pay for quick checkout.'
+    answer: 'We accept:\n• Visa, MasterCard, American Express\n• Apple Pay & Google Pay\n• All major credit/debit cards\n\nProcessed securely through Stripe.'
   },
   {
     category: 'billing',
     question: 'Can I get a refund?',
-    answer: 'Yes! We offer a 30-day money-back guarantee on most services. If you\'re not satisfied, contact our support team within 30 days of purchase to request a full refund.'
+    answer: 'Yes! Our refund policy:\n• 30-day money-back guarantee\n• Contact support within 30 days\n• Full refund to original payment\n• Processed within 5-7 business days'
   },
   {
     category: 'billing',
-    question: 'How do I update my billing information?',
-    answer: 'Go to your Profile page and navigate to the Billing section. You can update your payment methods, billing address, and view your payment history there.'
+    question: 'How do I view my invoices?',
+    answer: '1. Go to Dashboard\n2. Click Orders\n3. View each order details\n4. Download invoice as PDF\n\nAll invoices are sent via email too.'
   },
-  {
-    category: 'billing',
-    question: 'Do you offer discounts for annual plans?',
-    answer: 'Yes! We offer significant discounts for annual subscriptions. Check our pricing page for current offers - you can save up to 30% by choosing annual billing.'
-  },
+
+  // Technical
   {
     category: 'technical',
     question: 'What technologies do you use?',
-    answer: 'Our platform is built with modern, cutting-edge technologies: Next.js 14 for the frontend, React for UI components, Tailwind CSS for styling, Supabase (PostgreSQL) for the database, Vercel for deployment, and Cloudflare for DNS and security.'
+    answer: 'Our tech stack:\n• Frontend: Next.js 14, React\n• Styling: Tailwind CSS\n• Database: Supabase (PostgreSQL)\n• Hosting: Vercel\n• Security: Cloudflare\n• Payments: Stripe'
   },
   {
     category: 'technical',
     question: 'Do you offer custom development?',
-    answer: 'Yes! We offer custom web development services. Browse our shop for development packages like API Development, Mobile App MVP, and Custom Integration Pro. For unique requirements, contact us directly.'
+    answer: 'Yes! Development services:\n• API Development\n• Mobile App MVP\n• Custom Integrations\n• E-commerce Solutions\n\nCheck our Shop for packages or contact us.'
   },
   {
     category: 'technical',
-    question: 'What is the uptime guarantee?',
-    answer: 'We guarantee 99.9% uptime for all our hosting services. Our infrastructure is built on enterprise-grade servers with redundancy, ensuring your applications stay available around the clock.'
+    question: 'What is your uptime guarantee?',
+    answer: 'We guarantee:\n• 99.9% uptime\n• Enterprise servers\n• Redundant infrastructure\n• 24/7 monitoring\n• Automatic failover'
   },
-  {
-    category: 'technical',
-    question: 'How do I get technical support?',
-    answer: 'You can reach our technical support team through the contact form, by email, or through our support tickets. Premium customers get priority support with faster response times.'
-  },
+
+  // Orders
   {
     category: 'orders',
     question: 'How do I track my order?',
-    answer: 'Go to your Dashboard and click on "Orders" to see the status of all your purchases. You\'ll also receive email notifications when your order status changes - from processing to completed.'
+    answer: 'Track your order:\n1. Go to Dashboard\n2. Click Orders\n3. View order status\n4. Get real-time updates\n\nEmail notifications sent automatically.'
   },
   {
     category: 'orders',
     question: 'How long does delivery take?',
-    answer: 'Digital products like hosting, domains, and SSL certificates are delivered instantly via email. For services like custom development or SEO packages, delivery times vary - check the product description for estimated timelines.'
+    answer: 'Delivery times:\n• Digital products: Instant\n• Hosting setup: 1-24 hours\n• Domain registration: 1-48 hours\n• Services: Per project timeline'
   },
   {
     category: 'orders',
     question: 'Can I cancel my order?',
-    answer: 'You can cancel orders within 24 hours of purchase if the service hasn\'t been delivered. Contact our support team to request a cancellation. Refunds are processed within 5-7 business days.'
+    answer: 'Cancel an order:\n• Within 24 hours of purchase\n• Service not yet delivered\n• Contact support team\n• Full refund to original payment'
   },
+
+  // Travel
   {
-    category: 'orders',
-    question: 'Where can I view my purchase history?',
-    answer: 'Visit the Orders page in your dashboard to view your complete purchase history, including order details, status, and invoices.'
+    category: 'travel',
+    question: 'How do I book a trip?',
+    answer: 'Book your trip:\n1. Go to Travel section\n2. Browse destinations\n3. Click "Book Now"\n4. Select dates & guests\n5. Enter details\n6. Confirm & pay'
   },
   {
     category: 'travel',
-    question: 'How do I book a travel destination?',
-    answer: 'Browse our Travel section, select your desired destination, choose your travel dates and number of guests, fill in your details, and complete the booking. You\'ll receive a confirmation email instantly.'
+    question: 'Can I modify my booking?',
+    answer: 'Modify your booking:\n• Contact 48+ hours before check-in\n• Change dates or guest count\n• Update special requests\n• Subject to availability'
   },
   {
     category: 'travel',
-    question: 'Can I modify my travel booking?',
-    answer: 'Yes! Contact our support team at least 48 hours before your check-in date to modify your booking. We can help change dates, update guest information, or adjust special requests.'
-  },
-  {
-    category: 'travel',
-    question: 'What is included in the travel package?',
-    answer: 'Each travel package includes accommodation, meals (as specified), airport transfers, guided tours, and activities. Check the destination details for specific inclusions.'
+    question: 'What\'s included in travel packages?',
+    answer: 'Each package includes:\n✓ Accommodation\n✓ Meals (as specified)\n✓ Airport transfers\n✓ Guided tours\n✓ Activities\n\nCheck destination for details.'
   },
 ]
 
 export default function FAQPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [openQuestion, setOpenQuestion] = useState(null)
-  const [searchQuery, setSearchQuery] = useState('')
 
-  const filteredFaqs = faqs.filter(faq => {
-    const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory
-    const matchesSearch = !searchQuery || 
-      faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesCategory && matchesSearch
-  })
+  const filteredFaqs = selectedCategory === 'all' 
+    ? faqs 
+    : faqs.filter(faq => faq.category === selectedCategory)
 
-  const categoryStats = faqs.reduce((acc, faq) => {
-    acc[faq.category] = (acc[faq.category] || 0) + 1
-    return acc
-  }, {})
+  const currentCategory = faqCategories.find(c => c.id === selectedCategory)
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-cyan-500/10" />
-        <div className="absolute top-20 left-10 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl" />
-        
-        <div className="max-w-4xl mx-auto px-4 relative">
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm mb-6">
-              <span className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse" />
-              Help Center
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Frequently Asked <span className="gradient-text">Questions</span>
-            </h1>
-            <p className="text-xl text-zinc-400 max-w-2xl mx-auto">
-              Find answers to common questions about our services, billing, and more
-            </p>
-          </div>
-
-          {/* Search */}
-          <div className="relative max-w-xl mx-auto mb-12">
-            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-              <svg className="w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              placeholder="Search for answers..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 bg-zinc-900/80 border border-zinc-700 rounded-2xl text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
-            />
-          </div>
-
-          {/* Stats */}
-          <div className="flex flex-wrap justify-center gap-6 mb-8">
-            <div className="text-center">
-              <div className="text-3xl font-bold gradient-text">{faqs.length}</div>
-              <div className="text-sm text-zinc-500">Questions</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold gradient-text">{faqCategories.length}</div>
-              <div className="text-sm text-zinc-500">Categories</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold gradient-text">24/7</div>
-              <div className="text-sm text-zinc-500">Support</div>
-            </div>
-          </div>
+      {/* Header */}
+      <section className="py-16 bg-gradient-to-b from-zinc-900 to-zinc-950">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            How can we <span className="gradient-text">help you?</span>
+          </h1>
+          <p className="text-xl text-zinc-400">
+            Choose a category below or search for answers
+          </p>
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="py-8 border-y border-zinc-800 bg-zinc-900/30">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="flex flex-wrap justify-center gap-3">
-            <button
-              onClick={() => { setSelectedCategory('all'); setOpenQuestion(null) }}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
-                selectedCategory === 'all'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                  : 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800'
-              }`}
-            >
-              All ({faqs.length})
-            </button>
-            {faqCategories.map(cat => (
+      {/* Visual Category Guide */}
+      <section className="py-12 -mt-8">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {faqCategories.map((cat, index) => (
               <button
                 key={cat.id}
-                onClick={() => { setSelectedCategory(cat.id); setOpenQuestion(null) }}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 ${
                   selectedCategory === cat.id
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                    : 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800'
+                    ? 'ring-2 ring-offset-2 ring-offset-zinc-950'
+                    : 'hover:scale-[1.02]'
                 }`}
+                style={{ '--tw-ring-color': selectedCategory === cat.id ? '#6366f1' : 'transparent' }}
               >
-                <span>{cat.icon}</span>
-                <span>{cat.label}</span>
-                <span className="text-xs opacity-70">({categoryStats[cat.id] || 0})</span>
+                <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-${selectedCategory === cat.id ? '30' : '10'} group-hover:opacity-20 transition-opacity`} />
+                <div className="relative z-10">
+                  <div className="text-3xl mb-3">{cat.icon}</div>
+                  <h3 className="font-bold text-white text-lg mb-1">{cat.label}</h3>
+                  <p className="text-sm text-zinc-400">{cat.desc}</p>
+                  
+                  {/* Steps preview */}
+                  <div className="mt-4 pt-4 border-t border-zinc-700/50">
+                    <div className="text-xs text-zinc-500 mb-2">Quick steps:</div>
+                    <div className="flex flex-wrap gap-1">
+                      {cat.steps.slice(0, 2).map((step, i) => (
+                        <span key={i} className="text-xs px-2 py-1 bg-zinc-800 rounded-full text-zinc-400">
+                          {step}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </button>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Current Category Steps */}
+      {selectedCategory !== 'all' && currentCategory && (
+        <section className="py-8 bg-zinc-900/50 border-y border-zinc-800">
+          <div className="max-w-4xl mx-auto px-4">
+            <div className="flex items-center gap-4 mb-6">
+              <span className="text-3xl">{currentCategory.icon}</span>
+              <div>
+                <h2 className="text-xl font-bold">{currentCategory.label}</h2>
+                <p className="text-zinc-400 text-sm">Follow these steps to get started</p>
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap gap-3">
+              {currentCategory.steps.map((step, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <span className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold text-white">
+                    {index + 1}
+                  </span>
+                  <span className="text-zinc-300">{step}</span>
+                  {index < currentCategory.steps.length - 1 && (
+                    <svg className="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* All Categories Reset */}
+      {selectedCategory !== 'all' && (
+        <section className="py-4">
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            <button
+              onClick={() => { setSelectedCategory('all'); setOpenQuestion(null) }}
+              className="text-indigo-400 hover:text-indigo-300 text-sm"
+            >
+              ← View all categories
+            </button>
+          </div>
+        </section>
+      )}
+
       {/* FAQs */}
       <section className="py-12">
         <div className="max-w-4xl mx-auto px-4">
-          {filteredFaqs.length > 0 ? (
-            <div className="space-y-3">
-              {filteredFaqs.map((faq, index) => {
-                const cat = faqCategories.find(c => c.id === faq.category)
-                return (
-                  <Card 
-                    key={index} 
-                    className={`overflow-hidden transition-all duration-300 ${
-                      openQuestion === index 
-                        ? 'border-indigo-500/50 shadow-lg shadow-indigo-500/10' 
-                        : 'hover:border-zinc-700'
-                    }`}
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold">
+              {selectedCategory === 'all' ? 'All Questions' : currentCategory?.label + ' Questions'}
+            </h2>
+            <span className="text-zinc-500 text-sm">{filteredFaqs.length} questions</span>
+          </div>
+
+          <div className="space-y-3">
+            {filteredFaqs.map((faq, index) => {
+              const cat = faqCategories.find(c => c.id === faq.category)
+              return (
+                <Card 
+                  key={index} 
+                  className={`overflow-hidden transition-all duration-300 ${
+                    openQuestion === index 
+                      ? 'border-indigo-500/50 shadow-lg shadow-indigo-500/10' 
+                      : 'hover:border-zinc-700'
+                  }`}
+                >
+                  <button
+                    onClick={() => setOpenQuestion(openQuestion === index ? null : index)}
+                    className="w-full text-left p-5 flex items-center justify-between gap-4 group"
                   >
-                    <button
-                      onClick={() => setOpenQuestion(openQuestion === index ? null : index)}
-                      className="w-full text-left p-5 flex items-center justify-between gap-4 group"
-                    >
-                      <div className="flex items-center gap-4">
-                        <span className={`w-10 h-10 rounded-xl bg-gradient-to-br ${cat?.color || 'from-zinc-500 to-zinc-600'} flex items-center justify-center text-lg shrink-0`}>
-                          {cat?.icon || '❓'}
-                        </span>
-                        <span className="font-medium text-white text-base group-hover:text-indigo-400 transition-colors">
-                          {faq.question}
-                        </span>
-                      </div>
-                      <span className={`w-8 h-8 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400 transition-all duration-300 ${
-                        openQuestion === index ? 'rotate-180 bg-indigo-600 text-white' : ''
-                      }`}>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">{cat?.icon}</span>
+                      <span className="font-medium text-white group-hover:text-indigo-400 transition-colors">
+                        {faq.question}
                       </span>
-                    </button>
-                    {openQuestion === index && (
-                      <CardContent className="pt-0 pb-5 px-5 ml-14">
-                        <p className="text-zinc-400 leading-relaxed border-l-2 border-indigo-500/30 pl-4">
-                          {faq.answer}
-                        </p>
-                      </CardContent>
-                    )}
-                  </Card>
-                )
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="text-5xl mb-4">🔍</div>
-              <h3 className="text-xl font-semibold text-zinc-400 mb-2">No results found</h3>
-              <p className="text-zinc-500 mb-6">Try a different search term or browse all categories</p>
-              <Button onClick={() => { setSearchQuery(''); setSelectedCategory('all') }}>
-                Clear Filters
-              </Button>
-            </div>
-          )}
+                    </div>
+                    <span className={`w-6 h-6 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400 transition-all duration-300 ${
+                      openQuestion === index ? 'rotate-180 bg-indigo-600 text-white' : ''
+                    }`}>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </span>
+                  </button>
+                  {openQuestion === index && (
+                    <CardContent className="pt-0 pb-5 px-5">
+                      <div className="pl-8">
+                        {faq.answer.split('\n').map((line, i) => {
+                          if (line.startsWith('•') || line.startsWith('✓') || line.match(/^\d+\./)) {
+                            return <div key={i} className="text-zinc-400 mb-1">{line}</div>
+                          }
+                          return line.trim() ? <p key={i} className="text-zinc-400 mb-2">{line}</p> : <div key={i} className="h-2" />
+                        })}
+                      </div>
+                    </CardContent>
+                  )}
+                </Card>
+              )
+            })}
+          </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-900/50 via-zinc-900 to-cyan-900/50 border border-zinc-800 p-10 text-center">
-            <div className="absolute inset-0 bg-grid-white/5" />
-            <div className="relative z-10">
-              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-3xl">
-                💬
-              </div>
-              <h2 className="text-3xl font-bold mb-4">Still have questions?</h2>
-              <p className="text-zinc-400 mb-8 max-w-lg mx-auto">
-                Can't find the answer you're looking for? Our dedicated support team is here to help you with any questions.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/contact">
-                  <Button size="lg" className="glow-primary">
-                    Contact Support
-                  </Button>
-                </Link>
-                <Link href="/shop">
-                  <Button variant="outline" size="lg">
-                    Browse Services
-                  </Button>
-                </Link>
-              </div>
-            </div>
+      {/* Need More Help */}
+      <section className="py-16 bg-zinc-900">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-2xl font-bold mb-4">Still need help?</h2>
+          <p className="text-zinc-400 mb-8">Our support team is here to assist you</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/contact">
+              <Button size="lg" className="glow-primary">
+                Contact Us
+              </Button>
+            </Link>
+            <Link href="/shop">
+              <Button variant="outline" size="lg">
+                Browse Services
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
