@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Menu, Search, Bell, User, LogOut, Settings } from 'lucide-react'
-import { useAuth } from '../../AuthProvider'
+import { useAuth } from '../AuthProvider'
 
 export default function AdminHeader({ onMenuClick }) {
   const router = useRouter()
