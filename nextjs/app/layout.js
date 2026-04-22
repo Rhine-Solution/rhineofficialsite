@@ -21,6 +21,7 @@ import { OrganizationSchema, WebsiteSchema } from '../components/JsonLd'
 import { OpenReplayProvider } from '../components/OpenReplayProvider'
 import AIChatbot from '../components/AIChatbot'
 import AccessibilityChecker from '../components/AccessibilityChecker'
+import { LanguageProvider } from '../contexts/LanguageContext'
 
 export const dynamic = 'force-dynamic'
 
@@ -141,6 +142,7 @@ export default function RootLayout({ children }) {
       <body className="bg-white dark:bg-zinc-950 text-gray-900 dark:text-zinc-100 antialiased">
         <OpenReplayProvider>
         <AccessibilityChecker>
+        <LanguageProvider>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
             <ToastProvider>
@@ -168,6 +170,7 @@ export default function RootLayout({ children }) {
             </ToastProvider>
           </AuthProvider>
         </ThemeProvider>
+        </LanguageProvider>
         </AccessibilityChecker>
         </OpenReplayProvider>
         <OrganizationSchema />
