@@ -9,6 +9,7 @@ import { useWishlist } from '../WishlistProvider'
 import { useSearch } from '../SearchContext'
 import { useTheme } from 'next-themes'
 import { Sun, Moon } from 'lucide-react'
+import LanguageSwitcher from '../LanguageSwitcher'
 
 const mainButtons = [
   { 
@@ -173,6 +174,9 @@ export default function Navbar() {
                 </svg>
               )}
             </button>
+
+            {/* Language Switcher */}
+            <LanguageSwitcher />
 
             {/* Search */}
             <button
