@@ -126,10 +126,12 @@ export default function LoginPage() {
                 </Link>
               </div>
 
+              {/* Turnstile disabled - needs secret key 
               <Turnstile 
                 onVerify={handleTurnstileVerify}
                 action="login" 
-              />
+              /> 
+              */}
 
               <Button type="submit" className="w-full" disabled={loading || authLoading}>
                 {loading || authLoading ? 'Signing in...' : 'Sign In'}

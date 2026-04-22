@@ -151,10 +151,12 @@ export default function RegisterPage() {
                 <Link href="/privacy" className="text-indigo-500 hover:underline">Privacy</Link>
               </div>
 
+              {/* Turnstile disabled - needs secret key
               <Turnstile 
                 onVerify={(token) => setTurnstileToken(token)} 
                 action="register" 
               />
+              */}
 
               <Button type="submit" className="w-full" disabled={loading || authLoading}>
                 {loading || authLoading ? 'Creating account...' : 'Create Account'}
