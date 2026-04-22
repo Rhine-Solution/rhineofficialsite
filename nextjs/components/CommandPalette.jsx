@@ -23,6 +23,7 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import { useDebounce } from '../hooks/useDebounce';
+import { useMeilisearch } from './useMeilisearch';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://crqjedivobupxbbathux.supabase.co'
 const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNycWplZGl2b2J1cHhiYmF0aHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTA5MDEsImV4cCI6MjA5MDM2NjkwMX0.0_HAu_sj7j-3racZK9nWIghKdNEXWRTHgLme2sUMAhM'
@@ -63,6 +64,8 @@ export default function CommandPalette({ open, onOpenChange }) {
   })
   const [loading, setLoading] = useState(false)
   const debouncedSearch = useDebounce(search, 300)
+  const { search: meiliSearch, searchMultiple: meiliMultiSearch, isConfigured: meiliConfigured, results: meiliResults, loading: meiliLoading } = useMeilisearch()
+  const [meiliData, setMeiliData] = useState({ products: [], posts: [], portfolio: [] })
 
   useEffect(() => {
     const down = (e) => {
@@ -127,7 +130,30 @@ export default function CommandPalette({ open, onOpenChange }) {
     fetchResults()
   }, [debouncedSearch])
 
-  const hasContentResults = results.products.length > 0 || results.posts.length > 0 || results.faqs.length > 0
+  // Meilisearch enhanced search
+  useEffect(() => {
+    if (!meiliConfigured || !debouncedSearch || debouncedSearch.length < 2) {
+      setMeiliData({ products: [], posts: [], portfolio: [] })
+      return
+    }
+
+    const fetchMeiliResults = async () => {
+      try {
+        const multiResults = await meiliMultiSearch(debouncedSearch, ['products', 'blog', 'portfolio'])
+        setMeiliData({
+          products: multiResults.products || [],
+          posts: multiResults.blog || [],
+          portfolio: multiResults.portfolio || []
+        })
+      } catch (err) {
+        console.error('Meilisearch error:', err)
+      }
+    }
+
+    fetchMeiliResults()
+  }, [debouncedSearch, meiliConfigured, meiliMultiSearch])
+
+  const hasContentResults = results.products.length > 0 || results.posts.length > 0 || results.faqs.length > 0 || meiliData.products.length > 0 || meiliData.posts.length > 0 || meiliData.portfolio.length > 0
 
   if (!open) return null;
 
@@ -188,6 +214,67 @@ export default function CommandPalette({ open, onOpenChange }) {
                   >
                     <BookOpen className="h-4 w-4 text-green-400" />
                     <span className="flex-1">{post.title}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
+
+            {/* Meilisearch Products */}
+            {meiliData.products.length > 0 && (
+              <Command.Group heading="Products (Enhanced)" className="text-xs font-medium text-indigo-500 dark:text-indigo-400 mb-2 px-2">
+                {meiliData.products.map((product) => (
+                  <Command.Item
+                    key={`meili-prod-${product.id}`}
+                    value={`meili product ${product.title || product.name}`}
+                    onSelect={() => {
+                      router.push(`/shop?search=${product.title || product.name}`);
+                      onOpenChange(false);
+                    }}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 dark:text-zinc-300 aria-selected:bg-indigo-50 dark:aria-selected:bg-indigo-900/20 cursor-pointer"
+                  >
+                    <ShoppingBag className="h-4 w-4 text-indigo-500" />
+                    <span className="flex-1">{product.title || product.name}</span>
+                    {product.price && <span className="text-xs text-gray-500">${product.price}</span>}
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
+
+            {/* Meilisearch Blog Posts */}
+            {meiliData.posts.length > 0 && (
+              <Command.Group heading="Blog (Enhanced)" className="text-xs font-medium text-indigo-500 dark:text-indigo-400 mb-2 px-2">
+                {meiliData.posts.map((post) => (
+                  <Command.Item
+                    key={`meili-post-${post.id}`}
+                    value={`meili blog ${post.title}`}
+                    onSelect={() => {
+                      router.push(`/blog/${post.slug}`);
+                      onOpenChange(false);
+                    }}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 dark:text-zinc-300 aria-selected:bg-indigo-50 dark:aria-selected:bg-indigo-900/20 cursor-pointer"
+                  >
+                    <BookOpen className="h-4 w-4 text-indigo-500" />
+                    <span className="flex-1">{post.title}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
+
+            {/* Meilisearch Portfolio */}
+            {meiliData.portfolio.length > 0 && (
+              <Command.Group heading="Portfolio (Enhanced)" className="text-xs font-medium text-indigo-500 dark:text-indigo-400 mb-2 px-2">
+                {meiliData.portfolio.map((item) => (
+                  <Command.Item
+                    key={`meili-port-${item.id}`}
+                    value={`meili portfolio ${item.title}`}
+                    onSelect={() => {
+                      router.push(`/portfolio`);
+                      onOpenChange(false);
+                    }}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 dark:text-zinc-300 aria-selected:bg-indigo-50 dark:aria-selected:bg-indigo-900/20 cursor-pointer"
+                  >
+                    <Briefcase className="h-4 w-4 text-indigo-500" />
+                    <span className="flex-1">{item.title}</span>
                   </Command.Item>
                 ))}
               </Command.Group>
