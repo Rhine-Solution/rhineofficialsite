@@ -1,8 +1,20 @@
 'use client'
 
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
 import Card, { CardContent, CardTitle } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
+
+const STORAGE_KEY = 'pricing_ab_variant'
+
+function getVariant() {
+  if (typeof window === 'undefined') return 'default'
+  const stored = localStorage.getItem(STORAGE_KEY)
+  if (stored) return stored
+  const variant = Math.random() > 0.5 ? 'highlight-pro' : 'default'
+  localStorage.setItem(STORAGE_KEY, variant)
+  return variant
+}
 
 const plans = [
   {
@@ -56,6 +68,25 @@ const plans = [
 ]
 
 export default function PricingPage() {
+  const [layout, setLayout] = useState('default')
+
+  useEffect(() => {
+    setLayout(getVariant())
+  }, [])
+
+  const trackConversion = (planName, variant) => {
+    if (typeof window !== 'undefined') {
+      console.log('Pricing CTA:', planName, variant)
+      if (window.umami) {
+        window.umami.track('pricing_cta_click', { plan: planName, variant })
+      }
+    }
+  }
+
+  const handleCtaClick = (planName) => {
+    trackConversion(planName, layout)
+  }
+
   return (
     <div className="min-h-screen py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,6 +98,11 @@ export default function PricingPage() {
           <p className="text-xl text-zinc-400 max-w-2xl mx-auto">
             Choose the perfect plan for your needs. All plans include a 14-day free trial.
           </p>
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mt-4 inline-block px-3 py-1 bg-amber-500/20 text-amber-400 text-xs rounded-full">
+              A/B Test Variant: {layout}
+            </div>
+          )}
         </div>
 
         {/* Toggle */}
@@ -82,49 +118,69 @@ export default function PricingPage() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {plans.map((plan, index) => (
-            <Card 
-              key={plan.name} 
-              className={`relative card-animate hover-lift ${plan.popular ? 'border-indigo-500 glow-primary' : ''}`}
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-indigo-600 text-white text-xs font-medium rounded-full">
-                  Most Popular
-                </div>
-              )}
-              <CardContent className="p-8">
-                <CardTitle className="text-xl mb-2">{plan.name}</CardTitle>
-                <p className="text-zinc-400 text-sm mb-6">{plan.description}</p>
-                
-                <div className="mb-6">
-                  <span className="text-4xl font-bold">${plan.price}</span>
-                  <span className="text-zinc-500">/month</span>
-                </div>
+        <div className={`grid gap-8 max-w-5xl mx-auto ${
+          layout === 'highlight-pro' 
+            ? 'md:grid-cols-3 md:gap-4' 
+            : 'md:grid-cols-3'
+        }`}>
+          {plans.map((plan, index) => {
+            const isHighlighted = layout === 'highlight-pro' && plan.name === 'Pro'
+            
+            return (
+              <Card 
+                key={plan.name} 
+                className={`relative card-animate hover-lift transition-all ${
+                  plan.popular || isHighlighted 
+                    ? 'border-indigo-500 glow-primary' 
+                    : ''
+                } ${
+                  layout === 'highlight-pro' && isHighlighted 
+                    ? 'md:scale-110 md:-my-4 md:z-10 shadow-2xl shadow-indigo-500/30' 
+                    : ''
+                }`}
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                {(plan.popular || isHighlighted) && (
+                  <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 text-xs font-medium rounded-full ${
+                    layout === 'highlight-pro' && isHighlighted
+                      ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-amber-950'
+                      : 'bg-indigo-600 text-white'
+                  }`}>
+                    {layout === 'highlight-pro' && isHighlighted ? '🏆 Best Value' : 'Most Popular'}
+                  </div>
+                )}
+                <CardContent className={`p-8 ${layout === 'highlight-pro' && isHighlighted ? 'p-10' : ''}`}>
+                  <CardTitle className="text-xl mb-2">{plan.name}</CardTitle>
+                  <p className="text-zinc-400 text-sm mb-6">{plan.description}</p>
+                  
+                  <div className="mb-6">
+                    <span className={`font-bold ${layout === 'highlight-pro' && isHighlighted ? 'text-5xl' : 'text-4xl'}`}>${plan.price}</span>
+                    <span className="text-zinc-500">/month</span>
+                  </div>
 
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map(feature => (
-                    <li key={feature} className="flex items-center text-sm text-zinc-300">
-                      <svg className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+                  <ul className="space-y-3 mb-8">
+                    {plan.features.map(feature => (
+                      <li key={feature} className="flex items-center text-sm text-zinc-300">
+                        <svg className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
 
-                <Link href="/register">
-                  <Button 
-                    className="w-full" 
-                    variant={plan.popular ? 'primary' : 'outline'}
-                  >
-                    {plan.cta}
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
+                  <Link href="/register" onClick={() => handleCtaClick(plan.name)}>
+                    <Button 
+                      className="w-full" 
+                      variant={plan.popular || isHighlighted ? 'primary' : 'outline'}
+                    >
+                      {plan.cta}
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
 
         {/* FAQ Section */}
