@@ -2,7 +2,7 @@
 
 import { Command } from 'cmdk';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
   Home,
   ShoppingBag,
@@ -17,7 +17,15 @@ import {
   LogIn,
   UserPlus,
   LayoutDashboard,
+  Search,
+  Package,
+  MessageCircle,
+  HelpCircle,
 } from 'lucide-react';
+import { useDebounce } from '../hooks/useDebounce';
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://crqjedivobupxbbathux.supabase.co'
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNycWplZGl2b2J1cHhiYmF0aHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTA5MDEsImV4cCI6MjA5MDM2NjkwMX0.0_HAu_sj7j-3racZK9nWIghKdNEXWRTHgLme2sUMAhM'
 
 const navigationItems = [
   { name: 'Home', href: '/', icon: Home, keywords: ['index', 'main'] },
@@ -25,7 +33,9 @@ const navigationItems = [
   { name: 'Travel', href: '/travel', icon: Map, keywords: ['destinations', 'booking', 'vacation'] },
   { name: 'Portfolio', href: '/portfolio', icon: Briefcase, keywords: ['projects', 'work', 'showcase'] },
   { name: 'Blog', href: '/blog', icon: BookOpen, keywords: ['articles', 'news', 'posts'] },
+  { name: 'FAQ', href: '/faq', icon: HelpCircle, keywords: ['questions', 'help', 'support'] },
   { name: 'Contact', href: '/contact', icon: Mail, keywords: ['support', 'email', 'message'] },
+  { name: 'Pricing', href: '/pricing', icon: Package, keywords: ['plans', 'subscription', 'plans'] },
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, keywords: ['user', 'account', 'profile'] },
   { name: 'Profile', href: '/profile', icon: User, keywords: ['settings', 'avatar'] },
   { name: 'Orders', href: '/orders', icon: ShoppingBag, keywords: ['history', 'purchases'] },
@@ -35,8 +45,24 @@ const navigationItems = [
   { name: 'Privacy', href: '/privacy', icon: FileText },
 ];
 
+// FAQ data (local)
+const faqItems = [
+  { question: 'How do I get started?', answer: 'Create an account, browse services, and subscribe.', href: '/faq' },
+  { question: 'What payment methods do you accept?', answer: 'Credit cards, PayPal, bank transfers.', href: '/faq' },
+  { question: 'Is there a free trial?', answer: '14-day free trial on all plans.', href: '/faq' },
+  { question: 'Can I cancel anytime?', answer: 'Yes, cancel or upgrade anytime.', href: '/faq' },
+]
+
 export default function CommandPalette({ open, onOpenChange }) {
-  const router = useRouter();
+  const router = useRouter()
+  const [search, setSearch] = useState('')
+  const [results, setResults] = useState({
+    products: [],
+    posts: [],
+    faqs: []
+  })
+  const [loading, setLoading] = useState(false)
+  const debouncedSearch = useDebounce(search, 300)
 
   useEffect(() => {
     const down = (e) => {
@@ -50,6 +76,59 @@ export default function CommandPalette({ open, onOpenChange }) {
     return () => document.removeEventListener('keydown', down);
   }, [open, onOpenChange]);
 
+  // Fetch search results
+  useEffect(() => {
+    if (!debouncedSearch || debouncedSearch.length < 2) {
+      setResults({ products: [], posts: [], faqs: [] })
+      return
+    }
+
+    const fetchResults = async () => {
+      setLoading(true)
+      try {
+        // Search products
+        const productsRes = await fetch(
+          `${SUPABASE_URL}/rest/v1/products?select=id,name,price,description&name=ilike.*${encodeURIComponent(debouncedSearch)}*&limit=5`,
+          {
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': `Bearer ${SUPABASE_KEY}`
+            }
+          }
+        )
+        const products = await productsRes.json()
+
+        // Search posts (blog)
+        const postsRes = await fetch(
+          `${SUPABASE_URL}/rest/v1/posts?select=id,title,slug&title=ilike.*${encodeURIComponent(debouncedSearch)}*&limit=5`,
+          {
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': `Bearer ${SUPABASE_KEY}`
+            }
+          }
+        )
+        const posts = await postsRes.json()
+
+        // Search FAQ (local)
+        const faqs = faqItems.filter(faq => 
+          faq.question.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          faq.answer.toLowerCase().includes(debouncedSearch.toLowerCase())
+        ).slice(0, 5)
+
+        setResults({ products: products || [], posts: posts || [], faqs })
+      } catch (err) {
+        console.error('Search error:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchResults()
+  }, [debouncedSearch])
+
+  const hasContentResults = results.products.length > 0 || results.posts.length > 0 || results.faqs.length > 0
+
   if (!open) return null;
 
   return (
@@ -62,16 +141,80 @@ export default function CommandPalette({ open, onOpenChange }) {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => onOpenChange(false)} />
         <div className="relative w-full max-w-lg mx-4 overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800">
           <Command.Input
-            placeholder="Type a command or search..."
+            value={search}
+            onValueChange={setSearch}
+            placeholder="Search products, posts, FAQ..."
             className="w-full border-0 border-b border-gray-200 bg-transparent px-4 py-4 text-base text-gray-900 outline-none placeholder:text-gray-500 dark:border-zinc-800 dark:text-white dark:placeholder:text-zinc-400"
           />
 
-          <Command.List className="max-h-[400px] overflow-y-auto p-2 scroll-py-2">
+          <Command.List className="max-h-[500px] overflow-y-auto p-2 scroll-py-2">
             <Command.Empty className="py-6 text-center text-sm text-gray-500 dark:text-zinc-400">
-              No results found.
+              {loading ? 'Searching...' : 'No results found.'}
             </Command.Empty>
 
-            <Command.Group heading="Navigation" className="text-xs font-medium text-gray-500 dark:text-zinc-400 mb-2 px-2">
+            {/* Products */}
+            {results.products.length > 0 && (
+              <Command.Group heading="Products" className="text-xs font-medium text-gray-500 dark:text-zinc-400 mb-2 px-2">
+                {results.products.map((product) => (
+                  <Command.Item
+                    key={product.id}
+                    value={`product ${product.name}`}
+                    onSelect={() => {
+                      router.push(`/shop?search=${product.name}`);
+                      onOpenChange(false);
+                    }}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 dark:text-zinc-300 aria-selected:bg-gray-100 dark:aria-selected:bg-zinc-800 cursor-pointer"
+                  >
+                    <ShoppingBag className="h-4 w-4 text-indigo-400" />
+                    <span className="flex-1">{product.name}</span>
+                    <span className="text-xs text-gray-500 dark:text-zinc-500">${product.price}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
+
+            {/* Blog Posts */}
+            {results.posts.length > 0 && (
+              <Command.Group heading="Blog Posts" className="text-xs font-medium text-gray-500 dark:text-zinc-400 mb-2 px-2">
+                {results.posts.map((post) => (
+                  <Command.Item
+                    key={post.id}
+                    value={`blog ${post.title}`}
+                    onSelect={() => {
+                      router.push(`/blog/${post.slug}`);
+                      onOpenChange(false);
+                    }}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 dark:text-zinc-300 aria-selected:bg-gray-100 dark:aria-selected:bg-zinc-800 cursor-pointer"
+                  >
+                    <BookOpen className="h-4 w-4 text-green-400" />
+                    <span className="flex-1">{post.title}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
+
+            {/* FAQ */}
+            {results.faqs.length > 0 && (
+              <Command.Group heading="FAQ" className="text-xs font-medium text-gray-500 dark:text-zinc-400 mb-2 px-2">
+                {results.faqs.map((faq, idx) => (
+                  <Command.Item
+                    key={idx}
+                    value={`faq ${faq.question}`}
+                    onSelect={() => {
+                      router.push(faq.href);
+                      onOpenChange(false);
+                    }}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 dark:text-zinc-300 aria-selected:bg-gray-100 dark:aria-selected:bg-zinc-800 cursor-pointer"
+                  >
+                    <HelpCircle className="h-4 w-4 text-amber-400" />
+                    <span className="flex-1 truncate">{faq.question}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
+
+            {/* Navigation */}
+            <Command.Group heading="Pages" className="text-xs font-medium text-gray-500 dark:text-zinc-400 mb-2 px-2 mt-2">
               {navigationItems.map((item) => (
                 <Command.Item
                   key={item.href}
