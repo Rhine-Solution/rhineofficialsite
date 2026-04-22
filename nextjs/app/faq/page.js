@@ -7,6 +7,7 @@ import Card, { CardContent } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import FadeInSection from '../../components/ui/FadeInSection'
 import { useDebounce } from '../../hooks/useDebounce'
+import { FAQSchema } from '../../components/JsonLd'
 
 const faqCategories = [
   { 
@@ -186,8 +187,15 @@ export default function FAQPage() {
 
   const currentCategory = faqCategories.find(c => c.id === selectedCategory)
 
+  // Transform faqs for JSON-LD schema
+  const faqSchemaData = faqs.map(faq => ({
+    question: faq.question,
+    answer: faq.answer.replace(/\n/g, ' ').replace(/•/g, '').trim()
+  }))
+
   return (
     <div className="min-h-screen">
+      <FAQSchema faqs={faqSchemaData} />
       {/* Header */}
       <section className="py-16 bg-gradient-to-b from-zinc-900 to-zinc-950">
         <div className="max-w-4xl mx-auto px-4 text-center">
