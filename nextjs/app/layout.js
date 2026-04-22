@@ -168,13 +168,13 @@ export default function RootLayout({ children }) {
             </ToastProvider>
           </AuthProvider>
         </ThemeProvider>
+        </AccessibilityChecker>
+        </OpenReplayProvider>
         <OrganizationSchema />
         <WebsiteSchema />
         <Analytics />
         <SpeedInsights />
         <AIChatbot />
-        </AccessibilityChecker>
-        </OpenReplayProvider>
       </body>
     </html>
   )
