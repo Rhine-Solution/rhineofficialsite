@@ -19,6 +19,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { OrganizationSchema, WebsiteSchema } from '../components/JsonLd'
 import { OpenReplayProvider } from '../components/OpenReplayProvider'
+import AIChatbot from '../components/AIChatbot'
 
 export const dynamic = 'force-dynamic'
 
@@ -169,6 +170,7 @@ export default function RootLayout({ children }) {
         <WebsiteSchema />
         <Analytics />
         <SpeedInsights />
+        <AIChatbot />
         </OpenReplayProvider>
       </body>
     </html>
