@@ -8,10 +8,10 @@ export default function Button({
   const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
   
   const variants = {
-    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500',
-    secondary: 'bg-cyan-500 text-white hover:bg-cyan-600 focus:ring-cyan-400',
-    outline: 'border-2 border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:border-zinc-500',
-    ghost: 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 dark:bg-indigo-600 dark:text-white dark:hover:bg-indigo-700',
+    secondary: 'bg-cyan-500 text-white hover:bg-cyan-600 focus:ring-cyan-400 dark:bg-cyan-500 dark:text-white dark:hover:bg-cyan-600',
+    outline: 'border-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:border-zinc-500',
+    ghost: 'text-gray-600 dark:text-zinc-400 hover:text-gray-900 hover:bg-gray-100 dark:hover:text-white dark:hover:bg-zinc-800'
   }
   
   const sizes = {

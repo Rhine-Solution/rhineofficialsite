@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import Card, { CardContent } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
+import Turnstile from '../../components/Turnstile'
 import { useAuth } from '../../components/AuthProvider'
 
 export default function LoginPage() {
@@ -15,11 +16,30 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState(null)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setErrorMsg('')
+
+    if (!turnstileToken) {
+      setErrorMsg('Please complete the security verification.')
+      setLoading(false)
+      return
+    }
+
+    const verifyRes = await fetch('/api/verify-turnstile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: turnstileToken, action: 'login' })
+    })
+
+    if (!verifyRes.ok) {
+      setErrorMsg('Security verification failed. Please try again.')
+      setLoading(false)
+      return
+    }
 
     const result = await signIn(email, password)
     
@@ -90,6 +110,11 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
+
+              <Turnstile 
+                onVerify={(token) => setTurnstileToken(token)} 
+                action="login" 
+              />
 
               <Button type="submit" className="w-full" disabled={loading || authLoading}>
                 {loading || authLoading ? 'Signing in...' : 'Sign In'}

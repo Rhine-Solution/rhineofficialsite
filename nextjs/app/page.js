@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react'
 import Card, { CardImage, CardContent, CardTitle, CardDescription, CardPrice } from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import Turnstile from '../components/Turnstile'
+import FadeInSection from '../components/ui/FadeInSection'
+import TrustBar from '../components/TrustBar'
 
 const features = [
   { icon: '🛒', title: 'E-commerce', description: 'Full online store with cart and checkout', href: '/shop', color: 'from-pink-500 to-rose-500' },
@@ -65,11 +67,11 @@ export default function Home() {
       {/* Turnstile Verification Modal */}
       {showVerify && !verified && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-gray-900 p-8 rounded-xl border border-indigo-500/30 max-w-md w-full mx-4">
-            <h3 className="text-xl font-bold text-white text-center mb-4">
+          <div className="bg-white dark:bg-gray-900 p-8 rounded-xl border border-indigo-500/30 max-w-md w-full mx-4">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white text-center mb-4">
               Verify you're human
             </h3>
-            <p className="text-gray-400 text-center mb-4">
+            <p className="text-gray-500 dark:text-gray-400 text-center mb-4">
               Please complete the verification below to continue.
             </p>
             <Turnstile onVerify={handleVerify} action="homepage" />
@@ -91,34 +93,40 @@ export default function Home() {
               Enterprise-Grade Platform
             </div>
             
-            <h1 className={`text-4xl md:text-6xl lg:text-7xl font-bold mb-6 ${loaded ? 'animate-slide-up' : 'opacity-0'}`}>
-              <span className="text-white">Welcome to </span>
-              <span className="gradient-text">Rhine</span>
+            <FadeInSection delay={0}>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
+              <span className="text-gray-900 dark:text-white">Welcome to </span>
+              <span className="gradient-text dark:text-white">Rhine</span>
             </h1>
+          </FadeInSection>
             
-            <p className={`text-xl text-zinc-400 max-w-2xl mx-auto mb-8 ${loaded ? 'animate-slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.1s' }}>
-              Enterprise-grade multi-service platform built with modern web technologies. 
-              E-commerce, travel booking, portfolio, and more.
-            </p>
+            <FadeInSection delay={0.1}>
+              <p className="text-xl text-gray-500 dark:text-zinc-400 max-w-2xl mx-auto mb-8">
+                Enterprise-grade multi-service platform built with modern web technologies. 
+                E-commerce, travel booking, portfolio, and more.
+              </p>
+            </FadeInSection>
             
-            <div className={`flex flex-col sm:flex-row gap-4 justify-center ${loaded ? 'animate-slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
-              <Link href="/shop">
-                <Button size="lg" className="glow-primary hover-lift">Browse Shop</Button>
-              </Link>
-              <Link href="/contact">
-                <Button variant="outline" size="lg">Get In Touch</Button>
-              </Link>
-            </div>
+            <FadeInSection delay={0.2}>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/shop">
+                  <Button size="lg" className="glow-primary hover-lift">Browse Shop</Button>
+                </Link>
+                <Link href="/contact">
+                  <Button variant="outline" size="lg">Get In Touch</Button>
+                </Link>
+              </div>
+            </FadeInSection>
           </div>
 
           {/* Tech Stack */}
           <div className={`mt-20 text-center ${loaded ? 'animate-fade-in' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
-            <p className="text-sm text-zinc-500 mb-6">Built with modern technologies</p>
+            <p className="text-sm text-gray-500 dark:text-zinc-500 mb-6">Built with modern technologies</p>
             <div className="flex flex-wrap justify-center gap-3">
               {techStack.map((tech, i) => (
                 <span 
                   key={tech} 
-                  className="px-4 py-2 bg-zinc-900/80 border border-zinc-800 rounded-full text-sm text-zinc-400 hover:border-zinc-700 hover:text-white transition-all hover-lift"
+                  className="px-4 py-2 bg-white dark:bg-zinc-900/80 border border-gray-200 dark:border-zinc-800 rounded-full text-sm text-gray-600 dark:text-zinc-400 hover:border-gray-300 dark:hover:border-zinc-700 hover:text-gray-900 dark:hover:text-white transition-all hover-lift"
                   style={{ animationDelay: `${0.4 + i * 0.05}s` }}
                 >
                   {tech}
@@ -129,25 +137,29 @@ export default function Home() {
         </div>
       </section>
 
+      <TrustBar />
+
       {/* Features Section */}
-      <section className="py-20 bg-zinc-900/30">
+      <section className="py-20 bg-gray-50 dark:bg-zinc-900/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Our Services</h2>
-          <p className="text-zinc-400 text-center mb-12 max-w-xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-900 dark:text-white">Our Services</h2>
+          <p className="text-gray-500 dark:text-zinc-400 text-center mb-12 max-w-xl mx-auto">
             Everything you need to build, launch, and grow your business online
           </p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
-              <Link key={feature.title} href={feature.href}>
-                <Card className="h-full group card-animate hover-lift" style={{ animationDelay: `${index * 0.1}s` }}>
-                  <div className={`h-1 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
-                  <CardContent className="text-center p-6">
-                    <div className="text-5xl mb-4 transform group-hover:scale-110 transition-transform duration-300">{feature.icon}</div>
-                    <CardTitle className="group-hover:text-indigo-400 transition-colors">{feature.title}</CardTitle>
-                    <CardDescription>{feature.description}</CardDescription>
-                  </CardContent>
-                </Card>
-              </Link>
+              <FadeInSection key={index} delay={index * 0.1}>
+                <Link href={feature.href}>
+                  <Card className="h-full group card-animate hover-lift">
+                    <div className={`h-1 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
+                    <CardContent className="text-center p-6">
+                      <div className="text-5xl mb-4 transform group-hover:scale-110 transition-transform duration-300">{feature.icon}</div>
+                      <CardTitle className="group-hover:text-indigo-400 transition-colors">{feature.title}</CardTitle>
+                      <CardDescription>{feature.description}</CardDescription>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </FadeInSection>
             ))}
           </div>
         </div>
@@ -158,8 +170,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-12">
             <div>
-              <h2 className="text-3xl font-bold">Featured Products</h2>
-              <p className="text-zinc-400 mt-2">Premium services for your business</p>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Featured Products</h2>
+              <p className="text-gray-500 dark:text-zinc-400 mt-2">Premium services for your business</p>
             </div>
             <Link href="/shop">
               <Button variant="ghost" className="hidden md:inline-flex">View All →</Button>
@@ -195,7 +207,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-zinc-900/30">
+      <section className="py-20 bg-gray-50 dark:bg-zinc-900/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
@@ -205,8 +217,8 @@ export default function Home() {
               { value: '24/7', label: 'Support' },
             ].map((stat, i) => (
               <div key={stat.label} className={`text-center card-animate`} style={{ animationDelay: `${i * 0.1}s` }}>
-                <div className="text-4xl md:text-5xl font-bold gradient-text">{stat.value}</div>
-                <div className="text-zinc-500 mt-2">{stat.label}</div>
+                <div className="text-4xl md:text-5xl font-bold gradient-text dark:text-white">{stat.value}</div>
+                <div className="text-gray-500 dark:text-zinc-500 mt-2">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -215,23 +227,25 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="p-12 bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-2xl border border-zinc-800">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Get Started?</h2>
-            <p className="text-zinc-400 mb-8 max-w-lg mx-auto">
-              Join thousands of users who trust Rhine for their digital needs. 
-              Start your free trial today.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register">
-                <Button size="lg" className="glow-primary">Create Account</Button>
-              </Link>
-              <Link href="/pricing">
-                <Button variant="outline" size="lg">View Pricing</Button>
-              </Link>
+        <FadeInSection>
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            <div className="p-12 bg-gradient-to-br from-gray-100 to-gray-50 dark:from-zinc-900 dark:to-zinc-800 rounded-2xl border border-gray-200 dark:border-zinc-800">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">Ready to Get Started?</h2>
+              <p className="text-gray-500 dark:text-zinc-400 mb-8 max-w-lg mx-auto">
+                Join thousands of users who trust Rhine for your digital needs. 
+                Start your free trial today.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/register">
+                  <Button size="lg" className="glow-primary">Create Account</Button>
+                </Link>
+                <Link href="/pricing">
+                  <Button variant="outline" size="lg">View Pricing</Button>
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
+        </FadeInSection>
       </section>
     </>
   )

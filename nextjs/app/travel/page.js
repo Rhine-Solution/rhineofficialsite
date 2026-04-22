@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import Card, { CardImage, CardContent, CardTitle, CardDescription, CardPrice } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
+import { CardSkeleton } from '../../components/ui/PageLoader'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://crqjedivobupxbbathux.supabase.co'
 const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNycWplZGl2b2J1cHhiYmF0aHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTA5MDEsImV4cCI6MjA5MDM2NjkwMX0.0_HAu_sj7j-3racZK9nWIghKdNEXWRTHgLme2sUMAhM'
@@ -25,11 +26,68 @@ const fallbackDestinations = [
   { id: '6', name: 'New York City', location: 'New York, USA', price: 1799, category: 'city', description: 'Complete NYC experience with Broadway shows', image_url: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400' },
 ]
 
+function DestinationsGrid({ destinations, selectedCategory, searchTerm }) {
+  const filteredDestinations = destinations.filter(dest => {
+    const matchesSearch = dest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (dest.description && dest.description.toLowerCase().includes(searchTerm.toLowerCase()))
+    const matchesCategory = selectedCategory === 'all' || dest.category === selectedCategory
+    return matchesSearch && matchesCategory
+  })
+
+  if (filteredDestinations.length === 0) {
+    return (
+      <div className="text-center py-12 text-zinc-500">
+        No destinations found. Try a different search.
+      </div>
+    )
+  }
+
+  return (
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {filteredDestinations.map((dest, index) => (
+        <Card 
+          key={dest.id} 
+          className="card-animate hover-lift group"
+          style={{ animationDelay: `${index * 0.05}s` }}
+        >
+          <CardImage 
+            src={dest.image_url} 
+            alt={dest.name}
+            className="group-hover:scale-105 transition-transform duration-300"
+          />
+          <CardContent>
+            <div className="text-xs text-indigo-400 mb-1 capitalize">{dest.category}</div>
+            <CardTitle className="group-hover:text-indigo-400 transition-colors">
+              {dest.name}
+            </CardTitle>
+            <CardDescription className="line-clamp-2">{dest.description}</CardDescription>
+            <div className="flex items-center justify-between mt-4">
+              <CardPrice>${dest.price}</CardPrice>
+              <span className="text-sm text-zinc-500">{dest.duration_days || 5} days</span>
+            </div>
+            <Link href={`/travel/booking?id=${dest.id}`}>
+              <Button className="w-full mt-4">Book Now</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )
+}
+
+const DestinationsSkeleton = () => (
+  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {[...Array(6)].map((_, i) => (
+      <CardSkeleton key={i} />
+    ))}
+  </div>
+)
+
 export default function TravelPage() {
   const [destinations, setDestinations] = useState(fallbackDestinations)
-  const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     fetchDestinations()
@@ -53,16 +111,9 @@ export default function TravelPage() {
     } catch (error) {
       console.log('Using fallback destinations')
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
-
-  const filteredDestinations = destinations.filter(dest => {
-    const matchesSearch = dest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (dest.description && dest.description.toLowerCase().includes(searchTerm.toLowerCase()))
-    const matchesCategory = selectedCategory === 'all' || dest.category === selectedCategory
-    return matchesSearch && matchesCategory
-  })
 
   return (
     <div className="min-h-screen">
@@ -110,50 +161,16 @@ export default function TravelPage() {
         </div>
       </section>
 
-      {/* Destinations Grid */}
+      {/* Destinations Grid with Suspense */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4">
-          {loading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-zinc-900 rounded-xl h-80 shimmer" />
-              ))}
-            </div>
-          ) : filteredDestinations.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredDestinations.map((dest, index) => (
-                <Card 
-                  key={dest.id} 
-                  className="card-animate hover-lift group"
-                  style={{ animationDelay: `${index * 0.05}s` }}
-                >
-                  <CardImage 
-                    src={dest.image_url} 
-                    alt={dest.name}
-                    className="group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <CardContent>
-                    <div className="text-xs text-indigo-400 mb-1 capitalize">{dest.category}</div>
-                    <CardTitle className="group-hover:text-indigo-400 transition-colors">
-                      {dest.name}
-                    </CardTitle>
-                    <CardDescription className="line-clamp-2">{dest.description}</CardDescription>
-                    <div className="flex items-center justify-between mt-4">
-                      <CardPrice>${dest.price}</CardPrice>
-                      <span className="text-sm text-zinc-500">{dest.duration_days || 5} days</span>
-                    </div>
-                    <Link href={`/travel/booking?id=${dest.id}`}>
-                      <Button className="w-full mt-4">Book Now</Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-zinc-500">
-              No destinations found. Try a different search.
-            </div>
-          )}
+          <Suspense fallback={<DestinationsSkeleton />}>
+            <DestinationsGrid 
+              destinations={destinations}
+              selectedCategory={selectedCategory}
+              searchTerm={searchTerm}
+            />
+          </Suspense>
         </div>
       </section>
     </div>

@@ -1,388 +1,399 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import Card, { CardImage, CardContent, CardTitle, CardDescription } from '../../components/ui/Card'
-import Button from '../../components/ui/Button'
-import Input from '../../components/ui/Input'
-import { useCart } from '../../components/CartProvider'
-import { useToast } from '../../components/ui/Toast'
-import { X, Eye, Minus, Plus, ShoppingCart, ArrowRight } from 'lucide-react'
+import { Check, X, ChevronDown, Sparkles, Zap, Shield } from 'lucide-react'
 
-const fallbackProducts = [
-  { id: '1', name: 'Premium Web Hosting', description: 'High-performance hosting with 99.9% uptime', price: 29, category: 'Hosting', image_url: null, stock: 100 },
-  { id: '2', name: 'Domain Registration', description: 'Secure your perfect domain name', price: 12, category: 'Domains', image_url: null, stock: 50 },
-  { id: '3', name: 'SSL Certificate', description: 'Enterprise-grade security for your site', price: 49, category: 'Security', image_url: null, stock: 25 },
-  { id: '4', name: 'Cloud Backup', description: 'Automated daily backups', price: 19, category: 'Storage', image_url: null, stock: 0 },
-  { id: '5', name: 'Email Hosting', description: 'Professional email with your domain', price: 9, category: 'Email', image_url: null, stock: 200 },
+const plans = [
+  {
+    id: 'basic',
+    name: 'Basic',
+    subtitle: 'DIY – Do It Yourself',
+    description: 'Self-service tech resources for independent problem solving. Perfect for tech-savvy users who want flexibility.',
+    monthlyPrice: 29,
+    annualPrice: 278,
+    icon: Zap,
+    gradient: 'from-blue-500 to-cyan-400',
+    borderColor: 'border-blue-500/30',
+    popular: false,
+    cta: 'Get Started',
+    features: [
+      { name: 'Knowledge Base Access', included: true },
+      { name: 'Automated Tools & Templates', included: true },
+      { name: 'Community Forum Access', included: true },
+      { name: 'Email Support (48h response)', included: true },
+      { name: 'Video Tutorials Library', included: true },
+      { name: 'Basic Tech Checklists', included: true },
+      { name: 'Live Chat Support', included: false },
+      { name: 'Monthly Tech Audit', included: false },
+      { name: 'Guided Implementation', included: false },
+      { name: 'Remote Assistance', included: false },
+      { name: '24/7 Priority Support', included: false },
+      { name: 'Dedicated Account Manager', included: false },
+      { name: 'On-site Support', included: false },
+      { name: 'Proactive Monitoring', included: false },
+      { name: 'Custom Solutions', included: false },
+    ],
+  },
+  {
+    id: 'professional',
+    name: 'Professional',
+    subtitle: 'DWY – Done With You',
+    description: 'Hands-on support with guided implementation. Ideal for growing businesses needing regular tech assistance.',
+    monthlyPrice: 99,
+    annualPrice: 950,
+    icon: Sparkles,
+    gradient: 'from-indigo-500 to-purple-500',
+    borderColor: 'border-indigo-500',
+    popular: true,
+    cta: 'Start Free Trial',
+    trialDays: 14,
+    features: [
+      { name: 'Knowledge Base Access', included: true },
+      { name: 'Automated Tools & Templates', included: true },
+      { name: 'Community Forum Access', included: true },
+      { name: 'Email Support (24h response)', included: true },
+      { name: 'Video Tutorials Library', included: true },
+      { name: 'Basic Tech Checklists', included: true },
+      { name: 'Live Chat Support', included: true, note: 'Business Hours' },
+      { name: 'Monthly Tech Audit', included: true },
+      { name: 'Guided Implementation', included: true },
+      { name: 'Remote Assistance', included: true, note: 'Common Issues' },
+      { name: '24/7 Priority Support', included: false },
+      { name: 'Dedicated Account Manager', included: false },
+      { name: 'On-site Support', included: false },
+      { name: 'Proactive Monitoring', included: false },
+      { name: 'Custom Solutions', included: false },
+    ],
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise',
+    subtitle: 'DFY – Done For You',
+    description: 'Complete white-glove tech management. For businesses that want full tech handling with premium support.',
+    monthlyPrice: 499,
+    annualPrice: 4790,
+    icon: Shield,
+    gradient: 'from-amber-500 to-orange-500',
+    borderColor: 'border-amber-500/50',
+    popular: false,
+    cta: 'Contact Sales',
+    features: [
+      { name: 'Knowledge Base Access', included: true },
+      { name: 'Automated Tools & Templates', included: true },
+      { name: 'Community Forum Access', included: true },
+      { name: 'Email Support (Priority)', included: true },
+      { name: 'Video Tutorials Library', included: true },
+      { name: 'Basic Tech Checklists', included: true },
+      { name: 'Live Chat Support', included: true, note: '24/7' },
+      { name: 'Monthly Tech Audit', included: true },
+      { name: 'Guided Implementation', included: true },
+      { name: 'Remote Assistance', included: true, note: 'Unlimited' },
+      { name: '24/7 Priority Support', included: true, note: '<30 min response' },
+      { name: 'Dedicated Account Manager', included: true },
+      { name: 'On-site Support', included: true, note: 'If local' },
+      { name: 'Proactive Monitoring', included: true },
+      { name: 'Custom Solutions', included: true },
+    ],
+  },
 ]
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://crqjedivobupxbbathux.supabase.co'
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNycWplZGl2b2J1cHhiYmF0aHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTA5MDEsImV4cCI6MjA5MDM2NjkwMX0.0_HAu_sj7j-3racZK9nWIghKdNEXWRTHgLme2sUMAhM'
+const comparisonFeatures = [
+  { feature: 'Knowledge Base', basic: true, professional: true, enterprise: true },
+  { feature: 'Automated Tools & Templates', basic: true, professional: true, enterprise: true },
+  { feature: 'Community Forum', basic: true, professional: true, enterprise: true },
+  { feature: 'Email Support', basic: '48h', professional: '24h', enterprise: 'Priority' },
+  { feature: 'Video Tutorials', basic: true, professional: true, enterprise: true },
+  { feature: 'Live Chat', basic: false, professional: true, enterprise: true },
+  { feature: 'Monthly Tech Audit', basic: false, professional: true, enterprise: true },
+  { feature: 'Guided Implementation', basic: false, professional: true, enterprise: true },
+  { feature: 'Remote Assistance', basic: false, professional: 'Common Issues', enterprise: 'Unlimited' },
+  { feature: '24/7 Priority Support', basic: false, professional: false, enterprise: true },
+  { feature: 'Dedicated Account Manager', basic: false, professional: false, enterprise: true },
+  { feature: 'On-site Support', basic: false, professional: false, enterprise: true },
+  { feature: 'Proactive Monitoring', basic: false, professional: false, enterprise: true },
+  { feature: 'Custom Solutions', basic: false, professional: false, enterprise: true },
+]
 
-function StockBadge({ stock }) {
-  if (!stock || stock === 0) {
-    return (
-      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400">
-        Out of Stock
-      </span>
-    )
-  }
-  if (stock < 10) {
-    return (
-      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-400">
-        Low Stock ({stock})
-      </span>
-    )
-  }
-  return (
-    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
-      In Stock
-    </span>
-  )
-}
+const faqs = [
+  {
+    question: 'Can I upgrade or downgrade my plan anytime?',
+    answer: 'Yes! You can upgrade, downgrade, or cancel your subscription at any time. Changes take effect at the start of your next billing cycle. No hidden fees or cancellation penalties.',
+  },
+  {
+    question: 'What happens during the 14-day free trial?',
+    answer: 'You get full access to all Professional features for 14 days. Cancel anytime during the trial and you won\'t be charged. If you continue, your subscription auto-converts.',
+  },
+  {
+    question: 'What payment methods do you accept?',
+    answer: 'We accept all major credit cards (Visa, Mastercard, American Express), PayPal, and bank transfers for annual plans.',
+  },
+  {
+    question: 'Is there a money-back guarantee?',
+    answer: 'Yes, we offer a 30-day money-back guarantee on all plans. Contact us anytime within 30 days for a full refund, no questions asked.',
+  },
+  {
+    question: 'Do you offer one-time services?',
+    answer: 'Yes! While our subscription plans cover ongoing tech needs, we also offer one-time add-on services like website setup, SEO packages, and cloud migrations. Contact us for custom quotes.',
+  },
+]
 
-function QuantitySelector({ value, onChange, max }) {
-  const decrease = () => {
-    if (value > 1) onChange(value - 1)
-  }
-  const increase = () => {
-    if (!max || value < max) onChange(value + 1)
-  }
-
-  return (
-    <div className="flex items-center gap-2">
-      <button
-        onClick={decrease}
-        disabled={value <= 1}
-        className="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      >
-        <Minus className="w-4 h-4" />
-      </button>
-      <span className="w-10 text-center text-white font-medium">{value}</span>
-      <button
-        onClick={increase}
-        disabled={max && value >= max}
-        className="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      >
-        <Plus className="w-4 h-4" />
-      </button>
-    </div>
-  )
-}
-
-function QuickViewModal({ product, onClose, onAddToCart }) {
-  const [quantity, setQuantity] = useState(1)
-  const [adding, setAdding] = useState(false)
-
-  const handleAdd = async () => {
-    setAdding(true)
-    await onAddToCart(product, quantity)
-    setAdding(false)
-    onClose()
-  }
-
-  if (!product) return null
-
-  return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-zinc-900 border border-white/10 rounded-2xl w-full max-w-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
-        <div className="relative">
-          <div className="aspect-video bg-zinc-800 overflow-hidden">
-            {product.image_url ? (
-              <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <span className="text-6xl">📦</span>
-              </div>
-            )}
-          </div>
-          <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <div className="p-6">
-          <div className="flex items-start justify-between gap-4 mb-4">
-            <div>
-              <span className="text-sm text-indigo-400 uppercase tracking-wide">{product.category}</span>
-              <h2 className="text-2xl font-bold text-white mt-1">{product.name}</h2>
-            </div>
-            <StockBadge stock={product.stock} />
-          </div>
-
-          <p className="text-zinc-400 mb-6">{product.description || 'No description available.'}</p>
-
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <span className="text-3xl font-bold text-cyan-400">${product.price}</span>
-              {product.stock !== undefined && product.stock > 0 && (
-                <span className="text-sm text-zinc-500 ml-2">/ unit</span>
-              )}
-            </div>
-          </div>
-
-          {product.stock !== undefined && product.stock > 0 && (
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-sm text-zinc-400">Quantity:</span>
-              <QuantitySelector value={quantity} onChange={setQuantity} max={product.stock} />
-            </div>
-          )}
-
-          <div className="flex gap-3">
-            <Button
-              onClick={handleAdd}
-              disabled={!product.stock || product.stock === 0 || adding}
-              className="flex-1"
-            >
-              {adding ? 'Adding...' : product.stock === 0 ? 'Out of Stock' : `Add to Cart - $${(parseFloat(product.price) * quantity).toFixed(2)}`}
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+const addOns = [
+  { name: 'Additional Users', description: 'Add more team members', priceFrom: '$5/user' },
+  { name: 'Extended Support Hours', description: 'Extend beyond business hours', priceFrom: '$99/mo' },
+  { name: 'Custom Development', description: 'Bespoke software solutions', priceFrom: 'Custom' },
+  { name: 'On-site visits', description: 'In-person technical support', priceFrom: '$150/visit' },
+]
 
 export default function ShopPage() {
-  const [products, setProducts] = useState(fallbackProducts)
-  const [loading, setLoading] = useState(false)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [category, setCategory] = useState('')
-  const [selectedProduct, setSelectedProduct] = useState(null)
-  const [quantities, setQuantities] = useState({})
-  const { addItem } = useCart()
-  const toast = useToast()
-
-  useEffect(() => {
-    fetchProducts()
-  }, [])
-
-  async function fetchProducts() {
-    setLoading(true)
-    try {
-      const res = await fetch(
-        `${SUPABASE_URL}/rest/v1/products?select=*&order=created_at.desc`,
-        {
-          headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`
-          }
-        }
-      )
-      const data = await res.json()
-      if (Array.isArray(data) && data.length > 0) {
-        // Add random stock for demo
-        const productsWithStock = data.map(p => ({
-          ...p,
-          stock: Math.floor(Math.random() * 150) + 1
-        }))
-        setProducts(productsWithStock)
-      }
-    } catch (error) {
-      console.log('Using fallback products')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleAddToCart = async (product, quantity = 1) => {
-    // Add the same product multiple times based on quantity
-    for (let i = 0; i < quantity; i++) {
-      addItem(product)
-    }
-    toast.success(`${product.name} x${quantity} added to cart!`)
-  }
-
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()))
-    const matchesCategory = !category || product.category === category
-    return matchesSearch && matchesCategory
-  })
-
-  const categories = [...new Set(products.map(p => p.category).filter(Boolean))]
+  const [isAnnual, setIsAnnual] = useState(true)
+  const [showComparison, setShowComparison] = useState(false)
+  const [expandedFaq, setExpandedFaq] = useState(null)
 
   return (
-    <div className="min-h-screen pb-20">
-      {/* Header */}
-      <section className="bg-gradient-to-b from-zinc-900 to-zinc-950 py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-2">Shop</h1>
-          <p className="text-zinc-400">Browse our premium services and solutions</p>
+    <div className="min-h-screen bg-zinc-950">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-zinc-900 via-zinc-900 to-zinc-950 pt-20 pb-16">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-zinc-950 to-zinc-950" />
+        <div className="absolute top-20 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+        
+        <div className="relative max-w-7xl mx-auto px-4">
+          <div className="text-center mb-10">
+            <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-indigo-500/20 text-indigo-300 text-sm font-medium mb-5">
+              <Sparkles className="w-4 h-4 mr-2" />
+              Subscription Plans
+            </span>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-5">
+              Tech Support <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">Subscriptions</span>
+            </h1>
+            <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto">
+              From self-service tools to complete tech management — choose the level of support that fits your business.
+            </p>
+          </div>
+
+          {/* Billing Toggle */}
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <span className={`text-sm font-medium transition-colors ${!isAnnual ? 'text-white' : 'text-zinc-500'}`}>Monthly</span>
+            <button
+              onClick={() => setIsAnnual(!isAnnual)}
+              className={`relative w-14 h-7 rounded-full transition-colors ${isAnnual ? 'bg-indigo-600' : 'bg-zinc-700'}`}
+            >
+              <div className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow-md transition-transform ${isAnnual ? 'translate-x-8' : 'translate-x-1'}`} />
+            </button>
+            <span className={`text-sm font-medium transition-colors ${isAnnual ? 'text-white' : 'text-zinc-500'}`}>
+              Annual <span className="text-green-400 font-semibold">(Save 20%)</span>
+            </span>
+          </div>
         </div>
       </section>
 
-      {/* Search & Filter */}
-      <section className="py-6 border-b border-zinc-800">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div className="relative w-full md:w-96">
-            <input
-              type="text"
-              placeholder="Search services..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
-            />
+      {/* Pricing Cards */}
+      <section className="py-8 -mt-4">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+            {plans.map((plan) => {
+              const Icon = plan.icon
+              const price = isAnnual ? Math.round(plan.annualPrice / 12) : plan.monthlyPrice
+              const yearlyTotal = isAnnual ? plan.annualPrice : plan.monthlyPrice * 12
+              
+              return (
+                <div
+                  key={plan.id}
+                  className={`relative rounded-3xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 ${
+                    plan.popular 
+                      ? 'bg-gradient-to-b from-zinc-800/90 to-zinc-900/90 border-2 shadow-2xl shadow-indigo-500/20' 
+                      : 'bg-zinc-900/60 border border-zinc-800 hover:border-zinc-700'
+                  }`}
+                >
+                  {plan.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                      <span className="inline-flex items-center px-5 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-bold rounded-full shadow-lg shadow-indigo-500/40">
+                        <Sparkles className="w-4 h-4 mr-1.5" />
+                        Most Popular
+                      </span>
+                    </div>
+                  )}
+
+                  <div className={`absolute inset-0 rounded-3xl ${plan.gradient} opacity-5`} />
+                  
+                  <div className="relative p-6 pt-8">
+                    <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${plan.gradient} mb-5 shadow-lg`}>
+                      <Icon className="w-7 h-7 text-white" />
+                    </div>
+                    
+                    <h3 className="text-2xl font-bold text-white">{plan.name}</h3>
+                    <p className={`text-sm font-medium mb-2 ${plan.popular ? 'text-indigo-400' : 'text-zinc-400'}`}>{plan.subtitle}</p>
+                    <p className="text-zinc-400 text-sm mb-6">{plan.description}</p>
+
+                    <div className="mb-6">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-5xl font-bold text-white">${price}</span>
+                        <span className="text-zinc-500">/month</span>
+                      </div>
+                      {isAnnual && (
+                        <p className="text-sm text-zinc-400 mt-1">
+                          ${yearlyTotal}/year (save ${plan.monthlyPrice * 12 - plan.annualPrice})
+                        </p>
+                      )}
+                    </div>
+
+                    <Link
+                      href={`/checkout?plan=${plan.id}&billing=${isAnnual ? 'annual' : 'monthly'}`}
+                      className={`block w-full py-4 rounded-xl font-semibold text-base text-center transition-all hover:shadow-lg ${
+                        plan.popular
+                          ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-indigo-500/30'
+                          : 'bg-zinc-800 text-white hover:bg-zinc-700'
+                      }`}
+                    >
+                      {plan.cta}
+                    </Link>
+                    
+                    {plan.trialDays && (
+                      <p className="text-center text-xs text-zinc-500 mt-4">
+                        {plan.trialDays}-day free trial • No credit card required
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="relative px-6 pb-6">
+                    <div className="border-t border-zinc-800 pt-5">
+                      <h4 className="text-sm font-semibold text-white mb-4">What's included:</h4>
+                      <ul className="space-y-3">
+                        {plan.features.slice(0, 6).map((feature, idx) => (
+                          <li key={idx} className="flex items-start gap-2.5 text-sm">
+                            {feature.included ? (
+                              <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                            ) : (
+                              <X className="w-5 h-5 text-zinc-700 flex-shrink-0 mt-0.5" />
+                            )}
+                            <span className={feature.included ? 'text-zinc-300' : 'text-zinc-600'}>
+                              {feature.name}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
           </div>
-          <div className="flex gap-2 flex-wrap">
-            <button
-              onClick={() => setCategory('')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                !category ? 'bg-indigo-600 text-white' : 'bg-zinc-900 text-zinc-400 hover:text-white'
-              }`}
-            >
-              All
-            </button>
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setCategory(cat)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${
-                  category === cat ? 'bg-indigo-600 text-white' : 'bg-zinc-900 text-zinc-400 hover:text-white'
-                }`}
-              >
-                {cat}
-              </button>
+        </div>
+      </section>
+
+      {/* Feature Comparison */}
+      <section className="py-12 border-t border-zinc-900">
+        <div className="max-w-7xl mx-auto px-4">
+          <button
+            onClick={() => setShowComparison(!showComparison)}
+            className="w-full flex items-center justify-between p-6 bg-zinc-900/50 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition-colors"
+          >
+            <div className="text-left">
+              <h3 className="text-xl font-semibold text-white">Compare All Features</h3>
+              <p className="text-zinc-400 text-sm mt-1">See exactly what's included in each plan</p>
+            </div>
+            <ChevronDown className={`w-6 h-6 text-zinc-400 transition-transform ${showComparison ? 'rotate-180' : ''}`} />
+          </button>
+
+          {showComparison && (
+            <div className="mt-6 overflow-x-auto rounded-2xl border border-zinc-800">
+              <table className="w-full min-w-[600px] bg-zinc-900/30">
+                <thead>
+                  <tr className="border-b border-zinc-800">
+                    <th className="text-left py-4 px-5 text-zinc-400 font-medium">Feature</th>
+                    <th className="text-center py-4 px-5 text-white font-semibold">Basic</th>
+                    <th className="text-center py-4 px-5 text-indigo-400 font-semibold bg-indigo-500/5">Professional</th>
+                    <th className="text-center py-4 px-5 text-white font-semibold">Enterprise</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparisonFeatures.map((row, idx) => (
+                    <tr key={idx} className="border-b border-zinc-800/50">
+                      <td className="py-4 px-5 text-zinc-300">{row.feature}</td>
+                      <td className="py-4 px-5 text-center">
+                        {row.basic === true && <Check className="w-5 h-5 text-green-400 mx-auto" />}
+                        {row.basic === false && <X className="w-5 h-5 text-zinc-700 mx-auto" />}
+                        {typeof row.basic === 'string' && <span className="text-zinc-400 text-sm">{row.basic}</span>}
+                      </td>
+                      <td className="py-4 px-5 text-center bg-indigo-500/5">
+                        {row.professional === true && <Check className="w-5 h-5 text-green-400 mx-auto" />}
+                        {row.professional === false && <X className="w-5 h-5 text-zinc-700 mx-auto" />}
+                        {typeof row.professional === 'string' && <span className="text-indigo-400 text-sm font-medium">{row.professional}</span>}
+                      </td>
+                      <td className="py-4 px-5 text-center">
+                        {row.enterprise === true && <Check className="w-5 h-5 text-green-400 mx-auto" />}
+                        {row.enterprise === false && <X className="w-5 h-5 text-zinc-700 mx-auto" />}
+                        {typeof row.enterprise === 'string' && <span className="text-zinc-300 text-sm font-medium">{row.enterprise}</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Add-ons Section */}
+      <section className="py-12 border-t border-zinc-900">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-2xl font-bold text-white text-center mb-8">Optional Add-ons</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {addOns.map((addon, idx) => (
+              <div key={idx} className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition-colors">
+                <h4 className="font-semibold text-white mb-1">{addon.name}</h4>
+                <p className="text-sm text-zinc-400 mb-3">{addon.description}</p>
+                <span className="text-cyan-400 font-semibold">{addon.priceFrom}</span>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Featured Bundles */}
-      {filteredProducts.some(p => p.name?.includes('Premium') || p.name?.includes('Pro') || p.name?.includes('Enterprise')) && (
-        <section className="py-8">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-red-900/80 via-red-800/60 to-amber-900/80 border border-amber-400/30 backdrop-blur-xl">
-              <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 via-amber-500/20 to-red-600/20 animate-pulse" />
-              <div className="relative z-10 px-8 pt-8 pb-4">
-                <h2 className="text-3xl font-bold flex items-center gap-3">
-                  <span className="text-4xl">👑</span>
-                  <span className="bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-300 bg-clip-text text-transparent">Premium Collection</span>
-                </h2>
-              </div>
-              <div className="relative z-10 px-8 pb-8">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {filteredProducts.filter(p => 
-                    p.name?.includes('Premium') || 
-                    p.name?.includes('Pro') || 
-                    p.name?.includes('Enterprise') ||
-                    p.name?.includes('MVP')
-                  ).slice(0, 8).map((product, index) => (
-                    <div 
-                      key={product.id}
-                      className="group relative bg-gradient-to-br from-amber-500/20 to-red-500/10 border border-amber-400/20 rounded-2xl p-4 hover:border-amber-400/60 hover:shadow-lg hover:shadow-amber-500/20 transition-all duration-300 cursor-pointer"
-                      style={{ animationDelay: `${index * 0.1}s` }}
-                    >
-                      <div className="absolute -top-2 -right-2">
-                        <span className="inline-flex items-center justify-center w-7 h-7 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-xs font-bold rounded-full shadow-lg">
-                          ⭐
-                        </span>
-                      </div>
-                      <div>
-                        <div className="text-xs text-amber-400 mb-1 uppercase tracking-wide font-medium">{product.category}</div>
-                        <h3 className="font-bold text-white text-sm mb-2 line-clamp-2">{product.name}</h3>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xl font-bold text-amber-300">${product.price}</span>
-                          <button 
-                            onClick={() => handleAddToCart(product)}
-                            className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 text-black text-xs font-bold rounded-lg hover:shadow-lg hover:shadow-amber-500/30 transition-all"
-                          >
-                            Add
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Products Grid */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-2xl font-bold mb-6">All Services</h2>
-          {loading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="bg-zinc-900 rounded-xl h-80 shimmer" />
-              ))}
-            </div>
-          ) : filteredProducts.length > 0 ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {filteredProducts.map((product, index) => {
-                const qty = quantities[product.id] || 1
-                const isOutOfStock = !product.stock || product.stock === 0
-                
-                return (
-                <Card 
-                  key={product.id} 
-                  className="card-animate hover-lift group relative"
-                  style={{ animationDelay: `${index * 0.05}s` }}
+      {/* FAQ Section */}
+      <section className="py-16 border-t border-zinc-900">
+        <div className="max-w-3xl mx-auto px-4">
+          <h2 className="text-2xl font-bold text-white text-center mb-8">Frequently Asked Questions</h2>
+          <div className="space-y-3">
+            {faqs.map((faq, idx) => (
+              <div
+                key={idx}
+                className="bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden"
+              >
+                <button
+                  onClick={() => setExpandedFaq(expandedFaq === idx ? null : idx)}
+                  className="w-full flex items-center justify-between p-5 text-left"
                 >
-                  <div className="aspect-square overflow-hidden relative">
-                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    <button
-                      onClick={() => setSelectedProduct(product)}
-                      className="absolute top-2 right-2 p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors opacity-0 group-hover:opacity-100"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
+                  <span className="font-medium text-white pr-4">{faq.question}</span>
+                  <ChevronDown className={`w-5 h-5 text-zinc-400 flex-shrink-0 transition-transform ${expandedFaq === idx ? 'rotate-180' : ''}`} />
+                </button>
+                {expandedFaq === idx && (
+                  <div className="px-5 pb-5">
+                    <p className="text-zinc-400 leading-relaxed">{faq.answer}</p>
                   </div>
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs text-indigo-400 uppercase tracking-wide">{product.category}</span>
-                      <StockBadge stock={product.stock} />
-                    </div>
-                    <CardTitle className="text-sm line-clamp-1 group-hover:text-indigo-400 transition-colors">
-                      {product.name}
-                    </CardTitle>
-                    <div className="flex items-center justify-between mt-3">
-                      <span className="font-bold text-cyan-400 text-sm">${product.price}</span>
-                    </div>
-                    <div className="flex items-center gap-2 mt-2">
-                      {!isOutOfStock && (
-                        <QuantitySelector 
-                          value={qty} 
-                          onChange={(v) => setQuantities({...quantities, [product.id]: v})}
-                          max={product.stock}
-                        />
-                      )}
-                      <button 
-                        onClick={() => handleAddToCart(product, qty)}
-                        disabled={isOutOfStock}
-                        className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                          isOutOfStock 
-                            ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
-                            : 'bg-indigo-600 hover:bg-indigo-500 text-white'
-                        }`}
-                      >
-                        {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
-                      </button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )})}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-zinc-500">
-              No products found. Try a different search.
-            </div>
-          )}
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Quick View Modal */}
-      {selectedProduct && (
-        <QuickViewModal 
-          product={selectedProduct} 
-          onClose={() => setSelectedProduct(null)}
-          onAddToCart={handleAddToCart}
-        />
-      )}
+      {/* CTA Section */}
+      <section className="py-20 border-t border-zinc-900">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">Ready to Get Started?</h2>
+          <p className="text-zinc-400 mb-8">Join hundreds of businesses that trust Rhine Solution for their tech needs.</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="px-8 py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-indigo-500/30 transition-all">
+              Start Free Trial
+            </button>
+            <button className="px-8 py-3.5 bg-zinc-800 text-white font-semibold rounded-xl hover:bg-zinc-700 transition-all">
+              Contact Sales
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

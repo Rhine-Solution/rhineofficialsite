@@ -7,10 +7,69 @@ import { CartProvider } from '../components/CartProvider'
 import { WishlistProvider } from '../components/WishlistProvider'
 import { NotificationProvider } from '../components/NotificationProvider'
 import { SearchProvider } from '../components/SearchContext'
+import { ThemeProvider } from '../components/ThemeProvider'
 import CartSidebar from '../components/CartSidebar'
 import SearchModal from '../components/SearchModal'
+import CommandPaletteWrapper from '../components/CommandPaletteWrapper'
+import PageTransition from '../components/PageTransition'
+import FloatingActionButton from '../components/FloatingActionButton'
+import RecentlyViewedBar from '../components/RecentlyViewedBar'
+import CookieConsent from '../components/CookieConsent'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 export const dynamic = 'force-dynamic'
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      name: 'Rhine Solution',
+      url: 'https://rhinesolution.com',
+      logo: 'https://rhinesolution.com/logo.png',
+      description: 'Enterprise-grade web development and IT solutions provider.',
+      sameAs: [
+        'https://github.com/rhine-solution',
+        'https://twitter.com/rhinesolution',
+        'https://linkedin.com/company/rhine-solution'
+      ],
+      contactPoint: {
+        '@type': 'ContactPoint',
+        telephone: '+1-555-123-4567',
+        contactType: 'customer service',
+        availableTime: {
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+          opens: '09:00',
+          closes: '18:00'
+        }
+      }
+    },
+    {
+      '@type': 'WebSite',
+      name: 'Rhine Solution',
+      url: 'https://rhinesolution.com',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: 'https://rhinesolution.com/search?q={search_term_string}',
+        'query-input': 'required name=search_term_string'
+      }
+    },
+    {
+      '@type': 'Product',
+      name: 'Professional Subscription',
+      description: 'Managed IT support with live chat, monthly audits, and guided implementation.',
+      offers: {
+        '@type': 'Offer',
+        price: '99',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        billingDuration: 'P1M'
+      }
+    }
+  ]
+}
 
 export const metadata = {
   metadataBase: new URL('https://rhinesolution.com'),
@@ -65,32 +124,46 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
         {/* Plausible Analytics - Replace with your domain */}
         <script defer data-domain="rhinesolution.com" src="https://plausible.io/js/script.js"></script>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
-      <body className="bg-zinc-950 text-zinc-100 antialiased">
-        <AuthProvider>
-          <ToastProvider>
-            <CartProvider>
-              <WishlistProvider>
-                <NotificationProvider>
-                  <SearchProvider>
-                    <Navbar />
-                    <CartSidebar />
-                    <SearchModal />
-                    <main className="min-h-screen pt-16">
-                      {children}
-                    </main>
-                    <Footer />
-                  </SearchProvider>
-                </NotificationProvider>
-              </WishlistProvider>
-            </CartProvider>
-          </ToastProvider>
-        </AuthProvider>
+      <body className="bg-white dark:bg-zinc-950 text-gray-900 dark:text-zinc-100 antialiased">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <AuthProvider>
+            <ToastProvider>
+              <CartProvider>
+                <WishlistProvider>
+                  <NotificationProvider>
+                    <SearchProvider>
+                      <Navbar />
+                      <CartSidebar />
+                      <SearchModal />
+                      <CommandPaletteWrapper />
+                      <FloatingActionButton />
+                      <RecentlyViewedBar />
+                      <CookieConsent />
+                      <main className="min-h-screen pt-16">
+                        <PageTransition>
+                          {children}
+                        </PageTransition>
+                      </main>
+                      <Footer />
+                    </SearchProvider>
+                  </NotificationProvider>
+                </WishlistProvider>
+              </CartProvider>
+            </ToastProvider>
+          </AuthProvider>
+        </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )

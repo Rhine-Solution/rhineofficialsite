@@ -7,6 +7,8 @@ import { useAuth } from '../AuthProvider'
 import { useCart } from '../CartProvider'
 import { useWishlist } from '../WishlistProvider'
 import { useSearch } from '../SearchContext'
+import { useTheme } from 'next-themes'
+import { Sun, Moon } from 'lucide-react'
 
 const mainButtons = [
   { 
@@ -59,6 +61,7 @@ export default function Navbar() {
   const { cartCount, setIsOpen: setCartOpen } = useCart()
   const { count: wishlistCount } = useWishlist()
   const { open: openSearch } = useSearch()
+  const { theme, setTheme } = useTheme()
   const megaMenuRef = useRef(null)
   const accountRef = useRef(null)
 
@@ -93,8 +96,8 @@ export default function Navbar() {
       {/* Glass background */}
       <div className={`absolute inset-0 transition-all duration-300 ${
         scrolled 
-          ? 'bg-zinc-950/80 backdrop-blur-xl border-b border-white/5' 
-          : 'bg-zinc-950/60 backdrop-blur-lg'
+          ? 'bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/5' 
+          : 'bg-white/60 dark:bg-zinc-950/60 backdrop-blur-lg'
       }`} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -104,7 +107,7 @@ export default function Navbar() {
             <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-cyan-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-indigo-500/20">
               <span className="text-white font-bold text-lg">R</span>
             </div>
-            <span className="text-xl font-bold gradient-text">Rhine</span>
+            <span className="text-xl font-bold gradient-text dark:text-white text-gray-900">Rhine</span>
           </Link>
 
           {/* Main Navigation Buttons */}
@@ -116,7 +119,7 @@ export default function Navbar() {
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                     activeMegaMenu === button.label
                       ? 'text-white bg-indigo-600'
-                      : 'text-zinc-300 hover:text-white hover:bg-white/5'
+                      : 'text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5'
                   }`}
                 >
                   <span>{button.label}</span>
@@ -127,19 +130,19 @@ export default function Navbar() {
 
                 {/* Mega Menu Panel */}
                 {activeMegaMenu === button.label && (
-                  <div className="absolute top-full left-0 mt-4 w-72 bg-zinc-950/95 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="absolute top-full left-0 mt-4 w-72 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-2xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl shadow-black/50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                     <div className="p-4">
                       <div className="space-y-1">
                         {button.megaMenu.map((item) => (
                           <Link
                             key={item.href}
                             href={item.href}
-                            className="block p-3 -mx-2 rounded-xl hover:bg-white/5 transition-colors group"
+                            className="block p-3 -mx-2 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors group"
                           >
-                            <span className="block text-base font-medium text-white group-hover:text-indigo-400 transition-colors">
+                            <span className="block text-base font-medium text-gray-900 dark:text-white group-hover:text-indigo-400 transition-colors">
                               {item.label}
                             </span>
-                            <span className="block text-xs text-zinc-500">
+                            <span className="block text-xs text-gray-500 dark:text-zinc-500">
                               {item.desc}
                             </span>
                           </Link>
@@ -153,11 +156,28 @@ export default function Navbar() {
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            {/* Theme Toggle */}
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="p-2.5 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors"
+              title="Toggle theme"
+            >
+              {theme === 'dark' ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+              )}
+            </button>
+
             {/* Search */}
             <button
               onClick={openSearch}
-              className="p-2.5 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+              className="p-2.5 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors"
               title="Search (Ctrl+K)"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,7 +188,7 @@ export default function Navbar() {
             {/* Wishlist */}
             <Link
               href="/wishlist"
-              className="relative p-2.5 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+              className="relative p-2.5 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -183,7 +203,7 @@ export default function Navbar() {
             {/* Cart */}
             <button
               onClick={() => setCartOpen(true)}
-              className="relative p-2.5 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+              className="relative p-2.5 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -200,7 +220,7 @@ export default function Navbar() {
               {isAuthenticated ? (
                 <button
                   onClick={() => setAccountDropdown(!accountDropdown)}
-                  className="flex items-center gap-2 px-3 py-2 text-zinc-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors"
                 >
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-sm font-medium">
                     {user?.email?.charAt(0).toUpperCase() || 'U'}
@@ -212,7 +232,7 @@ export default function Navbar() {
               ) : (
                 <Link 
                   href="/login"
-                  className="p-2.5 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+                  className="p-2.5 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -222,12 +242,12 @@ export default function Navbar() {
 
               {/* Account Dropdown */}
               {accountDropdown && (
-                <div className="absolute top-full right-0 mt-2 w-56 bg-zinc-950/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-zinc-950/95 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl dark:shadow-black/50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                   {isAuthenticated && (
                     <>
-                      <div className="p-4 border-b border-white/5">
-                        <p className="text-sm text-white font-medium truncate">{user?.email}</p>
-                        <p className="text-xs text-zinc-500">{user?.role === 'admin' ? 'Administrator' : 'Member'}</p>
+                      <div className="p-4 border-b border-gray-100 dark:border-white/5">
+                        <p className="text-sm text-gray-900 dark:text-white font-medium truncate">{user?.email}</p>
+                        <p className="text-xs text-gray-500 dark:text-zinc-500">{user?.role === 'admin' ? 'Administrator' : 'Member'}</p>
                       </div>
                       <div className="p-2">
                         {accountItems.map((item) => (
@@ -235,14 +255,14 @@ export default function Navbar() {
                             <Link
                               key={item.href}
                               href={item.href}
-                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors text-zinc-300 hover:text-white"
+                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white"
                             >
                               <span>{item.label}</span>
                             </Link>
                           )
                         ))}
                       </div>
-                      <div className="p-2 border-t border-white/5">
+                      <div className="p-2 border-t border-gray-100 dark:border-white/5">
                         <button 
                           onClick={signOut}
                           className="flex items-center gap-3 w-full p-3 rounded-xl hover:bg-red-500/10 text-red-400 hover:text-red-300 transition-colors"
@@ -272,7 +292,7 @@ export default function Navbar() {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2.5 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+              className="lg:hidden p-2.5 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isOpen ? (
@@ -288,13 +308,13 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-zinc-950/95 backdrop-blur-xl border-t border-white/5 shadow-2xl">
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-white dark:bg-zinc-950/95 backdrop-blur-xl border-t border-gray-200 dark:border-white/5 shadow-xl dark:shadow-2xl">
           <div className="max-w-7xl mx-auto px-4 py-4 space-y-2">
             {mainButtons.map((button) => (
               <div key={button.label}>
                 <button
                   onClick={() => setActiveMegaMenu(activeMegaMenu === button.label ? null : button.label)}
-                  className="flex items-center justify-between w-full p-4 rounded-xl text-zinc-300 hover:text-white hover:bg-white/5 transition-colors"
+                  className="flex items-center justify-between w-full p-4 rounded-xl text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
                 >
                   <span className="font-medium">{button.label}</span>
                   <svg className={`w-5 h-5 transition-transform ${activeMegaMenu === button.label ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -302,16 +322,16 @@ export default function Navbar() {
                   </svg>
                 </button>
                 {activeMegaMenu === button.label && (
-                  <div className="ml-4 pl-4 border-l border-white/10 space-y-1">
+                  <div className="ml-4 pl-4 border-l border-gray-200 dark:border-white/10 space-y-1">
                     {button.megaMenu.map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
                         onClick={() => setIsOpen(false)}
-                        className="block p-3 rounded-xl text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+                        className="block p-3 rounded-xl text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
                       >
                         <span className="block text-sm font-medium">{item.label}</span>
-                        <span className="block text-xs text-zinc-500">{item.desc}</span>
+                        <span className="block text-xs text-gray-500 dark:text-zinc-500">{item.desc}</span>
                       </Link>
                     ))}
                   </div>
@@ -320,13 +340,13 @@ export default function Navbar() {
             ))}
 
             {/* Mobile Links */}
-            <div className="pt-4 mt-4 border-t border-white/10 space-y-2">
-              <Link href="/" onClick={() => setIsOpen(false)} className="block p-4 text-zinc-300 hover:text-white hover:bg-white/5 rounded-xl">
+            <div className="pt-4 mt-4 border-t border-gray-200 dark:border-white/10 space-y-2">
+              <Link href="/" onClick={() => setIsOpen(false)} className="block p-4 text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl">
                 Home
               </Link>
               {!isAuthenticated && (
                 <>
-                  <Link href="/login" onClick={() => setIsOpen(false)} className="block p-4 text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl">
+                  <Link href="/login" onClick={() => setIsOpen(false)} className="block p-4 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl">
                     Sign In
                   </Link>
                   <Link href="/register" onClick={() => setIsOpen(false)} className="block p-4 text-white bg-indigo-600 rounded-xl text-center">

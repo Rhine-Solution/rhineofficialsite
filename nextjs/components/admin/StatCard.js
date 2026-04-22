@@ -24,7 +24,7 @@ export default function StatCard({ title, value, icon: Icon, change, changeLabel
   const isPositive = change && change > 0
 
   return (
-    <div className="bg-zinc-900/50 backdrop-blur-sm border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-colors">
+    <div className="bg-white dark:bg-zinc-900/50 backdrop-blur-sm border border-gray-200 dark:border-white/5 rounded-2xl p-5 hover:border-gray-300 dark:hover:border-white/10 transition-colors">
       <div className="flex items-start justify-between mb-4">
         <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colorClasses[color]} flex items-center justify-center`}>
           {Icon && <Icon className="w-6 h-6 text-white" />}
@@ -37,10 +37,10 @@ export default function StatCard({ title, value, icon: Icon, change, changeLabel
         )}
       </div>
       <div className="space-y-1">
-        <p className="text-3xl font-bold text-white">{value}</p>
-        <p className="text-sm text-zinc-400">{title}</p>
+        <p className="text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
+        <p className="text-sm text-gray-500 dark:text-zinc-400">{title}</p>
         {changeLabel && (
-          <p className="text-xs text-zinc-500">{changeLabel}</p>
+          <p className="text-xs text-gray-400 dark:text-zinc-500">{changeLabel}</p>
         )}
       </div>
     </div>

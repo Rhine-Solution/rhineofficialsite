@@ -2,8 +2,11 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { Search, X } from 'lucide-react'
 import Card, { CardContent } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
+import FadeInSection from '../../components/ui/FadeInSection'
+import { useDebounce } from '../../hooks/useDebounce'
 
 const faqCategories = [
   { 
@@ -168,10 +171,18 @@ const faqs = [
 export default function FAQPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [openQuestion, setOpenQuestion] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  
+  const debouncedSearch = useDebounce(searchTerm, 300)
+  const isSearching = searchTerm !== debouncedSearch
 
-  const filteredFaqs = selectedCategory === 'all' 
-    ? faqs 
-    : faqs.filter(faq => faq.category === selectedCategory)
+  const filteredFaqs = faqs.filter(faq => {
+    const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory
+    const matchesSearch = !debouncedSearch || 
+      faq.question.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      faq.answer.toLowerCase().includes(debouncedSearch.toLowerCase())
+    return matchesCategory && matchesSearch
+  })
 
   const currentCategory = faqCategories.find(c => c.id === selectedCategory)
 
@@ -183,9 +194,33 @@ export default function FAQPage() {
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             How can we <span className="gradient-text">help you?</span>
           </h1>
-          <p className="text-xl text-zinc-400">
+          <p className="text-xl text-zinc-400 mb-8">
             Choose a category below or search for answers
           </p>
+          {/* Search Input */}
+          <div className="max-w-xl mx-auto relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+            <input
+              type="text"
+              placeholder="Search FAQs..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-12 pr-10 py-4 bg-zinc-900/80 border border-zinc-700 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
+            />
+            {isSearching && (
+              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+            {searchTerm && !isSearching && (
+              <button 
+                onClick={() => setSearchTerm('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
         </div>
       </section>
 
@@ -284,34 +319,42 @@ export default function FAQPage() {
           </div>
 
           <div className="space-y-3">
-            {filteredFaqs.map((faq, index) => {
-              const cat = faqCategories.find(c => c.id === faq.category)
-              return (
-                <Card 
-                  key={index} 
-                  className={`overflow-hidden transition-all duration-300 ${
-                    openQuestion === index 
-                      ? 'border-indigo-500/50 shadow-lg shadow-indigo-500/10' 
-                      : 'hover:border-zinc-700'
-                  }`}
-                >
-                  <button
-                    onClick={() => setOpenQuestion(openQuestion === index ? null : index)}
-                    className="w-full text-left p-5 flex items-center justify-between gap-4 group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">{cat?.icon}</span>
-                      <span className="font-medium text-white group-hover:text-indigo-400 transition-colors">
-                        {faq.question}
-                      </span>
-                    </div>
-                    <span className={`w-6 h-6 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400 transition-all duration-300 ${
-                      openQuestion === index ? 'rotate-180 bg-indigo-600 text-white' : ''
-                    }`}>
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </span>
+            {filteredFaqs.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-zinc-500 mb-4">No FAQs match your search.</p>
+                <Link href="/contact" className="text-indigo-400 hover:text-indigo-300">
+                  Contact support →
+                </Link>
+              </div>
+            ) : (
+              filteredFaqs.map((faq, index) => {
+                const cat = faqCategories.find(c => c.id === faq.category)
+                return (
+                  <FadeInSection key={index} delay={index * 0.05}>
+                    <Card 
+                      className={`overflow-hidden transition-all duration-300 ${
+                        openQuestion === index 
+                          ? 'border-indigo-500/50 shadow-lg shadow-indigo-500/10' 
+                          : 'hover:border-zinc-700'
+                      }`}
+                    >
+                      <button
+                        onClick={() => setOpenQuestion(openQuestion === index ? null : index)}
+                        className="w-full text-left p-5 flex items-center justify-between gap-4 group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-xl">{cat?.icon}</span>
+                          <span className="font-medium text-white group-hover:text-indigo-400 transition-colors">
+                            {faq.question}
+                          </span>
+                        </div>
+                        <span className={`w-6 h-6 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400 transition-all duration-300 ${
+                          openQuestion === index ? 'rotate-180 bg-indigo-600 text-white' : ''
+                        }`}>
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </span>
                   </button>
                   {openQuestion === index && (
                     <CardContent className="pt-0 pb-5 px-5">
@@ -325,9 +368,11 @@ export default function FAQPage() {
                       </div>
                     </CardContent>
                   )}
-                </Card>
-              )
-            })}
+                    </Card>
+                  </FadeInSection>
+                )
+              })
+            )}
           </div>
         </div>
       </section>

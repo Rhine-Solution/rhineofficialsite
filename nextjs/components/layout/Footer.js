@@ -1,8 +1,12 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
+import { useToast } from '../ui/Toast'
 
 const footerLinks = {
   services: [
-    { href: '/shop', label: 'Shop' },
+    { href: '/shop', label: 'Subscriptions' },
     { href: '/travel', label: 'Travel' },
     { href: '/portfolio', label: 'Portfolio' },
     { href: '/contact', label: 'Contact Us' },
@@ -18,6 +22,8 @@ const footerLinks = {
     { href: '/terms', label: 'Terms of Service' },
   ],
 }
+
+const supportEmail = 'support@rhinesolution.com'
 
 const socialLinks = [
   { href: 'https://github.com/rhine-solution', icon: 'github', label: 'GitHub' },
@@ -47,22 +53,132 @@ function SocialIcon({ type }) {
 }
 
 export default function Footer() {
+  const [email, setEmail] = useState('')
+  const [subscribed, setSubscribed] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [agreedToMarketing, setAgreedToMarketing] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleCopyEmail = async () => {
+    await navigator.clipboard.writeText(supportEmail)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!email) return
+    
+    setLoading(true)
+    setError('')
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email,
+          agreedToMarketing 
+        })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || 'Failed to subscribe')
+        return
+      }
+
+      setSubscribed(true)
+      setEmail('')
+      setAgreedToMarketing(false)
+    } catch (err) {
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <footer className="bg-zinc-950 border-t border-zinc-800">
+    <footer className="bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-zinc-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
-          {/* Brand */}
+          {/* Brand & Newsletter */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center space-x-2">
               <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-cyan-500 rounded-xl flex items-center justify-center">
                 <span className="text-white font-bold text-lg">R</span>
               </div>
-              <span className="text-xl font-bold gradient-text">Rhine</span>
+              <span className="text-xl font-bold text-gray-900 dark:text-white">Rhine Solution</span>
             </Link>
-            <p className="mt-4 text-zinc-400 max-w-xs">
+            <p className="mt-4 text-gray-500 dark:text-zinc-400 max-w-xs">
               Building amazing digital experiences with modern web technologies. 
               Enterprise-grade solutions for your business.
             </p>
+            
+            {/* Support Email */}
+            <div className="mt-4 flex items-center gap-2">
+              <span className="text-sm text-gray-500 dark:text-zinc-400">Support:</span>
+              <button 
+                onClick={handleCopyEmail}
+                className="flex items-center gap-1.5 text-sm text-indigo-500 dark:text-indigo-400 hover:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
+              >
+                {supportEmail}
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </button>
+              {copied && (
+                <span className="text-xs text-green-500 font-medium">Copied!</span>
+              )}
+            </div>
+            
+            {/* Newsletter */}
+            <div className="mt-6">
+              <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Subscribe to our newsletter</h4>
+              {subscribed ? (
+                <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-xl text-green-400 text-sm">
+                  Thanks for subscribing!
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      placeholder="your@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="flex-1 px-4 py-2 bg-gray-100 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-800 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-zinc-500 focus:outline-none focus:border-indigo-500 text-sm"
+                      required
+                    />
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-400 text-white text-sm font-medium rounded-lg transition-colors"
+                    >
+                      {loading ? '...' : 'Subscribe'}
+                    </button>
+                  </div>
+                  {error && (
+                    <p className="text-xs text-red-400">{error}</p>
+                  )}
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={agreedToMarketing}
+                      onChange={(e) => setAgreedToMarketing(e.target.checked)}
+                      className="w-4 h-4 rounded border-gray-300 dark:border-zinc-700 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <span className="text-xs text-gray-500 dark:text-zinc-400">
+                      I agree to receive marketing emails
+                    </span>
+                  </label>
+                </form>
+              )}
+            </div>
+
+            {/* Social Links */}
             <div className="mt-6 flex gap-4">
               {socialLinks.map(social => (
                 <a
@@ -70,7 +186,8 @@ export default function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-zinc-500 hover:text-indigo-400 transition-colors hover-lift"
+                  className="text-gray-400 dark:text-zinc-500 hover:text-indigo-400 transition-colors"
+                  aria-label={social.label}
                 >
                   <SocialIcon type={social.icon} />
                 </a>
@@ -80,7 +197,7 @@ export default function Footer() {
           
           {/* Services */}
           <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
               Services
             </h3>
             <ul className="space-y-3">
@@ -88,7 +205,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link 
                     href={link.href}
-                    className="text-zinc-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
+                    className="text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -99,7 +216,7 @@ export default function Footer() {
           
           {/* Company */}
           <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
               Company
             </h3>
             <ul className="space-y-3">
@@ -107,7 +224,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link 
                     href={link.href}
-                    className="text-zinc-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
+                    className="text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -118,7 +235,7 @@ export default function Footer() {
           
           {/* Support */}
           <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
               Support
             </h3>
             <ul className="space-y-3">
@@ -126,7 +243,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link 
                     href={link.href}
-                    className="text-zinc-400 hover:text-white transition-colors hover:translate-x-1 inline-block"
+                    className="text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -136,8 +253,8 @@ export default function Footer() {
           </div>
         </div>
         
-        <div className="mt-16 pt-8 border-t border-zinc-800">
-          <p className="text-center text-zinc-500 text-sm">
+        <div className="mt-16 pt-8 border-t border-gray-200 dark:border-zinc-800">
+          <p className="text-center text-gray-500 dark:text-zinc-500 text-sm">
             © {new Date().getFullYear()} Rhine Solution. All rights reserved. 
             Built with Next.js & Tailwind CSS.
           </p>

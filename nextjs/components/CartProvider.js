@@ -39,7 +39,6 @@ export function CartProvider({ children }) {
       }
       return [...prev, { ...product, quantity }]
     })
-    success(`${product.name} added to cart`)
     setIsOpen(true)
   }, [success])
 

@@ -1,12 +1,12 @@
 export default function Skeleton({ className = '' }) {
   return (
-    <div className={`animate-pulse bg-zinc-800 rounded ${className}`} />
+    <div className={`animate-pulse bg-gray-200 dark:bg-zinc-800 rounded ${className}`} />
   )
 }
 
 export function CardSkeleton() {
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+    <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl overflow-hidden">
       <Skeleton className="h-48 w-full" />
       <div className="p-5 space-y-3">
         <Skeleton className="h-6 w-3/4" />

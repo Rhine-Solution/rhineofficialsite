@@ -4,12 +4,12 @@ export default function Input({
   className = '',
   ...props 
 }) {
-  const inputStyles = 'w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors'
+  const inputStyles = 'w-full px-4 py-3 bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors'
   
   return (
     <div className={className}>
       {label && (
-        <label className="block text-sm font-medium text-zinc-300 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">
           {label}
         </label>
       )}
@@ -31,12 +31,12 @@ export function Textarea({
   rows = 4,
   ...props 
 }) {
-  const inputStyles = 'w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors resize-none'
+  const inputStyles = 'w-full px-4 py-3 bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors resize-none'
   
   return (
     <div className={className}>
       {label && (
-        <label className="block text-sm font-medium text-zinc-300 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">
           {label}
         </label>
       )}
@@ -59,12 +59,12 @@ export function Select({
   className = '',
   ...props 
 }) {
-  const inputStyles = 'w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors'
+  const inputStyles = 'w-full px-4 py-3 bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors'
   
   return (
     <div className={className}>
       {label && (
-        <label className="block text-sm font-medium text-zinc-300 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">
           {label}
         </label>
       )}

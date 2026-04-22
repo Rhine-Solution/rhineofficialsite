@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import Card, { CardContent } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
+import Turnstile from '../../components/Turnstile'
 import { useAuth } from '../../components/AuthProvider'
 
 export default function RegisterPage() {
@@ -18,6 +19,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState(null)
 
   const handleGoogleSignIn = async () => {
     const result = await signInWithGoogle()
@@ -28,6 +30,24 @@ export default function RegisterPage() {
     setLoading(true)
     setError('')
     setSuccessMsg('')
+
+    if (!turnstileToken) {
+      setError('Please complete the security verification.')
+      setLoading(false)
+      return
+    }
+
+    const verifyRes = await fetch('/api/verify-turnstile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: turnstileToken, action: 'register' })
+    })
+
+    if (!verifyRes.ok) {
+      setError('Security verification failed. Please try again.')
+      setLoading(false)
+      return
+    }
 
     if (password !== confirmPassword) {
       setError('Passwords do not match')
@@ -124,6 +144,11 @@ export default function RegisterPage() {
                 <span>and</span>
                 <Link href="/privacy" className="text-indigo-500 hover:underline">Privacy</Link>
               </div>
+
+              <Turnstile 
+                onVerify={(token) => setTurnstileToken(token)} 
+                action="register" 
+              />
 
               <Button type="submit" className="w-full" disabled={loading || authLoading}>
                 {loading || authLoading ? 'Creating account...' : 'Create Account'}

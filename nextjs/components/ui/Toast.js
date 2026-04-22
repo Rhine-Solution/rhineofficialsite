@@ -63,7 +63,7 @@ function ToastContainer({ toasts }) {
           className={`px-4 py-3 rounded-lg shadow-lg animate-slide-in flex items-center gap-3 ${
             toast.type === 'success' ? 'bg-green-600 text-white' :
             toast.type === 'error' ? 'bg-red-600 text-white' :
-            'bg-zinc-800 text-white border border-zinc-700'
+            'bg-gray-900 dark:bg-zinc-800 text-white border border-gray-700 dark:border-zinc-700'
           }`}
         >
           <span>
