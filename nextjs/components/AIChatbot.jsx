@@ -1,59 +1,42 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { MessageCircle, X, Send, Bot, User, Loader2 } from 'lucide-react'
-
-const defaultResponses = [
-  "I'd be happy to help! You can browse our services on the Shop page, check our Portfolio for past projects, or read our Blog for industry insights.",
-  "Great question! Our team specializes in web development, e-commerce solutions, and digital transformation. What area interests you most?",
-  "Thanks for reaching out! For pricing details, visit our Pricing page. We offer flexible plans to suit different business needs.",
-  "We'd love to work with you! Contact us through the Contact page and our team will get back to you within 24 hours.",
-  "Check out our FAQ page for quick answers to common questions, or feel free to ask me anything specific!",
-]
+import { MessageCircle, X, Send, Bot, User, Loader2, Sparkles } from 'lucide-react'
+import { getResponseWithDelay, getSuggestedQuestions } from '../lib/local-chatbot'
 
 export default function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hi! I'm Rhine's AI assistant. How can I help you today?" }
+    { role: 'assistant', content: "Hello! I'm Rhine, your virtual assistant. Ask me anything about our services, pricing, or travel destinations!" }
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(true)
   const messagesEndRef = useRef(null)
 
-  const scrollToBottom = () => {
+  const suggestedQuestions = getSuggestedQuestions()
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+  }, [messages])
 
-  useEffect(scrollToBottom, [messages])
+  const handleSend = async (text) => {
+    const messageToSend = text || input.trim()
+    if (!messageToSend || loading) return
 
-  const handleSend = async () => {
-    if (!input.trim() || loading) return
-
-    const userMessage = input.trim()
+    const userMessage = messageToSend
     setInput('')
     setMessages(prev => [...prev, { role: 'user', content: userMessage }])
     setLoading(true)
+    setShowSuggestions(false)
 
     try {
-      const res = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage })
-      })
-      const data = await res.json()
-      
-      let response
-      if (data.response) {
-        response = data.response
-      } else {
-        response = defaultResponses[Math.floor(Math.random() * defaultResponses.length)]
-      }
-
+      const response = await getResponseWithDelay(userMessage, 500)
       setMessages(prev => [...prev, { role: 'assistant', content: response }])
     } catch (err) {
       setMessages(prev => [...prev, { 
         role: 'assistant', 
-        content: "Sorry, I encountered an error. Please try again or contact support directly." 
+        content: "I'm having trouble right now. Please try again or contact support at /contact." 
       }])
     } finally {
       setLoading(false)
@@ -71,18 +54,19 @@ export default function AIChatbot() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition-all hover:bg-indigo-700 hover:scale-110"
+        className="fixed bottom-6 left-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg transition-all hover:bg-indigo-700 hover:scale-110"
         aria-label="Open AI Chatbot"
       >
         <MessageCircle className="h-6 w-6" />
       </button>
 
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-40 w-full max-w-md rounded-xl bg-white shadow-2xl dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 overflow-hidden">
+        <div className="fixed bottom-24 left-6 z-40 w-full max-w-md rounded-xl bg-white shadow-2xl dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 overflow-hidden">
           <div className="flex items-center justify-between border-b border-gray-200 bg-indigo-600 px-4 py-3 dark:bg-indigo-700">
             <div className="flex items-center gap-2 text-white">
-              <Bot className="h-5 w-5" />
-              <span className="font-semibold">AI Assistant</span>
+              <Sparkles className="h-5 w-5" />
+              <span className="font-semibold">Rhine Assistant</span>
+              <span className="ml-1 text-xs bg-white/20 px-2 py-0.5 rounded-full">Local AI</span>
             </div>
             <button
               onClick={() => setIsOpen(false)}
@@ -104,7 +88,7 @@ export default function AIChatbot() {
                   </div>
                 )}
                 <div
-                  className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
+                  className={`max-w-[80%] rounded-lg px-3 py-2 text-sm whitespace-pre-wrap ${
                     msg.role === 'user'
                       ? 'bg-indigo-600 text-white'
                       : 'bg-gray-100 text-gray-900 dark:bg-zinc-800 dark:text-zinc-100'
@@ -128,6 +112,23 @@ export default function AIChatbot() {
             <div ref={messagesEndRef} />
           </div>
 
+          {showSuggestions && messages.length <= 2 && (
+            <div className="px-4 py-2 border-t border-gray-200 dark:border-zinc-800">
+              <p className="text-xs text-gray-500 dark:text-zinc-400 mb-2">Try asking:</p>
+              <div className="flex flex-wrap gap-2">
+                {suggestedQuestions.map((q, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleSend(q)}
+                    className="text-xs px-3 py-1.5 bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 rounded-full hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="border-t border-gray-200 p-3 dark:border-zinc-800">
             <div className="flex gap-2">
               <input
@@ -140,13 +141,16 @@ export default function AIChatbot() {
                 disabled={loading}
               />
               <button
-                onClick={handleSend}
+                onClick={() => handleSend()}
                 disabled={loading || !input.trim()}
                 className="rounded-lg bg-indigo-600 px-3 py-2 text-white hover:bg-indigo-700 disabled:opacity-50"
               >
                 <Send className="h-4 w-4" />
               </button>
             </div>
+            <p className="text-[10px] text-center text-gray-400 dark:text-zinc-500 mt-2">
+              Local AI • No data sent to external servers
+            </p>
           </div>
         </div>
       )}
