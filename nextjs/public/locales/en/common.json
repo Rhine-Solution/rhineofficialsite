@@ -1,0 +1,86 @@
+{
+  "nav": {
+    "home": "Home",
+    "shop": "Shop",
+    "travel": "Travel",
+    "portfolio": "Portfolio",
+    "blog": "Blog",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "pricing": "Pricing",
+    "dashboard": "Dashboard",
+    "login": "Login",
+    "register": "Register",
+    "signOut": "Sign Out"
+  },
+  "home": {
+    "hero": {
+      "title": "Enterprise Tech Solutions for Modern Business",
+      "subtitle": "Transform your digital presence with our expert web development, IT support, and cloud services.",
+      "cta": {
+        "primary": "Get Started",
+        "secondary": "View Pricing"
+      }
+    },
+    "features": {
+      "title": "Why Choose Rhine",
+      "web": {
+        "title": "Web Development",
+        "description": "Custom React and Next.js applications built for scale."
+      },
+      "support": {
+        "title": "24/7 IT Support",
+        "description": "Enterprise-grade support when you need it most."
+      },
+      "cloud": {
+        "title": "Cloud Solutions",
+        "description": "AWS, Azure, and GCP infrastructure management."
+      }
+    }
+  },
+  "footer": {
+    "newsletter": {
+      "title": "Subscribe to our newsletter",
+      "placeholder": "Your email",
+      "button": "Subscribe",
+      "success": "Thanks for subscribing!"
+    },
+    "links": {
+      "services": "Services",
+      "company": "Company",
+      "support": "Support"
+    },
+    "copyright": "© {{year}} Rhine Solution. All rights reserved."
+  },
+  "common": {
+    "learnMore": "Learn More",
+    "viewAll": "View All",
+    "search": "Search...",
+    "loading": "Loading...",
+    "error": "An error occurred"
+  },
+  "pricing": {
+    "title": "Choose Your Plan",
+    "subtitle": "DIY, DWY, or DFY — pick the level of support that fits your needs.",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "save": "Save 20%",
+    "cta": {
+      "getStarted": "Get Started",
+      "startTrial": "Start Free Trial",
+      "contactSales": "Contact Sales"
+    }
+  },
+  "contact": {
+    "title": "Let's Connect",
+    "subtitle": "Have a question or want to work together? We'd love to hear from you.",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "submit": "Send Message",
+      "success": "Message sent! We'll get back to you soon."
+    }
+  }
+}
