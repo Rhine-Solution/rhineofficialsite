@@ -11,7 +11,13 @@
     "dashboard": "Dashboard",
     "login": "Login",
     "register": "Register",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "services": "Services",
+    "resources": "Resources",
+    "company": "Company",
+    "appointments": "Appointments",
+    "about": "About",
+    "reviews": "Reviews"
   },
   "home": {
     "hero": {
@@ -24,6 +30,23 @@
     },
     "features": {
       "title": "Why Choose Rhine",
+      "subtitle": "Everything you need to build, launch, and grow your business online",
+      "ecommerce": {
+        "title": "E-commerce",
+        "description": "Full online store with cart and checkout"
+      },
+      "travel": {
+        "title": "Travel Booking",
+        "description": "Discover and book amazing destinations"
+      },
+      "portfolio": {
+        "title": "Portfolio",
+        "description": "Showcase your projects and work"
+      },
+      "dashboard": {
+        "title": "Dashboard",
+        "description": "Manage your account and orders"
+      },
       "web": {
         "title": "Web Development",
         "description": "Custom React and Next.js applications built for scale."
@@ -36,6 +59,12 @@
         "title": "Cloud Solutions",
         "description": "AWS, Azure, and GCP infrastructure management."
       }
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "subtitle": "Join thousands of users who trust Rhine for your digital needs. Start your free trial today.",
+      "createAccount": "Create Account",
+      "viewPricing": "View Pricing"
     }
   },
   "footer": {
@@ -56,8 +85,14 @@
     "learnMore": "Learn More",
     "viewAll": "View All",
     "search": "Search...",
+    "searchPlaceholder": "Search...",
     "loading": "Loading...",
-    "error": "An error occurred"
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "close": "Close",
+    "menu": "Menu"
   },
   "pricing": {
     "title": "Choose Your Plan",
@@ -65,10 +100,34 @@
     "monthly": "Monthly",
     "annual": "Annual",
     "save": "Save 20%",
+    "mostPopular": "Most Popular",
     "cta": {
       "getStarted": "Get Started",
       "startTrial": "Start Free Trial",
       "contactSales": "Contact Sales"
+    },
+    "plans": {
+      "basic": {
+        "name": "Basic",
+        "model": "DIY",
+        "description": "Self-service tech resources for independent problem solving",
+        "price": "$29",
+        "priceAnnual": "$278"
+      },
+      "professional": {
+        "name": "Professional",
+        "model": "DWY",
+        "description": "Hands-on support with guided implementation",
+        "price": "$99",
+        "priceAnnual": "$950"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "model": "DFY",
+        "description": "Complete white-glove tech management",
+        "price": "$499",
+        "priceAnnual": "$4,790"
+      }
     }
   },
   "contact": {
@@ -76,11 +135,60 @@
     "subtitle": "Have a question or want to work together? We'd love to hear from you.",
     "form": {
       "name": "Name",
+      "namePlaceholder": "Your name",
       "email": "Email",
+      "emailPlaceholder": "you@example.com",
       "subject": "Subject",
+      "subjectPlaceholder": "What is this about?",
       "message": "Message",
+      "messagePlaceholder": "Tell us about your project or question...",
       "submit": "Send Message",
+      "sending": "Sending...",
       "success": "Message sent! We'll get back to you soon."
+    },
+    "info": {
+      "email": "Email",
+      "phone": "Phone",
+      "location": "Location",
+      "responseTime": "We aim to reply within 24 hours"
     }
+  },
+  "faq": {
+    "title": "How can we help you?",
+    "subtitle": "Choose a category below or search for answers",
+    "search": "Search FAQs...",
+    "categories": {
+      "all": "All",
+      "general": "Getting Started",
+      "account": "My Account",
+      "billing": "Billing & Payments",
+      "technical": "Technical Help",
+      "orders": "Orders & Delivery",
+      "travel": "Travel Bookings"
+    },
+    "noResults": "No FAQs match your search.",
+    "stillNeedHelp": "Still need help?",
+    "contactSupport": "Contact support →",
+    "browseServices": "Browse Services"
+  },
+  "travel": {
+    "title": "Discover Your Next Adventure",
+    "subtitle": "Book amazing destinations around the world",
+    "categories": {
+      "all": "All Destinations",
+      "beach": "Beach",
+      "city": "City",
+      "mountain": "Mountain",
+      "island": "Island"
+    },
+    "bookNow": "Book Now",
+    "from": "From",
+    "perPerson": "per person"
+  },
+  "shop": {
+    "title": "Our Services",
+    "subtitle": "Everything you need for your business",
+    "addToCart": "Add to Cart",
+    "viewDetails": "View Details"
   }
 }

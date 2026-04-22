@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import Card, { CardImage, CardContent, CardTitle, CardDescription, CardPrice } from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import Turnstile from '../components/Turnstile'
@@ -28,6 +29,7 @@ const fallbackProducts = [
 ]
 
 export default function Home() {
+  const { t } = useTranslation()
   const [products, setProducts] = useState(fallbackProducts)
   const [loaded, setLoaded] = useState(false)
   const [showVerify, setShowVerify] = useState(false)
