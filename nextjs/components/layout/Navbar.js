@@ -90,6 +90,29 @@ export default function Navbar() {
     setAccountDropdown(false)
   }, [pathname])
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [isOpen])
+
+  // Close menu on Escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && isOpen) setIsOpen(false)
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isOpen])
+
+  const handleNavigation = (href) => {
+    setIsOpen(false)
+  }
+
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       scrolled ? 'py-2' : 'py-3'
@@ -310,57 +333,96 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       {isOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-white dark:bg-zinc-950/95 backdrop-blur-xl border-t border-gray-200 dark:border-white/5 shadow-xl dark:shadow-2xl">
-          <div className="max-w-7xl mx-auto px-4 py-4 space-y-2">
-            {mainButtons.map((button) => (
-              <div key={button.label}>
-                <button
-                  onClick={() => setActiveMegaMenu(activeMegaMenu === button.label ? null : button.label)}
-                  className="flex items-center justify-between w-full p-4 rounded-xl text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
-                >
-                  <span className="font-medium">{button.label}</span>
-                  <svg className={`w-5 h-5 transition-transform ${activeMegaMenu === button.label ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {activeMegaMenu === button.label && (
-                  <div className="ml-4 pl-4 border-l border-gray-200 dark:border-white/10 space-y-1">
-                    {button.megaMenu.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setIsOpen(false)}
-                        className="block p-3 rounded-xl text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
-                      >
-                        <span className="block text-sm font-medium">{item.label}</span>
-                        <span className="block text-xs text-gray-500 dark:text-zinc-500">{item.desc}</span>
-                      </Link>
-                    ))}
-                  </div>
+        <>
+          {/* Backdrop overlay */}
+          <div 
+            className="lg:hidden fixed inset-0 bg-black/50 z-40" 
+            onClick={() => setIsOpen(false)}
+          />
+          
+          {/* Mobile Side Menu */}
+          <div className="lg:hidden fixed top-0 right-0 h-screen w-80 max-w-[85vw] bg-white dark:bg-zinc-950 backdrop-blur-xl border-l border-gray-200 dark:border-white/10 shadow-2xl z-50 overflow-y-auto transform transition-transform duration-300 ease-in-out">
+            {/* Close button */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/10">
+              <span className="text-lg font-semibold text-gray-900 dark:text-white">Menu</span>
+              <button 
+                onClick={() => setIsOpen(false)}
+                className="p-2 rounded-lg text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Menu Content */}
+            <div className="p-4 space-y-2">
+              {mainButtons.map((button) => (
+                <div key={button.label}>
+                  <button
+                    onClick={() => setActiveMegaMenu(activeMegaMenu === button.label ? null : button.label)}
+                    className="flex items-center justify-between w-full py-4 px-4 rounded-xl text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors min-h-[44px]"
+                  >
+                    <span className="font-medium text-base">{button.label}</span>
+                    <svg className={`w-5 h-5 transition-transform ${activeMegaMenu === button.label ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {activeMegaMenu === button.label && (
+                    <div className="ml-4 pl-4 border-l border-gray-200 dark:border-white/10 space-y-1">
+                      {button.megaMenu.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setIsOpen(false)}
+                          className="block py-3 px-4 rounded-xl text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors min-h-[44px]"
+                        >
+                          <span className="block text-sm font-medium">{item.label}</span>
+                          <span className="block text-xs text-gray-500 dark:text-zinc-500">{item.desc}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* Mobile Links */}
+              <div className="pt-4 mt-4 border-t border-gray-200 dark:border-white/10 space-y-2">
+                <Link href="/" onClick={() => setIsOpen(false)} className="block py-4 px-4 text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl min-h-[44px]">
+                  Home
+                </Link>
+                <Link href="/shop" onClick={() => setIsOpen(false)} className="block py-4 px-4 text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl min-h-[44px]">
+                  Shop
+                </Link>
+                <Link href="/contact" onClick={() => setIsOpen(false)} className="block py-4 px-4 text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl min-h-[44px]">
+                  Contact
+                </Link>
+                
+                {!isAuthenticated ? (
+                  <>
+                    <Link href="/login" onClick={() => setIsOpen(false)} className="block py-4 px-4 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl min-h-[44px]">
+                      Sign In
+                    </Link>
+                    <Link href="/register" onClick={() => setIsOpen(false)} className="block py-4 px-4 text-white bg-indigo-600 rounded-xl text-center min-h-[44px] flex items-center justify-center font-medium">
+                      Sign Up
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/dashboard" onClick={() => setIsOpen(false)} className="block py-4 px-4 text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl min-h-[44px]">
+                      Dashboard
+                    </Link>
+                    <button onClick={() => { signOut(); setIsOpen(false); }} className="block w-full text-left py-4 px-4 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl min-h-[44px]">
+                      Sign Out
+                    </button>
+                  </>
                 )}
               </div>
-            ))}
-
-            {/* Mobile Links */}
-            <div className="pt-4 mt-4 border-t border-gray-200 dark:border-white/10 space-y-2">
-              <Link href="/" onClick={() => setIsOpen(false)} className="block p-4 text-gray-600 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl">
-                Home
-              </Link>
-              {!isAuthenticated && (
-                <>
-                  <Link href="/login" onClick={() => setIsOpen(false)} className="block p-4 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl">
-                    Sign In
-                  </Link>
-                  <Link href="/register" onClick={() => setIsOpen(false)} className="block p-4 text-white bg-indigo-600 rounded-xl text-center">
-                    Sign Up
-                  </Link>
-                </>
-              )}
             </div>
           </div>
-        </div>
+        </>
       )}
     </nav>
   )
