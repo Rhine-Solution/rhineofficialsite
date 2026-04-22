@@ -20,6 +20,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { OrganizationSchema, WebsiteSchema } from '../components/JsonLd'
 import { OpenReplayProvider } from '../components/OpenReplayProvider'
 import AIChatbot from '../components/AIChatbot'
+import AccessibilityChecker from '../components/AccessibilityChecker'
 
 export const dynamic = 'force-dynamic'
 
@@ -139,6 +140,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className="bg-white dark:bg-zinc-950 text-gray-900 dark:text-zinc-100 antialiased">
         <OpenReplayProvider>
+        <AccessibilityChecker>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
             <ToastProvider>
@@ -171,6 +173,7 @@ export default function RootLayout({ children }) {
         <Analytics />
         <SpeedInsights />
         <AIChatbot />
+        </AccessibilityChecker>
         </OpenReplayProvider>
       </body>
     </html>
