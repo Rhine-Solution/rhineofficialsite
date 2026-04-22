@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import Card, { CardContent } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
-import Turnstile from '../../components/Turnstile'
+// import Turnstile from '../../components/Turnstile' // Disabled until secret key added
 import { useAuth } from '../../components/AuthProvider'
 
 export default function LoginPage() {
@@ -16,46 +16,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
-  const [turnstileToken, setTurnstileToken] = useState(null)
-  const [turnstileError, setTurnstileError] = useState(false)
-
-  const handleTurnstileVerify = (token) => {
-    setTurnstileToken(token)
-    setTurnstileError(false)
-  }
-
-  const handleTurnstileError = () => {
-    setTurnstileError(true)
-    setTurnstileToken(null)
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setErrorMsg('')
 
-    // Allow login without Turnstile for now (fallback if Turnstile fails)
-    if (!turnstileToken && !turnstileError) {
-      // Try to proceed anyway - Turnstile might have failed silently
-      console.log('Warning: No Turnstile token, proceeding anyway')
-    }
-
-    // Skip Turnstile verification for now to test if that's the issue
-    // TODO: Re-enable after testing
-    /* 
-    const verifyRes = await fetch('/api/verify-turnstile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: turnstileToken, action: 'login' })
-    })
-
-    if (!verifyRes.ok) {
-      setErrorMsg('Security verification failed. Please try again.')
-      setLoading(false)
-      return
-    }
-    */
-
+    // Turnstile disabled - login without verification
     const result = await signIn(email, password)
     
     if (result.success) {
