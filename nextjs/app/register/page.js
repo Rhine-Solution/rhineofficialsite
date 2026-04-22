@@ -39,6 +39,9 @@ export default function RegisterPage() {
       return
     }
 
+    // Skip Turnstile verification for now to test if that's the issue
+    // TODO: Re-enable after testing
+    /*
     const verifyRes = await fetch('/api/verify-turnstile', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -50,6 +53,7 @@ export default function RegisterPage() {
       setLoading(false)
       return
     }
+    */
 
     if (password !== confirmPassword) {
       setError('Passwords do not match')
