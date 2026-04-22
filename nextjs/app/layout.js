@@ -20,6 +20,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { OrganizationSchema, WebsiteSchema } from '../components/JsonLd'
 import { OpenReplayProvider } from '../components/OpenReplayProvider'
 import AIChatbot from '../components/AIChatbot'
+import OnboardingTour from '../components/OnboardingTour'
 import AccessibilityChecker from '../components/AccessibilityChecker'
 import GoogleTranslate from '../components/GoogleTranslate'
 
@@ -177,6 +178,7 @@ export default function RootLayout({ children }) {
         <Analytics />
         <SpeedInsights />
         <AIChatbot />
+        <OnboardingTour />
       </body>
     </html>
   )

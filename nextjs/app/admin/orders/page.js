@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Eye, X } from 'lucide-react'
+import { Eye, X, Download } from 'lucide-react'
 import DataTable from '../../../components/admin/DataTable'
 import StatusBadge from '../../../components/admin/StatusBadge'
 import EmptyState from '../../../components/admin/EmptyState'
@@ -112,12 +112,22 @@ export default function OrdersPage() {
     {
       header: 'Actions',
       render: (row) => (
-        <button
-          onClick={() => { setSelectedOrder(row); fetchOrderItems(row.id) }}
-          className="p-2 text-zinc-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-        >
-          <Eye className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-2">
+          <a
+            href={`/api/invoice/${row.id}`}
+            target="_blank"
+            className="p-2 text-zinc-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+            title="Download PDF"
+          >
+            <Download className="w-4 h-4" />
+          </a>
+          <button
+            onClick={() => { setSelectedOrder(row); fetchOrderItems(row.id) }}
+            className="p-2 text-zinc-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
+        </div>
       )
     }
   ]

@@ -1,5 +1,13 @@
 # Admin Portal - Task Checklist
 
+> ⚠️ **DEPRECATED DOCUMENTATION**
+> This file is maintained for historical reference only.
+> For current documentation, please refer to:
+> - [Admin Task Tracker](./13-admin-task-tracker.md)
+> - [Improvement Roadmap](./07-improvement-roadmap.md)
+
+---
+
 ## Phase 1: Foundation
 - [ ] Create admin layout (glassmorphism sidebar)
 - [ ] Responsive sidebar (mobile hamburger)

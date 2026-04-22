@@ -1,5 +1,14 @@
 # Admin Portal - Implementation Plan (EXPANDED)
 
+> ⚠️ **DEPRECATED DOCUMENTATION**
+> This file is maintained for historical reference only.
+> For current documentation, please refer to:
+> - [Database Schema](./04-database-schema.md)
+> - [Improvement Roadmap](./07-improvement-roadmap.md)
+> - [Admin Task Tracker](./13-admin-task-tracker.md)
+
+---
+
 > **Created:** April 21, 2026  
 > **Project:** Rhine Official Site  
 > **Status:** Planning Phase (Expanded)

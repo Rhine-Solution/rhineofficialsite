@@ -210,7 +210,8 @@ export default function Navbar() {
             {/* Search */}
             <button
               onClick={openSearch}
-              className="p-2.5 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors"
+              aria-label="Open search (Ctrl+K)"
+              className="p-2.5 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors command-palette-hint"
               title="Search (Ctrl+K)"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -221,6 +222,7 @@ export default function Navbar() {
             {/* Wishlist */}
             <Link
               href="/wishlist"
+              aria-label="View wishlist"
               className="relative p-2.5 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,6 +238,7 @@ export default function Navbar() {
             {/* Cart */}
             <button
               onClick={() => setCartOpen(true)}
+              aria-label="Open shopping cart"
               className="relative p-2.5 text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

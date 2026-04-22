@@ -274,6 +274,9 @@ export default function DashboardPage() {
                     <Link href="/dashboard" className="block p-3 bg-zinc-900 rounded-lg hover:bg-zinc-800 transition-colors">
                       <p className="font-medium">✈️ My Bookings</p>
                     </Link>
+                    <Link href="/referral" className="block p-3 bg-zinc-900 rounded-lg hover:bg-zinc-800 transition-colors">
+                      <p className="font-medium">🎁 Refer Friends</p>
+                    </Link>
                     <button onClick={handleSignOut} className="block w-full text-left p-3 bg-zinc-900 rounded-lg hover:bg-zinc-800 transition-colors text-red-400">
                       <p className="font-medium">🚪 Sign Out</p>
                     </button>

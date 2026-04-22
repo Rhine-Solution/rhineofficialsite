@@ -159,3 +159,22 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* Shepherd.js Dark Mode */
+.shepherd-dark {
+  --shepherd-text-background: #1f2937;
+  --shepherd-header-background: #111827;
+  color: #f3f4f6;
+}
+
+.shepherd-dark .shepherd-header {
+  background: #111827;
+}
+
+.shepherd-dark .shepherd-text {
+  background: #1f2937;
+}
+
+.shepherd-dark .shepherd-footer {
+  background: #1f2937;
+}

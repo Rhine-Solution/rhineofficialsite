@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /orders/
+Disallow: /api/
+
+Sitemap: https://rhinesolution.com/sitemap.xml

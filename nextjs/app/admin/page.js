@@ -1,287 +1,423 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { Package, ShoppingCart, FileText, MessageSquare, MapPin, Users, DollarSign, TrendingUp, Calendar } from 'lucide-react'
-import StatCard from '../../components/admin/StatCard'
-import { CardSkeleton } from '../../components/ui/PageLoader'
+'use client';
+import { useState, useEffect } from 'react';
+import { Card, Title, Text, AreaChart, BarChart, Table, TableHead, TableRow, TableHeaderCell, TableBody, TableCell, Badge, Grid, Metric, Tab, TabList, TabGroup, TabPanel, TabPanels, BadgeDelta, ProgressBar, TextInput, Select, SelectItem, Flex, Button } from '@tremor/react';
+import { TrendingUp, Users, ShoppingBag, Clock, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://crqjedivobupxbbathux.supabase.co'
 const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNycWplZGl2b2J1cHhiYmF0aHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3OTA5MDEsImV4cCI6MjA5MDM2NjkwMX0.0_HAu_sj7j-3racZK9nWIghKdNEXWRTHgLme2sUMAhM'
 
-const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-const today = new Date().toISOString().split('T')[0]
+const headers = {
+  'apikey': SUPABASE_KEY,
+  'Authorization': `Bearer ${SUPABASE_KEY}`
+}
+
+// Target values for progress bars
+const TARGETS = {
+  revenue: 50000,    // Monthly revenue target
+  users: 500,         // User growth target
+  orders: 200,        // Monthly orders target
+  bookings: 50       // Monthly bookings target
+};
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({
-    revenue: 0,
-    revenueChange: 0,
-    orders: 0,
-    newUsers: 0,
-    pendingBookings: 0,
-    products: 0,
-    contacts: 0,
-    unreadContacts: 0,
-    destinations: 0,
-    totalBookings: 0,
-    weeklyRevenue: []
-  })
-  const [loading, setLoading] = useState(true)
+  // Overview data
+  const [revenueData, setRevenueData] = useState([]);
+  const [topProducts, setTopProducts] = useState([]);
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [allOrders, setAllOrders] = useState([]);
+  
+  // Stats with trends
+  const [stats, setStats] = useState({ 
+    revenue: 0, users: 0, orders: 0, pending: 0,
+    prevRevenue: 0, prevUsers: 0, prevOrders: 0, prevPending: 0 
+  });
+  
+  const [loading, setLoading] = useState(true);
+  
+  // Filters & pagination
+  const [dateRange, setDateRange] = useState('7');
+  const [orderSearch, setOrderSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 10;
+
+  // Calculate date range
+  const getDateRange = () => {
+    const days = parseInt(dateRange);
+    const end = new Date();
+    const start = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    const prevStart = new Date(start.getTime() - days * 24 * 60 * 60 * 1000);
+    return { 
+      current: { start: start.toISOString(), end: end.toISOString() },
+      previous: { start: prevStart.toISOString(), end: start.toISOString() }
+    };
+  };
 
   useEffect(() => {
-    fetchStats()
-  }, [])
+    fetchDashboardData();
+  }, [dateRange]);
 
-  async function fetchStats() {
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [orderSearch, statusFilter]);
+
+  async function fetchDashboardData() {
     try {
-      const headers = {
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`
-      }
-
-      const [
-        ordersRes, 
-        usersRes, 
-        appointmentsRes,
-        productsRes, 
-        contactsRes, 
-        destinationsRes,
-        weeklyOrdersRes
-      ] = await Promise.all([
-        fetch(`${SUPABASE_URL}/rest/v1/orders?select=total,created_at,status`, { headers }),
-        fetch(`${SUPABASE_URL}/rest/v1/users?select=id,created_at&created_at=gte.${sevenDaysAgo}`, { headers }),
-        fetch(`${SUPABASE_URL}/rest/v1/appointments?select=id,status`, { headers }),
-        fetch(`${SUPABASE_URL}/rest/v1/products?select=id`, { headers }),
-        fetch(`${SUPABASE_URL}/rest/v1/contacts?select=is_read`, { headers }),
-        fetch(`${SUPABASE_URL}/rest/v1/destinations?select=id`, { headers }),
-        fetch(`${SUPABASE_URL}/rest/v1/orders?select=total,created_at&created_at=gte.${sevenDaysAgo}`, { headers })
-      ])
-
-      const ordersData = await ordersRes.json()
-      const usersData = await usersRes.json()
-      const appointmentsData = await appointmentsRes.json()
-      const productsData = await productsRes.json()
-      const contactsData = await contactsRes.json()
-      const destinationsData = await destinationsData.json()
-      const weeklyData = await weeklyOrdersRes.json()
-
-      const orders = Array.isArray(ordersData) ? ordersData : []
-      const appointments = Array.isArray(appointmentsData) ? appointmentsData : []
-      const contacts = Array.isArray(contactsData) ? contactsData : []
-      const weeklyOrders = Array.isArray(weeklyData) ? weeklyData : []
-
-      const revenue = orders.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0)
+      setLoading(true);
+      const dateRangeData = getDateRange();
       
-      const prevWeekRevenue = revenue * 0.7
-      const revenueChange = prevWeekRevenue > 0 ? ((revenue - prevWeekRevenue) / prevWeekRevenue * 100) : 0
+      // Current period stats
+      const [ordersRes, usersRes, pendingRes, prevOrdersRes] = await Promise.all([
+        fetch(`${SUPABASE_URL}/rest/v1/orders?created_at=gte.${dateRangeData.current.start}&select=total,created_at`, { headers }),
+        fetch(`${SUPABASE_URL}/rest/v1/users?created_at=gte.${dateRangeData.current.start}&select=id`, { headers }),
+        fetch(`${SUPABASE_URL}/rest/v1/appointments?status=eq.pending&select=id`, { headers }),
+        fetch(`${SUPABASE_URL}/rest/v1/orders?created_at=gte.${dateRangeData.previous.start}&created_at=lt.${dateRangeData.current.start}&select=total`, { headers })
+      ]);
 
-      const weeklyByDay = Array(7).fill(0)
-      weeklyOrders.forEach(order => {
-        const orderDate = new Date(order.created_at)
-        const daysAgo = Math.floor((Date.now() - orderDate.getTime()) / (1000 * 60 * 60 * 24))
-        if (daysAgo < 7 && daysAgo >= 0) {
-          weeklyByDay[6 - daysAgo] += parseFloat(order.total) || 0
-        }
-      })
+      const ordersData = await ordersRes.json();
+      const usersData = await usersRes.json();
+      const pendingData = await pendingRes.json();
+      const prevOrdersData = await prevOrdersRes.json();
 
-      setStats({
-        revenue: revenue,
-        revenueChange: revenueChange.toFixed(1),
-        orders: orders.length,
-        newUsers: Array.isArray(usersData) ? usersData.length : 0,
-        pendingBookings: appointments.filter(a => a.status === 'scheduled' || a.status === 'pending').length,
-        products: Array.isArray(productsData) ? productsData.length : 0,
-        contacts: contacts.length,
-        unreadContacts: contacts.filter(c => !c.is_read).length,
-        destinations: Array.isArray(destinationsData) ? destinationsData.length : 0,
-        totalBookings: appointments.length,
-        weeklyRevenue: weeklyByDay
-      })
-    } catch (error) {
-      console.error('[Admin Dashboard] Error fetching stats:', error)
-    } finally {
-      setLoading(false)
+      const currentRevenue = Array.isArray(ordersData) ? ordersData.reduce((sum, o) => sum + (o.total || 0), 0) : 0;
+      const prevRevenue = Array.isArray(prevOrdersData) ? prevOrdersData.reduce((sum, o) => sum + (o.total || 0), 0) : 0;
+
+      // Calculate trends
+      const calcTrend = (current, previous) => {
+        if (previous === 0) return current > 0 ? 100 : 0;
+        return ((current - previous) / previous) * 100;
+      };
+
+      setStats({ 
+        revenue: currentRevenue,
+        users: Array.isArray(usersData) ? usersData.length : 0,
+        orders: Array.isArray(ordersData) ? ordersData.length : 0,
+        pending: Array.isArray(pendingData) ? pendingData.length : 0,
+        prevRevenue: prevRevenue,
+        prevUsers: 0, // Previous period users - simplified
+        prevOrders: Array.isArray(prevOrdersData) ? prevOrdersData.length : 0,
+        prevPending: 0
+      });
+
+      // Revenue over time chart
+      const dailyRevenue = {};
+      Array.isArray(ordersData) && ordersData.forEach(o => {
+        const date = new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        dailyRevenue[date] = (dailyRevenue[date] || 0) + (o.total || 0);
+      });
+      setRevenueData(Object.entries(dailyRevenue).map(([date, Revenue]) => ({ date, Revenue })));
+
+      // Top products
+      const itemsRes = await fetch(`${SUPABASE_URL}/rest/v1/order_items?created_at=gte.${dateRangeData.current.start}&select=quantity,products(name)&limit=50`, { headers });
+      const itemsData = await itemsRes.json();
+      const productSales = {};
+      Array.isArray(itemsData) && itemsData.forEach(i => { 
+        if (i.products?.name) productSales[i.products.name] = (productSales[i.products.name] || 0) + i.quantity; 
+      });
+      setTopProducts(Object.entries(productSales).map(([name, Sales]) => ({ name, Sales })).sort((a,b) => b.Sales - a.Sales).slice(0,5));
+
+      // All orders for detailed table
+      const allOrdersRes = await fetch(`${SUPABASE_URL}/rest/v1/orders?select=id,total,status,created_at,users(email)&order=created_at.desc&limit=100`, { headers });
+      const allOrdersData = await allOrdersRes.json();
+      setAllOrders(Array.isArray(allOrdersData) ? allOrdersData : []);
+      
+      // Recent orders (first 5 for overview)
+      setRecentOrders(allOrdersData.slice(0, 5));
+
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setLoading(false);
     }
   }
 
-  const quickLinks = [
-    { label: 'Products', href: '/admin/products', icon: Package, count: stats.products, color: 'indigo' },
-    { label: 'Orders', href: '/admin/orders', icon: ShoppingCart, count: stats.orders, color: 'cyan' },
-    { label: 'Contacts', href: '/admin/contacts', icon: MessageSquare, count: stats.unreadContacts, color: 'amber', badge: 'unread' },
-    { label: 'Bookings', href: '/admin/bookings', icon: MapPin, count: stats.pendingBookings, color: 'purple', badge: 'pending' },
-  ]
+  // Calculate progress percentages
+  const getProgress = (current, target) => Math.min((current / target) * 100, 100);
 
-  if (loading) {
-    return (
-      <div className="space-y-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <CardSkeleton key={i} />
-          ))}
-        </div>
-      </div>
-    )
-  }
+  // Calculate delta type for BadgeDelta
+  const getDeltaType = (trend) => {
+    if (trend >= 10) return 'increase';
+    if (trend > 0) return 'moderateIncrease';
+    if (trend === 0) return 'unchanged';
+    if (trend >= -10) return 'moderateDecrease';
+    return 'decrease';
+  };
 
-  const maxRevenue = Math.max(...stats.weeklyRevenue, 1)
+  // Filter orders
+  const filteredOrders = allOrders.filter(order => {
+    const matchesSearch = !orderSearch || 
+      order.id?.toLowerCase().includes(orderSearch.toLowerCase()) ||
+      order.users?.email?.toLowerCase().includes(orderSearch.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
-  return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-        <p className="text-gray-500 dark:text-zinc-400">Welcome back! Here's what's happening.</p>
-      </div>
+  // Paginate
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+  const paginatedOrders = filteredOrders.slice(
+    (currentPage - 1) * ordersPerPage,
+    currentPage * ordersPerPage
+  );
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Revenue Card with Sparkline */}
-        <div className="bg-white dark:bg-zinc-900/80 border border-gray-200 dark:border-zinc-800 rounded-2xl p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-gray-500 dark:text-zinc-400">Total Revenue (7d)</span>
-            <div className={`flex items-center gap-1 text-xs ${stats.revenueChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {stats.revenueChange >= 0 ? <TrendingUp className="w-3 h-3" /> : null}
-              {stats.revenueChange}%
-            </div>
-          </div>
-          <div className="text-3xl font-bold text-gray-900 dark:text-white mb-3">${stats.revenue.toFixed(2)}</div>
-          {/* Mini Sparkline */}
-          <div className="flex items-end gap-1 h-8">
-            {stats.weeklyRevenue.map((val, i) => (
-              <div 
-                key={i}
-                className="flex-1 bg-indigo-500/60 rounded-t"
-                style={{ height: `${(val / maxRevenue) * 100}%` }}
-              />
-            ))}
-          </div>
-        </div>
+  // Stat cards with trend and progress
+  const statCards = [
+    { 
+      title: 'Total Revenue', 
+      value: stats.revenue, 
+      prevValue: stats.prevRevenue,
+      icon: TrendingUp, 
+      color: 'blue',
+      target: TARGETS.revenue,
+      format: (v) => `$${v.toFixed(2)}`
+    },
+    { 
+      title: 'Total Users', 
+      value: stats.users, 
+      prevValue: stats.prevUsers,
+      icon: Users, 
+      color: 'green',
+      target: TARGETS.users,
+      format: (v) => v
+    },
+    { 
+      title: 'Total Orders', 
+      value: stats.orders, 
+      prevValue: stats.prevOrders,
+      icon: ShoppingBag, 
+      color: 'purple',
+      target: TARGETS.orders,
+      format: (v) => v
+    },
+    { 
+      title: 'Pending Bookings', 
+      value: stats.pending, 
+      prevValue: stats.prevPending,
+      icon: Clock, 
+      color: 'yellow',
+      target: TARGETS.bookings,
+      format: (v) => v
+    },
+  ];
 
-        <StatCard
-          title="Total Orders"
-          value={stats.orders}
-          icon={ShoppingCart}
-          color="cyan"
-        />
-        <StatCard
-          title="Products"
-          value={stats.products}
-          icon={Package}
-          color="indigo"
-        />
-        <StatCard
-          title="New Users (7d)"
-          value={stats.newUsers}
-          icon={Users}
-          color="green"
-        />
-      </div>
-
-      {/* Second Row Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="Pending Bookings"
-          value={stats.pendingBookings}
-          icon={Calendar}
-          color="purple"
-        />
-        <StatCard
-          title="Unread Messages"
-          value={stats.unreadContacts}
-          icon={MessageSquare}
-          color="amber"
-        />
-        <StatCard
-          title="Destinations"
-          value={stats.destinations}
-          icon={MapPin}
-          color="pink"
-        />
-        <StatCard
-          title="Total Contacts"
-          value={stats.contacts}
-          icon={FileText}
-          color="blue"
-        />
-      </div>
-
-      {/* Quick Links */}
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Access</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {quickLinks.map(link => {
-            const Icon = link.icon
-            return (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="group bg-white dark:bg-zinc-900/50 border border-gray-200 dark:border-white/5 rounded-2xl p-5 hover:border-gray-300 dark:hover:border-white/10 transition-all hover:bg-gray-50 dark:hover:bg-zinc-900"
-              >
-                <div className={`
-                  w-12 h-12 rounded-xl bg-${link.color}-500/20 flex items-center justify-center mb-3
-                  group-hover:scale-110 transition-transform
-                `}>
-                  <Icon className={`w-6 h-6 text-${link.color}-400`} />
-                </div>
-                <p className="font-medium text-gray-900 dark:text-white">{link.label}</p>
-                <p className="text-sm text-gray-500 dark:text-zinc-500">
-                  {link.count} {link.count === 1 ? 'item' : 'items'}
-                </p>
-              </Link>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* System Status */}
-        <div className="bg-white dark:bg-zinc-900/50 border border-gray-200 dark:border-white/5 rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">System Status</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-500 dark:text-zinc-400">Database</span>
-              <span className="flex items-center gap-2 text-green-400">
-                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                Connected
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-500 dark:text-zinc-400">API Status</span>
-              <span className="flex items-center gap-2 text-green-400">
-                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                Operational
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-500 dark:text-zinc-400">Email Service</span>
-              <span className="flex items-center gap-2 text-green-400">
-                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                Resend Connected
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Activity Summary */}
-        <div className="bg-white dark:bg-zinc-900/50 border border-gray-200 dark:border-white/5 rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Activity Summary</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-500 dark:text-zinc-400">Travel Destinations</span>
-              <span className="text-gray-900 dark:text-white font-medium">{stats.destinations}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-500 dark:text-zinc-400">Total Bookings</span>
-              <span className="text-gray-900 dark:text-white font-medium">{stats.totalBookings}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-500 dark:text-zinc-400">Contact Messages</span>
-              <span className="text-gray-900 dark:text-white font-medium">{stats.contacts}</span>
-            </div>
-          </div>
-        </div>
+  if (loading) return (
+    <div className="p-6 flex items-center justify-center min-h-[400px]">
+      <div className="text-center">
+        <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <Text>Loading dashboard...</Text>
       </div>
     </div>
-  )
+  );
+
+  return (
+    <div className="p-6 space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <Title>Dashboard</Title>
+          <Text>Overview of your business performance</Text>
+        </div>
+        <Select value={dateRange} onValueChange={setDateRange} className="w-40">
+          <SelectItem value="7">Last 7 days</SelectItem>
+          <SelectItem value="30">Last 30 days</SelectItem>
+          <SelectItem value="90">Last 90 days</SelectItem>
+        </Select>
+      </div>
+      
+      <TabGroup>
+        <TabList>
+          <Tab>Overview</Tab>
+          <Tab>Detailed Orders</Tab>
+        </TabList>
+        
+        <TabPanels>
+          {/* Overview Tab */}
+          <TabPanel className="mt-6 space-y-6">
+            {/* KPI Cards with Delta and Progress */}
+            <Grid numItems={1} numItemsSm={2} numItemsLg={4} className="gap-6">
+              {statCards.map((stat, i) => {
+                const trend = stat.prevValue ? ((stat.value - stat.prevValue) / stat.prevValue) * 100 : 0;
+                const progress = getProgress(stat.value, stat.target);
+                
+                return (
+                  <Card key={i} decoration="top" decorationColor={stat.color}>
+                    <Flex justifyContent="start" alignItems="start" className="space-x-2">
+                      <Text>{stat.title}</Text>
+                      <BadgeDelta deltaType={getDeltaType(trend)} isIncreasePositive={true}>
+                        {trend >= 0 ? '+' : ''}{trend.toFixed(1)}%
+                      </BadgeDelta>
+                    </Flex>
+                    <Metric className="mt-2">{stat.format(stat.value)}</Metric>
+                    <ProgressBar value={progress} color={stat.color} className="mt-3" />
+                    <Flex className="mt-2">
+                      <Text className="text-xs text-gray-500 dark:text-zinc-400">
+                        {progress.toFixed(0)}% of ${stat.target.toLocaleString()} target
+                      </Text>
+                    </Flex>
+                  </Card>
+                );
+              })}
+            </Grid>
+            
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <Title>Revenue Over Time</Title>
+                <Text>Daily revenue for selected period</Text>
+                <AreaChart 
+                  className="h-72 mt-4" 
+                  data={revenueData} 
+                  index="date" 
+                  categories={['Revenue']} 
+                  colors={['blue']} 
+                  valueFormatter={(v) => `$${v.toFixed(2)}`} 
+                  showLegend={false}
+                  showAnimation
+                />
+              </Card>
+              <Card>
+                <Title>Top Products</Title>
+                <Text>Best selling products by quantity</Text>
+                <BarChart 
+                  className="h-72 mt-4" 
+                  data={topProducts} 
+                  index="name" 
+                  categories={['Sales']} 
+                  colors={['blue']} 
+                  valueFormatter={(v) => `${v} units`} 
+                  showLegend={false}
+                  layout="vertical"
+                  showAnimation
+                />
+              </Card>
+            </div>
+            
+            {/* Recent Orders */}
+            <Card>
+              <Title>Recent Orders</Title>
+              <Text>Latest orders from your customers</Text>
+              <Table className="mt-4">
+                <TableHead>
+                  <TableRow>
+                    <TableHeaderCell>Order ID</TableHeaderCell>
+                    <TableHeaderCell>Customer</TableHeaderCell>
+                    <TableHeaderCell>Total</TableHeaderCell>
+                    <TableHeaderCell>Status</TableHeaderCell>
+                    <TableHeaderCell>Date</TableHeaderCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {recentOrders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell className="font-mono">{order.id?.slice(0,8)}</TableCell>
+                      <TableCell>{order.users?.email || 'Guest'}</TableCell>
+                      <TableCell className="font-medium">${(order.total || 0).toFixed(2)}</TableCell>
+                      <TableCell>
+                        <Badge color={
+                          order.status === 'completed' ? 'green' : 
+                          order.status === 'pending' ? 'yellow' : 
+                          order.status === 'cancelled' ? 'red' : 'gray'
+                        }>
+                          {order.status || 'pending'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-gray-500">
+                        {order.created_at ? new Date(order.created_at).toLocaleDateString() : '-'}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          </TabPanel>
+          
+          {/* Detailed Orders Tab */}
+          <TabPanel className="mt-6 space-y-6">
+            <Card>
+              <Flex className="flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                <div>
+                  <Title>All Orders</Title>
+                  <Text>Complete order history with filtering</Text>
+                </div>
+                <Flex className="space-x-2">
+                  <TextInput
+                    placeholder="Search by ID or email..."
+                    value={orderSearch}
+                    onChange={(e) => setOrderSearch(e.target.value)}
+                    className="w-48"
+                  />
+                  <Select value={statusFilter} onValueChange={setStatusFilter} className="w-32">
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="processing">Processing</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </Select>
+                </Flex>
+              </Flex>
+              
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableHeaderCell>Order ID</TableHeaderCell>
+                    <TableHeaderCell>Customer</TableHeaderCell>
+                    <TableHeaderCell>Total</TableHeaderCell>
+                    <TableHeaderCell>Status</TableHeaderCell>
+                    <TableHeaderCell>Date</TableHeaderCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {paginatedOrders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell className="font-mono">{order.id?.slice(0,8)}</TableCell>
+                      <TableCell>{order.users?.email || 'Guest'}</TableCell>
+                      <TableCell className="font-medium">${(order.total || 0).toFixed(2)}</TableCell>
+                      <TableCell>
+                        <Badge color={
+                          order.status === 'completed' ? 'green' : 
+                          order.status === 'pending' ? 'yellow' : 
+                          order.status === 'processing' ? 'blue' :
+                          order.status === 'cancelled' ? 'red' : 'gray'
+                        }>
+                          {order.status || 'pending'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-gray-500">
+                        {order.created_at ? new Date(order.created_at).toLocaleDateString() : '-'}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              
+              {/* Pagination */}
+              <Flex className="mt-4 justify-between items-center">
+                <Text className="text-sm text-gray-500">
+                  Showing {((currentPage - 1) * ordersPerPage) + 1} to {Math.min(currentPage * ordersPerPage, filteredOrders.length)} of {filteredOrders.length} orders
+                </Text>
+                <Flex className="space-x-2">
+                  <Button
+                    size="xs"
+                    variant="secondary"
+                    icon={ChevronLeftIcon}
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    size="xs"
+                    variant="secondary"
+                    icon={ChevronRightIcon}
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages || totalPages === 0}
+                  >
+                    Next
+                  </Button>
+                </Flex>
+              </Flex>
+            </Card>
+          </TabPanel>
+        </TabPanels>
+      </TabGroup>
+    </div>
+  );
 }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Card, { CardContent } from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
@@ -11,6 +11,8 @@ import { useAuth } from '../../components/AuthProvider'
 
 export default function RegisterPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const referralCode = searchParams.get('ref')
   const { signUp, signInWithGoogle, loading: authLoading } = useAuth()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -61,7 +63,7 @@ export default function RegisterPage() {
       return
     }
 
-    const result = await signUp(email, password, name)
+    const result = await signUp(email, password, name, referralCode)
     
     if (result.success) {
       setSuccessMsg('Account created! Please check your email to verify your account.')

@@ -9,6 +9,7 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [supabase] = useState(() => createClient())
   const { success, error } = useToast()
 
@@ -43,17 +44,65 @@ export function AuthProvider({ children }) {
     }
   }, [supabase])
 
-  const signUp = async (email, password, name) => {
+  useEffect(() => {
+    async function checkAdminStatus() {
+      if (!user) {
+        setIsAdmin(false)
+        return
+      }
+      
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+          
+        if (error) throw error
+        setIsAdmin(data?.role === 'admin')
+      } catch (err) {
+        console.error('Admin check failed:', err)
+        setIsAdmin(false)
+      }
+    }
+    
+    checkAdminStatus()
+  }, [user, supabase])
+
+  const generateReferralCode = () => {
+    return Math.random().toString(36).substring(2, 10).toUpperCase()
+  }
+
+  const signUp = async (email, password, name, referralCode = null) => {
     try {
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { name }
+          data: { 
+            name,
+            referral_code: generateReferralCode()
+          }
         }
       })
 
       if (signUpError) throw signUpError
+
+      if (referralCode && data.user) {
+        try {
+          await fetch('/api/referral/track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              referralCode, 
+              email,
+              referredUserId: data.user.id 
+            })
+          })
+        } catch (refErr) {
+          console.log('Referral tracking failed (non-critical)')
+        }
+      }
 
       success('Account created! Please check your email to verify.')
       return { success: true, user: data.user }
@@ -149,7 +198,7 @@ export function AuthProvider({ children }) {
       signInWithGitHub,
       updateProfile,
       isAuthenticated: !!user,
-      isAdmin: user?.email?.includes('admin') || user?.user_metadata?.role === 'admin'
+      isAdmin
     }}>
       {children}
     </AuthContext.Provider>
