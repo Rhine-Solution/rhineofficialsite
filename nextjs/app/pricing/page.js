@@ -18,49 +18,51 @@ function getVariant() {
 
 const plans = [
   {
-    name: 'Starter',
-    price: 0,
-    description: 'Perfect for hobby projects and small websites',
+    name: 'Basic',
+    model: 'DIY',
+    monthly: 29,
+    annual: 278,
+    description: 'Perfect for those who want to manage their own tech stack',
     features: [
-      '5 GB Storage',
-      'Basic Analytics',
-      'Community Support',
-      '1 Custom Domain',
-      'Standard SSL',
+      'Knowledge base access',
+      'Email support (48h response)',
+      'Community forum access',
+      'Video tutorials library',
+      'Basic tech checklists',
     ],
     cta: 'Get Started',
     popular: false,
   },
   {
-    name: 'Pro',
-    price: 29,
-    description: 'Best for growing businesses and teams',
+    name: 'Professional',
+    model: 'DWY',
+    monthly: 99,
+    annual: 950,
+    description: 'Best for growing businesses needing guided implementation',
     features: [
-      '50 GB Storage',
-      'Advanced Analytics',
-      'Priority Support',
-      'Unlimited Domains',
-      'Premium SSL',
-      'API Access',
-      'Custom Integrations',
+      'Everything in Basic, plus:',
+      'Live chat support',
+      'Monthly tech audit',
+      'Guided implementation',
+      'Remote assistance',
     ],
     cta: 'Start Free Trial',
     popular: true,
   },
   {
     name: 'Enterprise',
-    price: 99,
-    description: 'For large organizations with custom needs',
+    model: 'DFY',
+    monthly: 499,
+    annual: 4790,
+    description: 'For organizations requiring full-service IT management',
     features: [
-      'Unlimited Storage',
-      'Real-time Analytics',
-      '24/7 Dedicated Support',
-      'Unlimited Domains',
-      'Enterprise SSL',
-      'Full API Access',
-      'Custom Integrations',
-      'SLA Guarantee',
-      'Dedicated Account Manager',
+      'Everything in Professional, plus:',
+      '24/7 live chat support',
+      'Unlimited remote assistance',
+      'Dedicated account manager',
+      'On-site support',
+      'Proactive monitoring',
+      'Custom solutions',
     ],
     cta: 'Contact Sales',
     popular: false,
@@ -69,6 +71,7 @@ const plans = [
 
 export default function PricingPage() {
   const [layout, setLayout] = useState('default')
+  const [isAnnual, setIsAnnual] = useState(false)
 
   useEffect(() => {
     setLayout(getVariant())
@@ -76,7 +79,7 @@ export default function PricingPage() {
 
   const trackConversion = (planName, variant) => {
     if (typeof window !== 'undefined') {
-      console.log('Pricing CTA:', planName, variant)
+      console.log('Pricing CTA:', planName, variant, isAnnual ? 'annual' : 'monthly')
       if (window.umami) {
         window.umami.track('pricing_cta_click', { plan: planName, variant })
       }
@@ -87,16 +90,18 @@ export default function PricingPage() {
     trackConversion(planName, layout)
   }
 
+  const getPrice = (plan) => isAnnual ? plan.annual : plan.monthly
+
   return (
     <div className="min-h-screen py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Simple, <span className="gradient-text">Transparent</span> Pricing
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white">
+            Choose Your <span className="gradient-text dark:text-white">Plan</span>
           </h1>
-          <p className="text-xl text-zinc-400 max-w-2xl mx-auto">
-            Choose the perfect plan for your needs. All plans include a 14-day free trial.
+          <p className="text-xl text-gray-500 dark:text-zinc-400 max-w-2xl mx-auto">
+            DIY, DWY, or DFY — pick the level of support that fits your needs.
           </p>
           {process.env.NODE_ENV === 'development' && (
             <div className="mt-4 inline-block px-3 py-1 bg-amber-500/20 text-amber-400 text-xs rounded-full">
@@ -107,12 +112,26 @@ export default function PricingPage() {
 
         {/* Toggle */}
         <div className="flex justify-center mb-12">
-          <div className="flex bg-zinc-900 rounded-lg p-1 border border-zinc-800">
-            <button className="px-6 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium">
+          <div className="flex bg-gray-100 dark:bg-zinc-900 rounded-lg p-1 border border-gray-200 dark:border-zinc-800">
+            <button 
+              onClick={() => setIsAnnual(false)}
+              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
+                !isAnnual 
+                  ? 'bg-indigo-600 text-white' 
+                  : 'text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
               Monthly
             </button>
-            <button className="px-6 py-2 rounded-md text-zinc-400 text-sm font-medium hover:text-white transition-colors">
-              Yearly <span className="text-green-400 text-xs ml-1">Save 20%</span>
+            <button 
+              onClick={() => setIsAnnual(true)}
+              className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
+                isAnnual 
+                  ? 'bg-indigo-600 text-white' 
+                  : 'text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              Yearly <span className="text-green-500 text-xs ml-1">Save 20%</span>
             </button>
           </div>
         </div>
@@ -124,13 +143,14 @@ export default function PricingPage() {
             : 'md:grid-cols-3'
         }`}>
           {plans.map((plan, index) => {
-            const isHighlighted = layout === 'highlight-pro' && plan.name === 'Pro'
+            const isHighlighted = layout === 'highlight-pro' && plan.name === 'Professional'
+            const isPopular = plan.name === 'Professional'
             
             return (
               <Card 
                 key={plan.name} 
                 className={`relative card-animate hover-lift transition-all ${
-                  plan.popular || isHighlighted 
+                  isPopular || isHighlighted 
                     ? 'border-indigo-500 glow-primary' 
                     : ''
                 } ${
@@ -140,7 +160,7 @@ export default function PricingPage() {
                 }`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                {(plan.popular || isHighlighted) && (
+                {(isPopular || isHighlighted) && (
                   <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 text-xs font-medium rounded-full ${
                     layout === 'highlight-pro' && isHighlighted
                       ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-amber-950'
@@ -150,18 +170,28 @@ export default function PricingPage() {
                   </div>
                 )}
                 <CardContent className={`p-8 ${layout === 'highlight-pro' && isHighlighted ? 'p-10' : ''}`}>
-                  <CardTitle className="text-xl mb-2">{plan.name}</CardTitle>
-                  <p className="text-zinc-400 text-sm mb-6">{plan.description}</p>
+                  <div className="flex items-center gap-2 mb-2">
+                    <CardTitle className="text-xl">{plan.name}</CardTitle>
+                    <span className="px-2 py-0.5 bg-indigo-500/20 text-indigo-400 text-xs rounded-full">
+                      {plan.model}
+                    </span>
+                  </div>
+                  <p className="text-gray-500 dark:text-zinc-400 text-sm mb-6">{plan.description}</p>
                   
                   <div className="mb-6">
-                    <span className={`font-bold ${layout === 'highlight-pro' && isHighlighted ? 'text-5xl' : 'text-4xl'}`}>${plan.price}</span>
-                    <span className="text-zinc-500">/month</span>
+                    <span className={`font-bold text-gray-900 dark:text-white ${layout === 'highlight-pro' && isHighlighted ? 'text-5xl' : 'text-4xl'}`}>${getPrice(plan)}</span>
+                    <span className="text-gray-500 dark:text-zinc-500">/month</span>
+                    {isAnnual && (
+                      <div className="text-sm text-gray-500 dark:text-zinc-500 mt-1">
+                        ${plan.annual}/year billed annually
+                      </div>
+                    )}
                   </div>
 
                   <ul className="space-y-3 mb-8">
-                    {plan.features.map(feature => (
-                      <li key={feature} className="flex items-center text-sm text-zinc-300">
-                        <svg className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {plan.features.map((feature, i) => (
+                      <li key={i} className="flex items-start text-sm text-gray-600 dark:text-zinc-300">
+                        <svg className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                         {feature}
@@ -169,10 +199,13 @@ export default function PricingPage() {
                     ))}
                   </ul>
 
-                  <Link href="/register" onClick={() => handleCtaClick(plan.name)}>
+                  <Link 
+                    href={plan.name === 'Enterprise' ? '/contact' : `/checkout?plan=${plan.name.toLowerCase()}`}
+                    onClick={() => handleCtaClick(plan.name)}
+                  >
                     <Button 
                       className="w-full" 
-                      variant={plan.popular || isHighlighted ? 'primary' : 'outline'}
+                      variant={isPopular || isHighlighted ? 'primary' : 'outline'}
                     >
                       {plan.cta}
                     </Button>
