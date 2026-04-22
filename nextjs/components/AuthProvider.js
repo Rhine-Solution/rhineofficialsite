@@ -58,11 +58,18 @@ export function AuthProvider({ children }) {
           .eq('id', user.id)
           .single()
           
-        if (error) throw error
-        setIsAdmin(data?.role === 'admin')
+        if (error) {
+          // If error (user not in table or RLS issue), check user_metadata as fallback
+          const metadataRole = user.user_metadata?.role
+          setIsAdmin(metadataRole === 'admin')
+          console.log('Admin check fallback - metadata role:', metadataRole)
+        } else {
+          setIsAdmin(data?.role === 'admin')
+        }
       } catch (err) {
         console.error('Admin check failed:', err)
-        setIsAdmin(false)
+        // Fallback: allow access if user_metadata has admin role
+        setIsAdmin(user.user_metadata?.role === 'admin')
       }
     }
     
