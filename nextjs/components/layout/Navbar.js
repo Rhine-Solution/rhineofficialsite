@@ -8,7 +8,6 @@ import { useCart } from '../CartProvider'
 import { useWishlist } from '../WishlistProvider'
 import { useSearch } from '../SearchContext'
 import { useTheme } from 'next-themes'
-import { useTranslation } from 'react-i18next'
 import { Sun, Moon } from 'lucide-react'
 import LanguageSwitcher from '../LanguageSwitcher'
 
@@ -70,7 +69,6 @@ export default function Navbar() {
   const { count: wishlistCount } = useWishlist()
   const { open: openSearch } = useSearch()
   const { theme, setTheme } = useTheme()
-  const { t } = useTranslation()
   const megaMenuRef = useRef(null)
   const accountRef = useRef(null)
 
@@ -320,7 +318,7 @@ export default function Navbar() {
                 href="/register"
                 className="hidden lg:inline-flex px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white text-sm font-medium rounded-xl hover:from-indigo-500 hover:to-indigo-400 transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40"
               >
-                {t('nav.register')}
+                Sign Up
               </Link>
             )}
 
@@ -354,7 +352,7 @@ export default function Navbar() {
           <div className="lg:hidden fixed top-0 right-0 h-screen w-80 max-w-[85vw] bg-white dark:bg-zinc-950 backdrop-blur-xl border-l border-gray-200 dark:border-white/10 shadow-2xl z-50 overflow-y-auto transform transition-transform duration-300 ease-in-out">
             {/* Close button */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/10">
-              <span className="text-lg font-semibold text-gray-900 dark:text-white">{t('common.menu') || 'Menu'}</span>
+              <span className="text-lg font-semibold text-gray-900 dark:text-white">Menu</span>
               <button 
                 onClick={() => setIsOpen(false)}
                 className="p-2 rounded-lg text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5"
